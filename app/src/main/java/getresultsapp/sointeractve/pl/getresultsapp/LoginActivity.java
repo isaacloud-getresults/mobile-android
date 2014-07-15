@@ -3,10 +3,9 @@ package getresultsapp.sointeractve.pl.getresultsapp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
 
 
 public class LoginActivity extends Activity {
@@ -34,9 +33,13 @@ public class LoginActivity extends Activity {
 
         });
 
-        
+
+
+
 
     }
+
+
 
 
 }
