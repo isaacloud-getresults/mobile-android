@@ -10,16 +10,16 @@ public class App extends Application {
 
     private static Isaacloud connector;
     private static App obj;
-    // private static FileManager fileManager;
+    private static FileManager fileManager;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         obj = this;
-        //fileManager = new FileManager();
+        fileManager = new FileManager();
 
     }
-    /*
     public static void saveUserData(UserData userData) {
         fileManager.saveUserData(userData, obj);
     }
@@ -40,16 +40,12 @@ public class App extends Application {
         return obj;
     }
 
-    public static void resetUserData() {
-        fileManager.resetUserData(obj);
-    }
-    */
-    public static Isaacloud getConnector() {
-        return connector;
-    }
-
     public static void setConnector(Isaacloud connector) {
         App.connector = connector;
+    }
+
+    public static Isaacloud getConnector() {
+        return connector;
     }
 
     public static boolean isOnline() {
