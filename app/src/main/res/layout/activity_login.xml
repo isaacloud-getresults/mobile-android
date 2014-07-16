@@ -50,7 +50,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/editEmail"
-        android:layout_alignEnd="@+id/editEmail" />
+        android:layout_alignEnd="@+id/editEmail"
+        android:text="!Ad*5@i" />
 
     <TextView
         android:layout_width="wrap_content"
