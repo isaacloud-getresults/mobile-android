@@ -17,7 +17,7 @@ import java.util.Map;
 
 
 public class LoginActivity extends Activity {
-
+// Oleg was here!
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
