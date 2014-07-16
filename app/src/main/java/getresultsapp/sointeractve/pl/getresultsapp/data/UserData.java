@@ -5,14 +5,6 @@ import java.io.Serializable;
 import android.app.Notification;
 
 
-/**
- * Data store class for user information. Apart from collecting user data, it
- * enables some parts of alarms management.
- *
- * @author Mateusz Renes
- *
- */
-
 public class UserData implements Serializable {
 
 
