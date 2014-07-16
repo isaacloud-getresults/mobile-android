@@ -31,6 +31,7 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         context = this;
+
         // create new wrapper instance for API connection
         initializeConnector();
 
