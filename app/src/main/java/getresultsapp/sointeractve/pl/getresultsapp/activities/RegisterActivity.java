@@ -87,7 +87,7 @@ public class RegisterActivity extends Activity {
             // generate json
             try {
                 jsonBody.put("email","getresultsdev@gmail.com");
-                jsonBody.put("password", "123");
+                jsonBody.put("password", "!Ad*5@i");
                 jsonBody.put("firstName", "Janusz");
                 jsonBody.put("lastName", "Tester");
                 jsonBody.put("status", 1);
