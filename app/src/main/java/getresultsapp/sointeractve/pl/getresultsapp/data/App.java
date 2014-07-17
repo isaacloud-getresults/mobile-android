@@ -18,7 +18,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         obj = this;
-        Log.d("APP:", "FileManager create");
+        Log.d("APP:", "FileManager created");
         fileManager = new FileManager();
 
     }
