@@ -153,9 +153,6 @@ public class LoginActivity extends Activity {
             } else {
              // DEBUG MODE
              // WHILE ISAA IS OFFLINE
-             // DELETE ASAP
-                Intent intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
             }
             // unlock screen orientation
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
