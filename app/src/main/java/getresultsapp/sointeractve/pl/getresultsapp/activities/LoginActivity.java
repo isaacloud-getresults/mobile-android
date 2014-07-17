@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class LoginActivity extends Activity {
 
     private static final String TAG = "LoginActivity";
@@ -127,6 +126,8 @@ public class LoginActivity extends Activity {
                         App.saveUserData(userData);
                         // report user found
                         success = true;
+                        // break the loop
+                        break;
                     }
                 }
             } catch (JSONException e) {
@@ -150,15 +151,16 @@ public class LoginActivity extends Activity {
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
             } else {
-             // NOT LOGGED MESSAGE MUST BE HERE
+             // DEBUG MODE
+             // WHILE ISAA IS OFFLINE
+             // DELETE ASAP
+                Intent intent = new Intent(context, MainActivity.class);
+                startActivity(intent);
             }
             // unlock screen orientation
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
 
     }
-
-
-
 
 }
