@@ -2,11 +2,9 @@ package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import androig.app.Dialog;
+import android.app.Dialog;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
 import android.widget.Toast;
 import android.content.DialogInterface;
 
@@ -23,8 +21,8 @@ public class MainActivity extends Activity {
     public void onClick(View v) {
 		showDialog(0);
 	}
-	
-    protected Dialog onCreateDialog(int id) {
+	/*
+   protected Dialog onCreateDialog(int id) {
 		switch(id) {
 		case 0:
 			return new AlertDialog.Builder(this).setIcon(R.drawable.ic_launcher).setTitle("Hello Janusz").setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -35,4 +33,5 @@ public class MainActivity extends Activity {
 		}
 		return null;
 	}
+    */
 }

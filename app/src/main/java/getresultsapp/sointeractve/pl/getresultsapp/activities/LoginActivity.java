@@ -40,6 +40,8 @@ public class LoginActivity extends Activity {
     private LoginData loginData;
     private UserData userData;
     private ProgressDialog dialog;
+    private Button buttonLogIn;
+    private Button buttonNewUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +53,8 @@ public class LoginActivity extends Activity {
         initializeConnector();
 
         // find relevant views and add listeners
-        Button buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
-        Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
+        buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
+        buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
         editEmail = (TextView) findViewById(R.id.editEmail);
         editPassword = (TextView) findViewById(R.id.editPassword);
 
@@ -76,13 +78,6 @@ public class LoginActivity extends Activity {
             }
 
         });
-
-        // load login data if available
-        loginData = App.loadLoginData();
-        if (loginData.isRemembered()) {
-            editEmail.setText(loginData.getEmail());
-            editPassword.setText(loginData.getPassword());
-        }
     }
 
     public void initializeConnector() {

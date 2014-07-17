@@ -9,4 +9,24 @@
     <string name="buttonNewUser">New user</string>
     <string name="title_activity_register">RegisterActivity</string>
 
+
+    <!-- RegisterActivity -->
+    <string name="activity_register_text_hint_email">Email</string>
+    <string name="activity_register_text_hint_password">Password</string>
+    <string name="activity_register_text_hint_password_repeat">Repeat password</string>
+    <string name="activity_register_text_hint_first_name">First name</string>
+    <string name="activity_register_text_hint_last_name">Last name</string>
+    <string name="activity_register_button_register">Register user</string>
+    <string name="activity_register_text_register_prompt">Please fill in the form below.</string>
+    <string name="activity_register_passwords_dont_match">The passwords don\'t match. Please try again.</string>
+    <string name="activity_register_empty_fields">Some of the fields are empty. Please try again.</string>
+
+    <!-- Error messages -->
+    <string name="error_no_connection">An unknown error has occurred. Please try again.</string>
+    <string name="error_empty">Email and/or password is empty. Please fill in all fields.</string>
+    <string name="error_password">Password needs to be at least 6 characters long, requires at least one upper and one lower case letter, one number, and one special character ( @#$%\\. )</string>
+    <string name="error_login">Unable to log in using current data. Please check if the user email and password are correct or use different data.</string>
+    <string name="error_register">Unable to register using current data. Please try using different email.</string>
+    <string name="error_not_online">No internet connection detected. Please connect before loggin in.</string>
+
 </resources>
