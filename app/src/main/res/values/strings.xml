@@ -9,7 +9,7 @@
     <string name="buttonNewUser">New user</string>
     <string name="title_activity_register">RegisterActivity</string>
     <string name="OK">OK</string>
-    <string name="hello">Hello </string>
+    <string name="hello">Hello</string>
 
 
     <!-- RegisterActivity -->

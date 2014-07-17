@@ -15,14 +15,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/textHelloMsg" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textHello"
-        android:layout_alignTop="@+id/textHelloMsg"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/textRooms"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
