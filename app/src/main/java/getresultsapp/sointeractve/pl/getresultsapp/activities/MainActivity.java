@@ -11,6 +11,9 @@ import android.widget.Toast;
 import android.content.DialogInterface;
 import android.app.AlertDialog.Builder;
 import android.app.DialogFragment;
+import java.util.ArrayList;
+import android.util.SparseArray;
+import android.widget.ExpandableListView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +29,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class MainActivity extends Activity {
 
+    SparseArray<Group> groups = new SparseArray<Group>();
     private static final String TAG = "UserActivity";
 
     @Override
@@ -34,7 +38,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         new AlertDialog.Builder(this)
-                .setTitle(R.string.hello + App.loadUserData().getName())
+                .setTitle("Hello " + App.loadUserData().getName())
                 .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // continue with delete
@@ -43,7 +47,11 @@ public class MainActivity extends Activity {
 
         new PostEventTask().execute();
 
-
+        createData();
+        ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
+        MyExpandableListAdapter adapter = new MyExpandableListAdapter(this,
+                groups);
+        listView.setAdapter(adapter);
     }
 
 
@@ -83,5 +91,16 @@ public class MainActivity extends Activity {
             }
         }
 
+    }
+
+    public void createData() {
+        for (int j = 0; j < 5; j++) {
+            Group group = new Group("Test " + j);
+            int rand = (int)(Math.random() * 10);
+        for (int i = 0; i < rand; i++) {
+               group.children.add("Sub Item" + i);
+            }
+            groups.append(j, group);
+        }
     }
 }
