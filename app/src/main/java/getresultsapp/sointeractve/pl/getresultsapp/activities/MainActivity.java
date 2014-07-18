@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new AlertDialog.Builder(this)
-                .setTitle(R.string.hello + App.loadUserData().getName())
+                .setTitle("Hello " + App.loadUserData().getName())
                 .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // continue with delete
