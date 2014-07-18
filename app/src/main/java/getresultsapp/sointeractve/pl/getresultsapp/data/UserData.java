@@ -2,7 +2,6 @@ package getresultsapp.sointeractve.pl.getresultsapp.data;
 
 import java.io.Serializable;
 
-import android.app.Notification;
 
 
 public class UserData implements Serializable {

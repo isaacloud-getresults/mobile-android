@@ -46,6 +46,8 @@ public class MainActivity extends Activity {
 
     }
 
+
+    // LOGIN EVENT
     private class PostEventTask extends AsyncTask<Object, Object, Object> {
 
         HttpResponse response;
@@ -66,7 +68,6 @@ public class MainActivity extends Activity {
                 isError = true;
                 e.printStackTrace();
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             return null;
