@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,9 +62,15 @@ public class LoginActivity extends Activity {
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("ButtonAction", "Login clicked");
-                userData = App.loadUserData();
-                new LoginTask().execute();
+                if (editEmail.getEditableText().toString().equals("")
+                        || editPassword.getEditableText().toString().equals("")) {
+                    Toast.makeText(context, R.string.error_empty,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Log.d("ButtonAction", "Login clicked");
+                    userData = App.loadUserData();
+                    new LoginTask().execute();
+                }
             }
 
         });
@@ -120,6 +127,7 @@ public class LoginActivity extends Activity {
                         String userEmail = json.getString("email");
                         int userId = json.getInt("id");
                         // send loaded data to App.UserData
+                        UserData userData = new UserData();
                         userData.setName(userFirstName + " " + userLastName);
                         userData.setEmail(userEmail);
                         userData.setUserId(userId);
