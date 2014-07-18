@@ -29,7 +29,7 @@ import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class MainActivity extends Activity {
-
+    // test comment
     SparseArray<Group> groups = new SparseArray<Group>();
     private static final String TAG = "UserActivity";
     String[] locations;
