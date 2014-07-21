@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.util.SparseArray;
 import android.widget.ExpandableListView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +26,8 @@ public class MainActivity extends Activity {
     // test comment
     SparseArray<Group> groups = new SparseArray<Group>();
     private static final String TAG = "UserActivity";
+    String[] locations;
+    boolean success = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +42,17 @@ public class MainActivity extends Activity {
                     }
                 }).show();
 
-        new PostEventTask().execute();
-
-        createData();
+//        new PostEventTask().execute();
+        new LoginTask().execute();
+//        createData();
+        while(!success) {}
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
         ExpandableListAdapter adapter = new ExpandableListAdapter(this,
                 groups);
         listView.setAdapter(adapter);
     }
 
-
+/*
     // LOGIN EVENT
     private class PostEventTask extends AsyncTask<Object, Object, Object> {
 
@@ -58,7 +62,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected Object doInBackground(Object... params) {
-            Log.d(TAG, "doInBackground()");
+            Log.d(TAG, "UWAGA!");
             try {
                 JSONObject body = new JSONObject();
                 body.put("activity", "login");
@@ -86,15 +90,53 @@ public class MainActivity extends Activity {
         }
 
     }
-
+*/
     public void createData() {
-        for (int j = 0; j < 5; j++) {
-            Group group = new Group("Test " + j);
-            int rand = (int)(Math.random() * 10);
-        for (int i = 0; i < rand; i++) {
-               group.children.add("Sub Item" + i);
+        for (int j = 0; j < locations.length; j++) {
+            Group group = new Group(locations[j] + j);
+            int rand = (int) (Math.random() * 10);
+            for (int i = 0; i < rand; i++) {
+                group.children.add("Sub Item" + i);
             }
             groups.append(j, group);
+        }
+    }
+
+    private class LoginTask extends AsyncTask<Object, Object, Object> {
+        protected Object doInBackground(Object... params) {
+
+            Log.d(TAG, "ATTENTION");
+            try {
+                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
+                Log.d(TAG, response.toString());
+                JSONArray array = response.getJSONArray();
+                locations = new String[array.length()];
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject json = (JSONObject) array.get(i);
+                    locations[i] = json.getString("label");
+                    Log.d(TAG, locations[i].toString());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            createData();
+            return null;
+        }
+
+        protected void createData() {
+            for (int j = 0; j < locations.length; j++) {
+                Group group = new Group(locations[j]);
+                int rand = (int) (Math.random() * 10);
+                for (int i = 0; i < rand; i++) {
+                    group.children.add("Janusz Tester");
+                }
+                groups.append(j, group);
+                success = true;
+            }
         }
     }
 }
