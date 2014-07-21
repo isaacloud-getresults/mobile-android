@@ -11,7 +11,6 @@
     <string name="OK">OK</string>
     <string name="hello">Hello</string>
 
-
     <!-- RegisterActivity -->
     <string name="activity_register_text_hint_email">Email</string>
     <string name="activity_register_text_hint_password">Password</string>
@@ -30,5 +29,6 @@
     <string name="error_login">Unable to log in using current data. Please check if the user email and password are correct or use different data.</string>
     <string name="error_register">Unable to register using current data. Please try using different email.</string>
     <string name="error_not_online">No internet connection detected. Please connect before loggin in.</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

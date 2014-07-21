@@ -2,8 +2,10 @@ package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.content.DialogInterface;
 import android.util.SparseArray;
@@ -14,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.adapters.ExpandableListAdapter;
@@ -22,7 +25,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
     // test comment
     SparseArray<Group> groups = new SparseArray<Group>();
     private static final String TAG = "UserActivity";
@@ -34,6 +37,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         new AlertDialog.Builder(this)
                 .setTitle("Hello " + App.loadUserData().getName())
                 .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
@@ -42,14 +47,13 @@ public class MainActivity extends Activity {
                     }
                 }).show();
 
-//        new PostEventTask().execute();
-        new LoginTask().execute();
-//        createData();
+        /*
         while(!success) {}
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
         ExpandableListAdapter adapter = new ExpandableListAdapter(this,
                 groups);
         listView.setAdapter(adapter);
+        */
     }
 
 /*
@@ -90,7 +94,7 @@ public class MainActivity extends Activity {
         }
 
     }
-*/
+
     public void createData() {
         for (int j = 0; j < locations.length; j++) {
             Group group = new Group(locations[j] + j);
@@ -139,4 +143,5 @@ public class MainActivity extends Activity {
             }
         }
     }
+    */
 }
