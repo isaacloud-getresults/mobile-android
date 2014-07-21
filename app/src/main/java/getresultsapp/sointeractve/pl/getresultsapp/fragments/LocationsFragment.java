@@ -13,11 +13,6 @@ import getresultsapp.sointeractve.pl.getresultsapp.R;
 
 public class LocationsFragment extends Fragment {
 
-    private String title;
-    private int page;
-
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -36,18 +31,13 @@ public class LocationsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            page = getArguments().getInt("someInt", 0);
-            title = getArguments().getString("someTitle");
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_status, container, false);
-        TextView tvLabel = (TextView) view.findViewById(R.id.textFrag1);
-        tvLabel.setText(page + " -- " + title);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        View view = inflater.inflate(R.layout.tab, container, false);
+        TextView textview = (TextView) view.findViewById(R.id.tabtextview);
+        textview.setText("one");
         return view;
     }
 
@@ -61,12 +51,6 @@ public class LocationsFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override

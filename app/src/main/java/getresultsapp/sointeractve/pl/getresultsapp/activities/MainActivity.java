@@ -1,42 +1,59 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
+import android.app.ActionBar;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+
 import android.util.Log;
 import android.content.DialogInterface;
-import android.util.SparseArray;
-import android.widget.ExpandableListView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.adapters.ExpandableListAdapter;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends FragmentActivity {
-    // test comment
-    SparseArray<Group> groups = new SparseArray<Group>();
+public class MainActivity extends Activity {
+
     private static final String TAG = "UserActivity";
-    String[] locations;
-    boolean success = false;
+    ActionBar.Tab tab1, tab2, tab3;
+    Fragment fragmentTab1 = new StatusFragment();
+    Fragment fragmentTab2 = new LocationsFragment();
+    Fragment fragmentTab3 = new ProfileFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tab_test);
 
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        tab1 = actionBar.newTab().setText("Status");
+        tab2 = actionBar.newTab().setText("Locations");
+        tab3 = actionBar.newTab().setText("Profile");
+
+        tab1.setTabListener(new TabListener(fragmentTab1));
+        tab2.setTabListener(new TabListener(fragmentTab2));
+        tab3.setTabListener(new TabListener(fragmentTab3));
+
+        actionBar.addTab(tab1);
+        actionBar.addTab(tab2);
+        actionBar.addTab(tab3);
 
 
         new AlertDialog.Builder(this)
@@ -47,16 +64,8 @@ public class MainActivity extends FragmentActivity {
                     }
                 }).show();
 
-        /*
-        while(!success) {}
-        ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
-        ExpandableListAdapter adapter = new ExpandableListAdapter(this,
-                groups);
-        listView.setAdapter(adapter);
-        */
     }
 
-/*
     // LOGIN EVENT
     private class PostEventTask extends AsyncTask<Object, Object, Object> {
 
@@ -95,53 +104,4 @@ public class MainActivity extends FragmentActivity {
 
     }
 
-    public void createData() {
-        for (int j = 0; j < locations.length; j++) {
-            Group group = new Group(locations[j] + j);
-            int rand = (int) (Math.random() * 10);
-            for (int i = 0; i < rand; i++) {
-                group.children.add("Sub Item" + i);
-            }
-            groups.append(j, group);
-        }
-    }
-
-    private class LoginTask extends AsyncTask<Object, Object, Object> {
-        protected Object doInBackground(Object... params) {
-
-            Log.d(TAG, "ATTENTION");
-            try {
-                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
-                Log.d(TAG, response.toString());
-                JSONArray array = response.getJSONArray();
-                locations = new String[array.length()];
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject json = (JSONObject) array.get(i);
-                    locations[i] = json.getString("label");
-                    Log.d(TAG, locations[i].toString());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            createData();
-            return null;
-        }
-
-        protected void createData() {
-            for (int j = 0; j < locations.length; j++) {
-                Group group = new Group(locations[j]);
-                int rand = (int) (Math.random() * 10);
-                for (int i = 0; i < rand; i++) {
-                    group.children.add("Janusz Tester");
-                }
-                groups.append(j, group);
-                success = true;
-            }
-        }
-    }
-    */
 }

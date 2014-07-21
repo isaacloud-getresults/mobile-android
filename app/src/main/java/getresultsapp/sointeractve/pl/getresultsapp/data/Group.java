@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.activities;
+package getresultsapp.sointeractve.pl.getresultsapp.data;
    import java.util.ArrayList;
    import java.util.List;
 
