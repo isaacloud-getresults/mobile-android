@@ -3,14 +3,13 @@ package getresultsapp.sointeractve.pl.getresultsapp.activities;
 import android.app.ActionBar;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.util.Log;
-import android.content.DialogInterface;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +26,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
 
     private static final String TAG = "UserActivity";
     ActionBar.Tab tab1, tab2, tab3;
@@ -40,8 +39,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab_test);
 
+        // disable custom actionbar
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
 
         tab1 = actionBar.newTab().setText("Status");
         tab2 = actionBar.newTab().setText("Locations");
@@ -55,14 +57,6 @@ public class MainActivity extends Activity {
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
 
-
-        new AlertDialog.Builder(this)
-                .setTitle("Hello " + App.loadUserData().getName())
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                    }
-                }).show();
 
     }
 

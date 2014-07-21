@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 
 public class ProfileFragment extends Fragment {
 
@@ -45,8 +46,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.tab, container, false);
-        TextView textview = (TextView) view.findViewById(R.id.tabtextview);
-        textview.setText("one");
         return view;
     }
 
