@@ -2,16 +2,10 @@ package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 import android.content.DialogInterface;
-import android.app.AlertDialog.Builder;
-import android.app.DialogFragment;
-import java.util.ArrayList;
 import android.util.SparseArray;
 import android.widget.ExpandableListView;
 
@@ -19,9 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Map;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.adapters.ExpandableListAdapter;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
@@ -49,7 +43,7 @@ public class MainActivity extends Activity {
 
         createData();
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
-        MyExpandableListAdapter adapter = new MyExpandableListAdapter(this,
+        ExpandableListAdapter adapter = new ExpandableListAdapter(this,
                 groups);
         listView.setAdapter(adapter);
     }

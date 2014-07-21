@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.activities;
+package getresultsapp.sointeractve.pl.getresultsapp.adapters;
 
 import android.app.Activity;
 import android.util.SparseArray;
@@ -12,14 +12,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.activities.Group;
 
-public class MyExpandableListAdapter extends BaseExpandableListAdapter {
+public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     private final SparseArray<Group> groups;
     public LayoutInflater inflater;
     public Activity activity;
 
-    public MyExpandableListAdapter(Activity act, SparseArray<Group> groups) {
+    public ExpandableListAdapter(Activity act, SparseArray<Group> groups) {
         activity = act;
         this.groups = groups;
         inflater = act.getLayoutInflater();
