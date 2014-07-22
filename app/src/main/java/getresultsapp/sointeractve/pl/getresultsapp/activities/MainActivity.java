@@ -3,14 +3,19 @@ package getresultsapp.sointeractve.pl.getresultsapp.activities;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import android.content.DialogInterface;
 import android.app.AlertDialog.Builder;
 import android.app.DialogFragment;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import android.util.SparseArray;
 import android.widget.ExpandableListView;
@@ -18,6 +23,14 @@ import android.widget.ExpandableListView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.estimote.sdk.BeaconManager;
+import com.estimote.sdk.Beacon;
+import com.estimote.sdk.Region;
+import com.estimote.sdk.Utils;
+import java.util.Date;
+
+import java.util.List;
 
 import java.io.IOException;
 import java.util.Map;
@@ -35,6 +48,11 @@ public class MainActivity extends Activity {
     String[] locations;
     boolean success = false;
 
+    private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
+    private BeaconManager beaconManager = new BeaconManager(this);
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,64 +66,64 @@ public class MainActivity extends Activity {
                     }
                 }).show();
 
-//        new PostEventTask().execute();
         new LoginTask().execute();
-//        createData();
+
         while(!success) {}
         ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
         MyExpandableListAdapter adapter = new MyExpandableListAdapter(this,
                 groups);
         listView.setAdapter(adapter);
+
+
+        beaconManager.setRangingListener(new BeaconManager.RangingListener() {
+            @Override public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
+                runOnUiThread(new Runnable() {
+                    DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
+                    public void run() {
+                        Beacon foundBeacon;
+                        Date date = new Date();
+                        for(Beacon tempBeacon : beacons) {
+                            foundBeacon = tempBeacon;
+                            Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
+                        }
+                        Log.d(TAG, "Ranged beacons: " + beacons);
+                    }
+                });
+            }
+        });
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override public void onServiceReady() {
+                try {
+                    beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
+                    Log.d(TAG, "Start ranging");
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Cannot start ranging", e);
+                }
+            }
+    });
+    }
 /*
-    // LOGIN EVENT
-    private class PostEventTask extends AsyncTask<Object, Object, Object> {
-
-        HttpResponse response;
-        boolean isError = false;
-        UserData userData = App.loadUserData();
-
-        @Override
-        protected Object doInBackground(Object... params) {
-            Log.d(TAG, "UWAGA!");
-            try {
-                JSONObject body = new JSONObject();
-                body.put("activity", "login");
-                response = App.getConnector().event(userData.getUserId(),
-                        "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                isError = true;
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Cannot stop but it does not matter now", e);
         }
-
-        protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
-            if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
-            }
-            if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
-            }
-        }
-
     }
 */
-    public void createData() {
-        for (int j = 0; j < locations.length; j++) {
-            Group group = new Group(locations[j] + j);
-            int rand = (int) (Math.random() * 10);
-            for (int i = 0; i < rand; i++) {
-                group.children.add("Sub Item" + i);
-            }
-            groups.append(j, group);
-        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        beaconManager.disconnect();
     }
 
     private class LoginTask extends AsyncTask<Object, Object, Object> {
