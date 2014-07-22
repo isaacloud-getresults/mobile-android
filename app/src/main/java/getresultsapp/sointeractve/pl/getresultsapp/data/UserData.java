@@ -10,6 +10,7 @@ public class UserData implements Serializable {
     private String name, email;
     private boolean hasNewNotifications;
     private int userId;
+    private String firstName;
     private Notification lastNotification;
 
 
@@ -62,6 +63,12 @@ public class UserData implements Serializable {
         this.lastNotification = lastNotification;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
+    public String getFirstName() {
+        return firstName;
+    }
 
 }

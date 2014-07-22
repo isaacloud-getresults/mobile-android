@@ -1,5 +1,6 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -129,6 +130,7 @@ public class LoginActivity extends Activity {
                         // send loaded data to App.UserData
                         UserData userData = new UserData();
                         userData.setName(userFirstName + " " + userLastName);
+                        userData.setFirstName(userFirstName);
                         userData.setEmail(userEmail);
                         userData.setUserId(userId);
                         App.saveUserData(userData);
