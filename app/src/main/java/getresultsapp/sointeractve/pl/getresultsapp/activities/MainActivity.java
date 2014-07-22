@@ -52,6 +52,9 @@ public class MainActivity extends Activity {
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
     private BeaconManager beaconManager = new BeaconManager(this);
     private Context context;
+    private static int counter = 0;
+    static SparseArray<ArrayList<Double>> beaconDistances;
+    static double dist = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,18 +83,44 @@ public class MainActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
                     public void run() {
+
                         Beacon foundBeacon;
                         Date date = new Date();
                         for(Beacon tempBeacon : beacons) {
                             foundBeacon = tempBeacon;
+                            calculateDistance(counter, foundBeacon);
                             Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
                         }
                         Log.d(TAG, "Ranged beacons: " + beacons);
+                        counter++;
                     }
                 });
             }
         });
 
+    }
+
+    public void calculateDistance(int count, Beacon beacon) {
+        if(count == 5) {
+            double d = 0;
+            ArrayList<Double> distances = beaconDistances.get(beacon.getMajor());
+            for(Double tempDouble: distances) {
+                d =+ tempDouble.doubleValue();
+                d = d / 5;
+            }
+            beaconDistances.delete(beacon.getMajor());
+            dist = d;
+            Log.d(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + dist);
+            counter = -1;
+        }
+
+        else {
+            ArrayList help = new ArrayList();
+            Log.d(TAG, "Ranged beacons: " + beacon);
+            help.add(new Double(Utils.computeAccuracy(beacon)));
+            beaconDistances.put(beacon.getMajor(), help);
+
+        }
     }
 
     @Override
