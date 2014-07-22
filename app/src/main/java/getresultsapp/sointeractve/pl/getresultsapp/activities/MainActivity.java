@@ -43,9 +43,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class MainActivity extends Activity {
     // test comment
-    SparseArray<Group> groups = new SparseArray<Group>();
     private static final String TAG = "UserActivity";
-    String[] locations;
     boolean success = false;
 
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
@@ -65,14 +63,6 @@ public class MainActivity extends Activity {
                         // continue with delete
                     }
                 }).show();
-
-        new LoginTask().execute();
-
-        while(!success) {}
-        ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
-        MyExpandableListAdapter adapter = new MyExpandableListAdapter(this,
-                groups);
-        listView.setAdapter(adapter);
 
 
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
@@ -124,43 +114,5 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         beaconManager.disconnect();
-    }
-
-    private class LoginTask extends AsyncTask<Object, Object, Object> {
-        protected Object doInBackground(Object... params) {
-
-            Log.d(TAG, "ATTENTION");
-            try {
-                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
-                Log.d(TAG, response.toString());
-                JSONArray array = response.getJSONArray();
-                locations = new String[array.length()];
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject json = (JSONObject) array.get(i);
-                    locations[i] = json.getString("label");
-                    Log.d(TAG, locations[i].toString());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            createData();
-            return null;
-        }
-
-        protected void createData() {
-            for (int j = 0; j < locations.length; j++) {
-                Group group = new Group(locations[j]);
-                int rand = (int) (Math.random() * 10);
-                for (int i = 0; i < rand; i++) {
-                    group.children.add("Janusz Tester");
-                }
-                groups.append(j, group);
-                success = true;
-            }
-        }
     }
 }
