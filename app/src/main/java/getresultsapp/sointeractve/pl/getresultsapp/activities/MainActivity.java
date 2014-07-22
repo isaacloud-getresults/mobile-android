@@ -5,21 +5,30 @@ import android.app.ActionBar;
 import android.app.Activity;
 
 import android.app.Fragment;
+
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
+import android.os.RemoteException;
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.estimote.sdk.BeaconManager;
+import com.estimote.sdk.Beacon;
+import com.estimote.sdk.Region;
+import com.estimote.sdk.Utils;
+import java.util.Date;
+
+import java.util.List;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
@@ -38,6 +47,12 @@ public class MainActivity extends Activity{
     Fragment fragmentTab1 = new StatusFragment();
     Fragment fragmentTab2 = new LocationsFragment();
     Fragment fragmentTab3 = new ProfileFragment();
+    boolean success = false;
+
+    private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
+    private BeaconManager beaconManager = new BeaconManager(this);
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +77,27 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
 
+        beaconManager.setRangingListener(new BeaconManager.RangingListener() {
+            @Override
+            public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
+                runOnUiThread(new Runnable() {
+                    DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
 
+                    public void run() {
+                        Beacon foundBeacon;
+                        Date date = new Date();
+                        for (Beacon tempBeacon : beacons) {
+                            foundBeacon = tempBeacon;
+                            Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
+                        }
+                        Log.d(TAG, "Ranged beacons: " + beacons);
+                    }
+                });
+            }
+        });
     }
 
+     
     // LOGIN EVENT
     private class PostEventTask extends AsyncTask<Object, Object, Object> {
 
@@ -100,7 +133,38 @@ public class MainActivity extends Activity{
                 Log.d(TAG, "onPostExecute() - response: " + response.toString());
             }
         }
-
     }
+  
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override public void onServiceReady() {
+                try {
+                    beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
+                    Log.d(TAG, "Start ranging");
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Cannot start ranging", e);
+                }
+            }
+    });
+    }
+/*
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Cannot stop but it does not matter now", e);
+        }
+    }
+*/
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        beaconManager.disconnect();
+    }
 }
