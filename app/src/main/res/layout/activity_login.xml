@@ -8,69 +8,76 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".LoginActivity">
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/buttonLogIn"
-        android:id="@+id/buttonLogIn"
-        android:layout_toStartOf="@+id/buttonNewUser"
-        android:layout_alignTop="@+id/buttonNewUser"
-        android:layout_toLeftOf="@+id/buttonNewUser" />
+        android:layout_marginLeft="@dimen/login_container_margin"
+        android:layout_marginRight="@dimen/login_container_margin"
+        android:layout_marginTop="@dimen/login_container_margin_top"
+        android:orientation="vertical"
+        >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/buttonNewUser"
-        android:id="@+id/buttonNewUser"
-        android:layout_toEndOf="@+id/textHey"
-        android:layout_below="@+id/editPassword"
-        android:layout_toRightOf="@+id/textHey" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="-3dp"
+            android:paddingLeft="-2dp"
+            android:paddingRight="1dp"
+            android:paddingTop="-2dp" >
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/editEmail"
-        android:layout_toEndOf="@+id/buttonLogIn"
-        android:layout_below="@+id/textHello"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:text="getresultsdev@gmail.com" />
+            <TextView
+                android:layout_width="@dimen/login_text_width"
+                android:layout_height="@dimen/login_items_height"
+                android:text="Your email:"
+                style="@style/labelStyle"
+                android:id="@+id/textHello" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/editPassword"
-        android:layout_toEndOf="@+id/buttonLogIn"
-        android:layout_below="@+id/textHey"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignRight="@+id/editEmail"
-        android:layout_alignEnd="@+id/editEmail"
-        android:text="!Ad*5@i" />
+            <EditText
+                android:layout_width="@dimen/login_edit_width"
+                android:layout_height="@dimen/login_items_height"
+                style="@style/editStyle"
+                android:inputType="textPersonName"
+                android:id="@+id/editEmail"
+                android:layout_toRightOf="@id/textHello"
+                android:text="getresultsdev@gmail.com" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Your email:"
-        android:id="@+id/textHello"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+            <TextView
+                android:layout_width="@dimen/login_text_width"
+                android:layout_height="@dimen/login_items_height"
+                android:text="Password:"
+                style="@style/labelStyle"
+                android:id="@+id/textHey"
+                android:layout_below="@+id/editEmail" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Password:"
-        android:id="@+id/textHey"
-        android:layout_below="@+id/editEmail"
-        android:layout_alignLeft="@+id/textHello"
-        android:layout_alignStart="@+id/textHello" />
+            <EditText
+                android:layout_width="@dimen/login_edit_width"
+                android:layout_height="@dimen/login_items_height"
+                style="@style/editStyle"
+                android:inputType="textEmailAddress"
+                android:id="@+id/editPassword"
+                android:layout_below="@+id/editEmail"
+                android:layout_toRightOf="@+id/textHey"
+                android:text="!Ad*5@i"
+                android:password="true" />
+
+            <Button
+                android:layout_width="@dimen/login_button_width"
+                android:layout_height="@dimen/login_button_height"
+                android:text="@string/buttonLogIn"
+                android:background="#006699"
+                android:id="@+id/buttonLogIn"
+                android:layout_below="@+id/textHey" />
+
+            <Button
+                android:layout_width="@dimen/login_button_width"
+                android:layout_height="@dimen/login_button_height"
+                android:text="@string/buttonNewUser"
+                android:id="@+id/buttonNewUser"
+                android:layout_below="@+id/buttonLogIn"/>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
