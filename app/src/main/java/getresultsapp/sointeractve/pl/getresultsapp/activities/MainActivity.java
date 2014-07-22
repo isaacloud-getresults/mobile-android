@@ -1,26 +1,20 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
+import android.app.ActionBar;
+
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
+
+import android.app.Fragment;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-import android.content.DialogInterface;
-import android.app.AlertDialog.Builder;
-import android.app.DialogFragment;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import android.util.SparseArray;
-import android.widget.ExpandableListView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,19 +27,26 @@ import java.util.Date;
 import java.util.List;
 
 import java.io.IOException;
-import java.util.Map;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
+import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity {
-    // test comment
-    SparseArray<Group> groups = new SparseArray<Group>();
+public class MainActivity extends Activity{
+
     private static final String TAG = "UserActivity";
-    String[] locations;
+    ActionBar.Tab tab1, tab2, tab3;
+    Fragment fragmentTab1 = new StatusFragment();
+    Fragment fragmentTab2 = new LocationsFragment();
+    Fragment fragmentTab3 = new ProfileFragment();
     boolean success = false;
 
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
@@ -59,34 +60,37 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tab_test);
 
-        new AlertDialog.Builder(this)
-                .setTitle("Hello " + App.loadUserData().getName())
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                    }
-                }).show();
+        // disable custom actionbar
+        ActionBar actionBar = getActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowTitleEnabled(false);
 
-        new LoginTask().execute();
+        tab1 = actionBar.newTab().setText("Status");
+        tab2 = actionBar.newTab().setText("Locations");
+        tab3 = actionBar.newTab().setText("Profile");
 
-        while(!success) {}
-        ExpandableListView listView = (ExpandableListView) findViewById(R.id.listView);
-        MyExpandableListAdapter adapter = new MyExpandableListAdapter(this,
-                groups);
-        listView.setAdapter(adapter);
+        tab1.setTabListener(new TabListener(fragmentTab1));
+        tab2.setTabListener(new TabListener(fragmentTab2));
+        tab3.setTabListener(new TabListener(fragmentTab3));
 
+        actionBar.addTab(tab1);
+        actionBar.addTab(tab2);
+        actionBar.addTab(tab3);
 
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
-            @Override public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
+            @Override
+            public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
                 runOnUiThread(new Runnable() {
                     DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
+
                     public void run() {
 
                         Beacon foundBeacon;
                         Date date = new Date();
-                        for(Beacon tempBeacon : beacons) {
+                        for (Beacon tempBeacon : beacons) {
                             foundBeacon = tempBeacon;
                             calculateDistance(counter, foundBeacon);
                             Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
@@ -97,8 +101,46 @@ public class MainActivity extends Activity {
                 });
             }
         });
-
     }
+
+     
+    // LOGIN EVENT
+    private class PostEventTask extends AsyncTask<Object, Object, Object> {
+
+        HttpResponse response;
+        boolean isError = false;
+        UserData userData = App.loadUserData();
+
+        @Override
+        protected Object doInBackground(Object... params) {
+            Log.d(TAG, "UWAGA!");
+            try {
+                JSONObject body = new JSONObject();
+                body.put("activity", "login");
+                response = App.getConnector().event(userData.getUserId(),
+                        "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                isError = true;
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Object result) {
+            Log.d(TAG, "onPostExecute()");
+            if (isError) {
+                Log.d(TAG, "onPostExecute() - error detected");
+            }
+            if (response != null) {
+                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+            }
+        }
+    }
+  
 
     public void calculateDistance(int count, Beacon beacon) {
         if(count == 5) {
@@ -153,43 +195,5 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         beaconManager.disconnect();
-    }
-
-    private class LoginTask extends AsyncTask<Object, Object, Object> {
-        protected Object doInBackground(Object... params) {
-
-            Log.d(TAG, "ATTENTION");
-            try {
-                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
-                Log.d(TAG, response.toString());
-                JSONArray array = response.getJSONArray();
-                locations = new String[array.length()];
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject json = (JSONObject) array.get(i);
-                    locations[i] = json.getString("label");
-                    Log.d(TAG, locations[i].toString());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            createData();
-            return null;
-        }
-
-        protected void createData() {
-            for (int j = 0; j < locations.length; j++) {
-                Group group = new Group(locations[j]);
-                int rand = (int) (Math.random() * 10);
-                for (int i = 0; i < rand; i++) {
-                    group.children.add("Janusz Tester");
-                }
-                groups.append(j, group);
-                success = true;
-            }
-        }
     }
 }
