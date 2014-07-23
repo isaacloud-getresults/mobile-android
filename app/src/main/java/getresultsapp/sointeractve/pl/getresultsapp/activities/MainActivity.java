@@ -23,6 +23,8 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
 import java.util.Date;
+import java.util.ArrayList;
+import android.util.SparseArray;
 
 import java.util.List;
 
@@ -54,8 +56,9 @@ public class MainActivity extends Activity{
     private BeaconManager beaconManager = new BeaconManager(this);
     private Context context;
     private static int counter = 0;
-    static SparseArray<ArrayList<Double>> beaconDistances;
-    static double dist = 0;
+    static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
+    static ArrayList<Integer> majors= new ArrayList<Integer>();
+    static ArrayList<Integer> temp = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,16 +88,18 @@ public class MainActivity extends Activity{
             public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
                 runOnUiThread(new Runnable() {
                     DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
-
                     public void run() {
-
                         Beacon foundBeacon;
+                        trackBeacons(beacons);
                         Date date = new Date();
                         for (Beacon tempBeacon : beacons) {
                             foundBeacon = tempBeacon;
-                            calculateDistance(counter, foundBeacon);
+                            if(counter == 5) calculateDistance(foundBeacon);
+                            writeDistance(foundBeacon);
                             Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
+                            Log.d(TAG, "Distance: " + beaconDistances.get(foundBeacon.getMajor()));
                         }
+                        if(counter == 5) counter = 0;
                         Log.d(TAG, "Ranged beacons: " + beacons);
                         counter++;
                     }
@@ -140,28 +145,63 @@ public class MainActivity extends Activity{
             }
         }
     }
-  
 
-    public void calculateDistance(int count, Beacon beacon) {
-        if(count == 5) {
-            double d = 0;
-            ArrayList<Double> distances = beaconDistances.get(beacon.getMajor());
-            for(Double tempDouble: distances) {
-                d =+ tempDouble.doubleValue();
-                d = d / 5;
-            }
-            beaconDistances.delete(beacon.getMajor());
-            dist = d;
-            Log.d(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + dist);
-            counter = -1;
+
+    public void writeDistance(Beacon beacon) {
+        ArrayList<Double> help;
+
+        if((beaconDistances.size() == 0) || (beaconDistances.get(beacon.getMajor()) == null)) {
+            help = new ArrayList<Double>();
         }
-
         else {
-            ArrayList help = new ArrayList();
-            Log.d(TAG, "Ranged beacons: " + beacon);
-            help.add(new Double(Utils.computeAccuracy(beacon)));
-            beaconDistances.put(beacon.getMajor(), help);
+            help = beaconDistances.get(beacon.getMajor());
 
+        }
+        Log.d(TAG, "Beacon in function: " + beacon.getMacAddress());
+        Log.d(TAG, "beaconDistances size: " + beaconDistances.size());
+
+        help.add(new Double(Utils.computeAccuracy(beacon)));
+        Log.d(TAG, "Help variable" + help);
+        beaconDistances.put(beacon.getMajor(), help);
+        Log.d(TAG, "Counter " + counter);
+        Log.d(TAG, "beacon " + beacon.getMacAddress() + " ranges - " + beaconDistances.get(beacon.getMajor()));
+
+
+    }
+
+    public void calculateDistance(Beacon beacon) {
+        double d = 0;
+        ArrayList<Double> distances = beaconDistances.get(beacon.getMajor());
+        for(Double tempDouble : distances) {
+            Log.d(TAG, "distance to a beacon " + beacon.getMacAddress() + ": " + tempDouble);
+            d += tempDouble.doubleValue();
+
+        }
+        d = d / 5;
+        beaconDistances.delete(beacon.getMajor());
+        Log.d(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + d);
+
+    }
+
+    public void trackBeacons(List<Beacon> beacons) {
+        ArrayList<Integer> helper = new ArrayList<Integer>();
+        for(Beacon b : beacons) {
+            helper.add(new Integer(b.getMajor()));
+            if(!(majors.contains(new Integer(b.getMajor())))) {
+                majors.add(new Integer(b.getMajor()));
+                Log.d(TAG, "Major " + b.getMajor() + " appeared");
+            }
+        }
+        temp = majors;
+        for(Integer i : temp) {
+            Log.d(TAG, "All majors: " + majors);
+            Log.d(TAG, "helper " + helper);
+            Log.d(TAG, "i = " + i);
+            if(!(helper.contains(i))) {
+                majors.remove(i);
+                Log.d(TAG, "Major " + i + " disappeared");
+                Log.d(TAG, "All majors: " + majors);
+            }
         }
     }
 
@@ -178,9 +218,9 @@ public class MainActivity extends Activity{
                     Log.e(TAG, "Cannot start ranging", e);
                 }
             }
-    });
+        });
     }
-/*
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -190,7 +230,7 @@ public class MainActivity extends Activity{
             Log.e(TAG, "Cannot stop but it does not matter now", e);
         }
     }
-*/
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
