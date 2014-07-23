@@ -51,7 +51,7 @@ public class MainActivity extends Activity{
 
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
-    private BeaconManager beaconManager = new BeaconManager(this);
+    // private BeaconManager beaconManager = new BeaconManager(this);
     private Context context;
 
     @Override
@@ -76,7 +76,7 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab1);
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
-
+        /*
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
@@ -95,6 +95,7 @@ public class MainActivity extends Activity{
                 });
             }
         });
+        */
     }
 
      
@@ -139,7 +140,7 @@ public class MainActivity extends Activity{
     @Override
     protected void onStart() {
         super.onStart();
-
+/*
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override public void onServiceReady() {
                 try {
@@ -150,6 +151,7 @@ public class MainActivity extends Activity{
                 }
             }
     });
+*/
     }
 /*
     @Override
@@ -165,6 +167,6 @@ public class MainActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        beaconManager.disconnect();
+        // beaconManager.disconnect();
     }
 }

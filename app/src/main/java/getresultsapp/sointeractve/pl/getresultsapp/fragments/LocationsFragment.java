@@ -1,10 +1,12 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
+import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.Loader;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -26,17 +28,19 @@ import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class LocationsFragment extends Fragment {
+public class LocationsFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Location>> {
 
     ExpandableListAdapter listAdapter;
-    ExpandableListView expListView;
-    List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    ExpandableListView expandableListView;
+    ArrayList<Location> locationsArray;
+    HashMap<Location, List<Person>> visitorsArray;
     Context context;
-    boolean success = false;
+    boolean isLoaded = false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -57,25 +61,24 @@ public class LocationsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
-
-        // get the listview
-        expListView = (ExpandableListView) view.findViewById(R.id.listView);
-
-        // preparing list data
-        new GetLocationsListTask().execute();
-
-        while(!success) {
-
-        }
-
-        listAdapter = new ExpandableListAdapter(context, listDataHeader, listDataChild);
-
-        // setting list adapter
-        expListView.setAdapter(listAdapter);
+        context = getActivity();
+        locationsArray = new ArrayList<Location>();
+        visitorsArray = new HashMap<Location, List<Person>>();
+        listAdapter = new ExpandableListAdapter(context, locationsArray, visitorsArray);
+        getLoaderManager().initLoader(0, null, this);
+        expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
+        expandableListView.setAdapter(listAdapter);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -99,43 +102,213 @@ public class LocationsFragment extends Fragment {
 
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public Loader<List<Location>> onCreateLoader(int id, Bundle args) {
+        Log.d("LocationsFragment",".onCreateLoader");
+        return new LocationsLoader(getActivity());
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Location>> loader, List<Location> data) {
+        listAdapter.setLocations(data);
+        // The list should now be shown.
+        if (isResumed()) {
+            //setListShown(true);
+        } else {
+            //setListShownNoAnimation(true);
+        }
+        listAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Location>> loader) {
+        listAdapter.setLocations(null);
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 
-    //
-    //
-    // PRIVATE EXPANDABLE LIST CLASS
-    //
-    //
+    // +++++++++++++++++++++++++++++++++++++++++
+    // ======== LOCATIONS LOADER CLASS =========
+    // +++++++++++++++++++++++++++++++++++++++++
 
-    private class ExpandableListAdapter extends BaseExpandableListAdapter {
+    private static class LocationsLoader extends AsyncTaskLoader<List<Location>> {
 
-        private Context _context;
-        private List<String> _listDataHeader;
-        private HashMap<String, List<String>> _listDataChild;
+        private List<Location> mLocations;
+        private HttpResponse response;
+        private static final String TAG = "LocationsLoader";
 
-        public ExpandableListAdapter(Context context, List<String> listDataHeader,
-                                     HashMap<String, List<String>> listChildData) {
-            this._context = context;
-            this._listDataHeader = listDataHeader;
-            this._listDataChild = listChildData;
+        public LocationsLoader(Context context) {
+            super(context);
         }
 
         @Override
-        public Object getChild(int groupPosition, int childPosititon) {
-            return this._listDataChild.get(this._listDataHeader.get(groupPosition))
+        public List<Location> loadInBackground() {
+
+            List<Location> entries = new ArrayList<Location>();
+
+            try {
+                // USERS REQUEST
+                HttpResponse userListResponse = App.getConnector().path("/admin/users")
+                        .withLimit(1000).get();
+                Log.d(TAG, userListResponse.toString());
+                JSONArray usersArray = userListResponse.getJSONArray();
+
+                // LOCATIONS REQUEST
+                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
+                Log.d(TAG, response.toString());
+                JSONArray locationsArray = response.getJSONArray();
+
+                for (int i = 0; i < locationsArray.length(); i++) {
+                    JSONObject json = (JSONObject) locationsArray.get(i);
+                    Location locToAdd = new Location(json);
+                    int id = locToAdd.getId();
+                    for (int j = 0; j < usersArray.length(); j++) {
+                        JSONObject userJson = (JSONObject) usersArray.get(j);
+                        if ( id == userJson.getInt("id")) {
+                            locToAdd.addVisitor(new Person(userJson));
+                            Log.d("loadInBackground: ", userJson.getString("firstName"));
+                        }
+                    }
+                    entries.add(locToAdd);
+                    Log.d(TAG, entries.get(i).print());
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return entries;
+        }
+
+        /**
+         * Called when there is new data to deliver to the client. The super
+         * class will take care of delivering it; the implementation here just
+         * adds a little more logic.
+         */
+
+        @Override
+        public void deliverResult(List<Location> listOfData) {
+            if (isReset()) {
+                // An async query came in while the loader is stopped. We
+                // don't need the result.
+                if (listOfData != null) {
+                    onReleaseResources(listOfData);
+                }
+            }
+            List<Location> oldApps = listOfData;
+            mLocations = listOfData;
+            if (isStarted()) {
+                // If the Loader is currently started, we can immediately
+                // deliver its results.
+                super.deliverResult(listOfData);
+            }
+            // At this point we can release the resources associated with
+            // 'oldApps' if needed; now that the new result is delivered we
+            // know that it is no longer in use.
+            if (oldApps != null) {
+                onReleaseResources(oldApps);
+            }
+        }
+
+        /**
+         * Helper function to take care of releasing resources associated with
+         * an actively loaded data set.
+         */
+
+        protected void onReleaseResources(List<Location> apps) {
+        }
+
+        /**
+         * Handles a request to start the Loader.
+         */
+
+        @Override
+        protected void onStartLoading() {
+            if (mLocations != null) {
+                // If we currently have a result available, deliver it
+                // immediately.
+                deliverResult(mLocations);
+            }
+            if (takeContentChanged() || mLocations == null) {
+                // If the data has changed since the last time it was loaded
+                // or is not currently available, start a load.
+                forceLoad();
+            }
+        }
+
+        /**
+         * Handles a request to stop the Loader.
+         */
+        @Override
+        protected void onStopLoading() {
+            // Attempt to cancel the current load task if possible.
+            cancelLoad();
+        }
+
+        /**
+         * Handles a request to cancel a load.
+         */
+        @Override
+        public void onCanceled(List<Location> apps) {
+            super.onCanceled(apps);
+            // At this point we can release the resources associated with 'apps'
+            // if needed.
+            onReleaseResources(apps);
+        }
+
+        /**
+         * Handles a request to completely reset the Loader.
+         */
+        @Override
+        protected void onReset() {
+            super.onReset();
+            // Ensure the loader is stopped
+            onStopLoading();
+            // At this point we can release the resources associated with 'apps'
+            // if needed.
+            if (mLocations != null) {
+                onReleaseResources(mLocations);
+                mLocations = null;
+            }
+
+
+        }
+    }
+
+    // ++++++++++++++++++++++++++++++++++++++++++++++++
+    // ======== EXPANDABLE LIST ADAPTER CLASS =========
+    // ++++++++++++++++++++++++++++++++++++++++++++++++
+
+    private class ExpandableListAdapter extends BaseExpandableListAdapter {
+
+        private Context context;
+        private List<Location> locationsList;
+        private HashMap<Location, List<Person>> currentVisitorsList;
+
+        public ExpandableListAdapter(Context context, List<Location> listDataHeader,
+                                     HashMap<Location, List<Person>> listChildData) {
+            this.context = context;
+            this.locationsList = listDataHeader;
+            this.currentVisitorsList = listChildData;
+        }
+
+        public void setLocations(List<Location> data) {
+            if (data != null) {
+                for (Location appEntry : data) {
+                    locationsList.add(appEntry);
+                    currentVisitorsList.put(appEntry, appEntry.getVisitors());
+                }
+            }
+        }
+
+        @Override
+        public Person getChild(int groupPosition, int childPosititon) {
+            return this.currentVisitorsList.get(this.locationsList.get(groupPosition))
                     .get(childPosititon);
         }
 
@@ -148,10 +321,10 @@ public class LocationsFragment extends Fragment {
         public View getChildView(int groupPosition, final int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
-            final String childText = (String) getChild(groupPosition, childPosition);
+            final String childText = getChild(groupPosition, childPosition).getFullName();
 
             if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this._context
+                LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_item, null);
             }
@@ -165,18 +338,18 @@ public class LocationsFragment extends Fragment {
 
         @Override
         public int getChildrenCount(int groupPosition) {
-            return this._listDataChild.get(this._listDataHeader.get(groupPosition))
+            return this.currentVisitorsList.get(this.locationsList.get(groupPosition))
                     .size();
         }
 
         @Override
-        public Object getGroup(int groupPosition) {
-            return this._listDataHeader.get(groupPosition);
+        public Location getGroup(int groupPosition) {
+            return this.locationsList.get(groupPosition);
         }
 
         @Override
         public int getGroupCount() {
-            return this._listDataHeader.size();
+            return this.locationsList.size();
         }
 
         @Override
@@ -187,9 +360,9 @@ public class LocationsFragment extends Fragment {
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
-            String headerTitle = (String) getGroup(groupPosition);
+            String headerTitle = getGroup(groupPosition).getLabel();
             if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this._context
+                LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_group, null);
             }
@@ -211,62 +384,7 @@ public class LocationsFragment extends Fragment {
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
         }
+
     }
 
-    private class GetLocationsListTask extends AsyncTask<Object, Object, Object> {
-
-        private HttpResponse response;
-        private String[] locations;
-        boolean isError = false;
-        private static final String TAG = "getLocationTask";
-
-        protected Object doInBackground(Object... params) {
-            Log.d(TAG, "ATTENTION");
-            try {
-                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
-                Log.d(TAG, response.toString());
-                JSONArray array = response.getJSONArray();
-                locations = new String[array.length()];
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject json = (JSONObject) array.get(i);
-                    locations[i] = json.getString("label");
-                    Log.d(TAG, locations[i].toString());
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            createData();
-            return null;
-        }
-
-        protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
-            if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
-            }
-            if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
-            }
-        }
-
-        protected void createData() {
-            listDataHeader = new ArrayList<String>();
-            listDataChild = new HashMap<String, List<String>>();
-
-            for (int j = 0; j < locations.length; j++) {
-                listDataHeader.add(locations[j]);
-                int rand = (int) (Math.random() * 10);
-                List<String> usersInLocation = new ArrayList<String>();
-                for (int i = 0; i < rand; i++) {
-                    usersInLocation.add("Janusz Tester");
-                }
-                listDataChild.put(listDataHeader.get(j), usersInLocation);
-                success = true;
-            }
-        }
-    }
 }
