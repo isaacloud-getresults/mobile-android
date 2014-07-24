@@ -14,14 +14,14 @@ public class Notification {
 
     public Notification(JSONObject data, String title, String message){
         this.data = data;
-        this.title = title;
+        //this.title = title;
         this.message = message;
     }
 
     public Notification(JSONObject json) throws JSONException{
         this.data = json.getJSONObject("data");
-        this.title = data.getString("title");
-        this.message = data.getString("message");
+        //this.title = data.getString("");
+        this.message = data.getJSONObject("body").getString("message");
     }
 
     public JSONObject getData() {

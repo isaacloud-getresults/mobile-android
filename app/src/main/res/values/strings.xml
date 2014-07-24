@@ -32,4 +32,8 @@
     <string name="error_not_online">No internet connection detected. Please connect before loggin in.</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- NotificationsFragment -->
+    <string name="fragment_notifications_fragment_name">Notifications Fragment</string>
+    <string name="fragment_notifications_empty">No notifications</string>
+
 </resources>

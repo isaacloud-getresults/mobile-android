@@ -3,8 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="15dp"
-    android:layout_marginBottom="4dp"
+    android:padding="12dp"
     android:layout_marginRight="4dp"
     android:layout_marginLeft="4dp"
     android:background="#282828">
@@ -16,6 +15,14 @@
         android:layout_height="wrap_content"
         android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
         android:textSize="16dp"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/lblListHeaderVisits"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:textSize="10dp"
         android:textColor="#FFFFFF" />
 
 </LinearLayout>

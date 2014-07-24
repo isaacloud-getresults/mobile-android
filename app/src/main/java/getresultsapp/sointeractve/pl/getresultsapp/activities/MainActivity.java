@@ -9,22 +9,12 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.util.Log;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.estimote.sdk.BeaconManager;
-import com.estimote.sdk.Beacon;
 import com.estimote.sdk.Region;
-import com.estimote.sdk.Utils;
-import java.util.Date;
-
-import java.util.List;
 
 import java.io.IOException;
 
@@ -35,9 +25,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
-import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class MainActivity extends Activity{
@@ -76,6 +64,8 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab1);
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
+
+        new EventLogin().execute();
         /*
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
@@ -100,7 +90,7 @@ public class MainActivity extends Activity{
 
      
     // LOGIN EVENT
-    private class PostEventTask extends AsyncTask<Object, Object, Object> {
+    private class EventLogin extends AsyncTask<Object, Object, Object> {
 
         HttpResponse response;
         boolean isError = false;

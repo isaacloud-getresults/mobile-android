@@ -364,6 +364,7 @@ public class LocationsFragment extends Fragment implements LoaderManager.LoaderC
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
+            String headerStats = "People here: " + getGroup(groupPosition).getVisitors().size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -372,9 +373,11 @@ public class LocationsFragment extends Fragment implements LoaderManager.LoaderC
 
             TextView lblListHeader = (TextView) convertView
                     .findViewById(R.id.lblListHeader);
+            TextView lblListHeaderVisits = (TextView) convertView
+                    .findViewById(R.id.lblListHeaderVisits);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
-
+            lblListHeaderVisits.setText(headerStats);
             return convertView;
         }
 
