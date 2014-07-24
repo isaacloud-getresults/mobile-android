@@ -6,6 +6,8 @@ import android.app.Activity;
 
 import android.app.Fragment;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import com.estimote.sdk.Utils;
 import java.util.Date;
 import java.util.ArrayList;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -59,6 +62,7 @@ public class MainActivity extends Activity{
     static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     static ArrayList<Integer> majors= new ArrayList<Integer>();
     static ArrayList<Integer> temp = new ArrayList<Integer>();
+    static SparseArray<String> x = new SparseArray<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,7 @@ public class MainActivity extends Activity{
                     DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
                     public void run() {
                         Beacon foundBeacon;
+                        temp = majors;
                         trackBeacons(beacons);
                         Date date = new Date();
                         for (Beacon tempBeacon : beacons) {
@@ -157,14 +162,9 @@ public class MainActivity extends Activity{
             help = beaconDistances.get(beacon.getMajor());
 
         }
-        Log.d(TAG, "Beacon in function: " + beacon.getMacAddress());
-        Log.d(TAG, "beaconDistances size: " + beaconDistances.size());
-
         help.add(new Double(Utils.computeAccuracy(beacon)));
-        Log.d(TAG, "Help variable" + help);
         beaconDistances.put(beacon.getMajor(), help);
         Log.d(TAG, "Counter " + counter);
-        Log.d(TAG, "beacon " + beacon.getMacAddress() + " ranges - " + beaconDistances.get(beacon.getMajor()));
 
 
     }
@@ -180,6 +180,7 @@ public class MainActivity extends Activity{
         d = d / 5;
         beaconDistances.delete(beacon.getMajor());
         Log.d(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + d);
+        setAndroidNotification("You entered a new beacon range!", beacon.getMacAddress(), d);
 
     }
 
@@ -189,20 +190,32 @@ public class MainActivity extends Activity{
             helper.add(new Integer(b.getMajor()));
             if(!(majors.contains(new Integer(b.getMajor())))) {
                 majors.add(new Integer(b.getMajor()));
-                Log.d(TAG, "Major " + b.getMajor() + " appeared");
+                x.put(b.getMajor(), b.getMacAddress());
+                Toast.makeText(getApplicationContext(), "Entered " + x.get(b.getMajor()) + " range!", Toast.LENGTH_SHORT).show();
             }
+
         }
-        temp = majors;
+
+        temp = new ArrayList<Integer>(majors);
         for(Integer i : temp) {
-            Log.d(TAG, "All majors: " + majors);
-            Log.d(TAG, "helper " + helper);
-            Log.d(TAG, "i = " + i);
             if(!(helper.contains(i))) {
                 majors.remove(i);
-                Log.d(TAG, "Major " + i + " disappeared");
-                Log.d(TAG, "All majors: " + majors);
+                Toast.makeText(getApplicationContext(), "Left " + x.get(i) + " range!", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void setAndroidNotification(String ticker, String title, double distance) {
+        Notification notification = new Notification.Builder(getApplicationContext())
+                .setTicker(ticker)
+                .setContentTitle(title)
+                .setContentText("Distance: " + String.format("%.2fm", distance))
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setOngoing(true)
+                .build();
+
+        NotificationManager notificationManger = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManger.notify(1, notification);
     }
 
     @Override
