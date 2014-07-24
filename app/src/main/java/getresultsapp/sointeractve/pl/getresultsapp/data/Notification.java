@@ -4,10 +4,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Data store class for Notifications.
- * @author Mateusz Renes
- *
- */
+ * Data store class for notifications.
+**/
+
 public class Notification {
 
     JSONObject data;

@@ -59,6 +59,9 @@ public class LocationsFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        locationsArray = new ArrayList<Location>();
+        visitorsArray = new HashMap<Location, List<Person>>();
+        getLoaderManager().initLoader(0, null, this);
     }
 
 
@@ -67,10 +70,8 @@ public class LocationsFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
         context = getActivity();
-        locationsArray = new ArrayList<Location>();
-        visitorsArray = new HashMap<Location, List<Person>>();
         listAdapter = new ExpandableListAdapter(context, locationsArray, visitorsArray);
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().restartLoader(0,null,this);
         expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setAdapter(listAdapter);
         return view;
@@ -151,25 +152,27 @@ public class LocationsFragment extends Fragment implements LoaderManager.LoaderC
 
             try {
                 // USERS REQUEST
-                HttpResponse userListResponse = App.getConnector().path("/admin/users")
+                HttpResponse userListResponse = App.getConnector()
+                        .path("/cache/users")
+                        .withFields("firstName", "lastName", "id", "usersGroups")
                         .withLimit(1000).get();
                 Log.d(TAG, userListResponse.toString());
                 JSONArray usersArray = userListResponse.getJSONArray();
 
                 // LOCATIONS REQUEST
-                HttpResponse response = App.getConnector().path("/cache/users/groups").get();
+                HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "users", "id").get();
                 Log.d(TAG, response.toString());
                 JSONArray locationsArray = response.getJSONArray();
 
                 for (int i = 0; i < locationsArray.length(); i++) {
-                    JSONObject json = (JSONObject) locationsArray.get(i);
-                    Location locToAdd = new Location(json);
+                    JSONObject locJson = (JSONObject) locationsArray.get(i);
+                    Location locToAdd = new Location(locJson);
                     int id = locToAdd.getId();
                     for (int j = 0; j < usersArray.length(); j++) {
                         JSONObject userJson = (JSONObject) usersArray.get(j);
-                        if ( id == userJson.getInt("id")) {
+                        JSONArray array = userJson.getJSONArray("usersGroups");
+                        if (array.length() != 0  && id == array.getInt(0)) {
                             locToAdd.addVisitor(new Person(userJson));
-                            Log.d("loadInBackground: ", userJson.getString("firstName"));
                         }
                     }
                     entries.add(locToAdd);

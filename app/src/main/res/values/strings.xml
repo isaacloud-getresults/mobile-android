@@ -10,6 +10,7 @@
     <string name="title_activity_register">RegisterActivity</string>
     <string name="OK">OK</string>
     <string name="hello">Hello</string>
+    <string name="loading">Loading...</string>
 
     <!-- RegisterActivity -->
     <string name="activity_register_text_hint_email">Email</string>
