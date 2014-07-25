@@ -9,6 +9,7 @@ import android.app.Fragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -40,12 +41,13 @@ import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
+import getresultsapp.sointeractve.pl.getresultsapp.services.trackService;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
     private static final String TAG = "UserActivity";
     ActionBar.Tab tab1, tab2, tab3;
@@ -60,7 +62,7 @@ public class MainActivity extends Activity{
     private Context context;
     private static int counter = 0;
     static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
-    static ArrayList<Integer> majors= new ArrayList<Integer>();
+    static ArrayList<Integer> majors = new ArrayList<Integer>();
     static ArrayList<Integer> temp = new ArrayList<Integer>();
     static SparseArray<String> x = new SparseArray<String>();
 
@@ -87,11 +89,19 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
 
+        Intent i = new Intent(getApplicationContext(), trackService.class);
+        i.putExtra("KEY1", "Value to be used by the service");
+        getApplicationContext().startService(i);
+        Log.d(TAG, "Service started 1");
+    }
+}
+/*
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
                 runOnUiThread(new Runnable() {
                     DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
+
                     public void run() {
                         Beacon foundBeacon;
                         temp = majors;
@@ -99,12 +109,12 @@ public class MainActivity extends Activity{
                         Date date = new Date();
                         for (Beacon tempBeacon : beacons) {
                             foundBeacon = tempBeacon;
-                            if(counter == 5) calculateDistance(foundBeacon);
+                            if (counter == 5) calculateDistance(foundBeacon);
                             writeDistance(foundBeacon);
                             Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
                             Log.d(TAG, "Distance: " + beaconDistances.get(foundBeacon.getMajor()));
                         }
-                        if(counter == 5) counter = 0;
+                        if (counter == 5) counter = 0;
                         Log.d(TAG, "Ranged beacons: " + beacons);
                         counter++;
                     }
@@ -113,7 +123,7 @@ public class MainActivity extends Activity{
         });
     }
 
-     
+
     // LOGIN EVENT
     private class PostEventTask extends AsyncTask<Object, Object, Object> {
 
@@ -249,4 +259,6 @@ public class MainActivity extends Activity{
         super.onDestroy();
         beaconManager.disconnect();
     }
+
 }
+*/
