@@ -6,20 +6,29 @@ import android.app.Activity;
 
 import android.app.Fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.estimote.sdk.Region;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
@@ -28,19 +37,16 @@ import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
-    private static final String TAG = "UserActivity";
+    private static final String TAG = "MainActivity";
     ActionBar.Tab tab1, tab2, tab3;
     Fragment fragmentTab1 = new StatusFragment();
     Fragment fragmentTab2 = new LocationsFragment();
     Fragment fragmentTab3 = new ProfileFragment();
     boolean success = false;
 
-    private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
-    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
-    // private BeaconManager beaconManager = new BeaconManager(this);
-    private Context context;
+    public Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,7 @@ public class MainActivity extends Activity{
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         tab1 = actionBar.newTab().setText("Status");
         tab2 = actionBar.newTab().setText("Locations");
@@ -66,26 +73,8 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab3);
 
         new EventLogin().execute();
-        /*
-        beaconManager.setRangingListener(new BeaconManager.RangingListener() {
-            @Override
-            public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
-                runOnUiThread(new Runnable() {
-                    DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
-
-                    public void run() {
-                        Beacon foundBeacon;
-                        Date date = new Date();
-                        for (Beacon tempBeacon : beacons) {
-                            foundBeacon = tempBeacon;
-                            Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
-                        }
-                        Log.d(TAG, "Ranged beacons: " + beacons);
-                    }
-                });
-            }
-        });
-        */
+        // create new data manager which downloads locations and people
+        App.createDataManager();
     }
 
      
@@ -98,7 +87,7 @@ public class MainActivity extends Activity{
 
         @Override
         protected Object doInBackground(Object... params) {
-            Log.d(TAG, "UWAGA!");
+            Log.d(TAG, "EventLogin:");
             try {
                 JSONObject body = new JSONObject();
                 body.put("activity", "login");
@@ -125,35 +114,12 @@ public class MainActivity extends Activity{
             }
         }
     }
-  
 
-    @Override
+        @Override
     protected void onStart() {
         super.onStart();
-/*
-        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
-            @Override public void onServiceReady() {
-                try {
-                    beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
-                    Log.d(TAG, "Start ranging");
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Cannot start ranging", e);
-                }
-            }
-    });
-*/
     }
-/*
-    @Override
-    protected void onStop() {
-        super.onStop();
-        try {
-            beaconManager.stopRanging(ALL_ESTIMOTE_BEACONS);
-        } catch (RemoteException e) {
-            Log.e(TAG, "Cannot stop but it does not matter now", e);
-        }
-    }
-*/
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

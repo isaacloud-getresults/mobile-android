@@ -88,8 +88,7 @@ public class ProfileFragment extends ListFragment implements
             super(context);
         }
 
-        @Override
-        public List<Achievement> loadInBackground() {
+        @Override    public List<Achievement> loadInBackground() {
             userData = App.loadUserData();
             List<Achievement> entries = new ArrayList<Achievement>();
             try {
@@ -115,6 +114,7 @@ public class ProfileFragment extends ListFragment implements
                                 new Achievement(json, true, idMap.get(json
                                         .getInt("id"))));
                     } else {
+
                         entries.add(new Achievement(json, false));
                     }
                 }

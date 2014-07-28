@@ -8,10 +8,10 @@ import org.json.JSONObject;
  */
 public class Person {
 
-    private String firstName, lastName, actualLocation;
-    private int id;
+    private String firstName, lastName;
+    private int id, actualLocation;
 
-    public Person (String firstName, String lastName, String actualLocation, int id) {
+    public Person (String firstName, String lastName, int actualLocation, int id) {
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setActualLocation(actualLocation);
@@ -21,6 +21,7 @@ public class Person {
     public Person (JSONObject json) throws JSONException  {
         this.setFirstName(json.getString("firstName"));
         this.setLastName(json.getString("lastName"));
+        // TODO: COUNTER WITH PLACE ID HERE
         //this.setActualLocation(actualLocation);
         this.setId(json.getInt("id"));
     }
@@ -47,11 +48,11 @@ public class Person {
 
     public String getFullName() { return firstName + " " + lastName;}
 
-    public String getActualLocation() {
+    public int getActualLocation() {
         return actualLocation;
     }
 
-    public void setActualLocation(String actualLocation) {
+    public void setActualLocation(int actualLocation) {
         this.actualLocation = actualLocation;
     }
 

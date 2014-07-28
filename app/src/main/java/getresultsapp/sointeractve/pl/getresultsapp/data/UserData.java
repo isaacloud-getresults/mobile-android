@@ -1,33 +1,23 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserData implements Serializable {
 
 
-    private String name, email;
-    private boolean hasNewNotifications;
+    private String name, email, firstName;
     private int userId;
-    private String firstName;
-    private Notification lastNotification;
+    private int userLocation;
 
-
-
-    public UserData() {
-        // set default user data
-        name = "user name";
-        email = "user email";
-        setHasNewNotifications(false);
+    public int getUserLocation() {
+        return userLocation;
     }
 
-    public boolean hasNewNotifications() {
-        return hasNewNotifications;
-    }
-
-    public void setHasNewNotifications(boolean hasNewNotifications) {
-        this.hasNewNotifications = hasNewNotifications;
+    public void setUserLocation(int userLocation) {
+        this.userLocation = userLocation;
     }
 
     public String getName() {
@@ -55,14 +45,6 @@ public class UserData implements Serializable {
         this.userId = userId;
     }
 
-    public Notification getLastNotification() {
-        return lastNotification;
-    }
-
-    public void setLastNotification(Notification lastNotification) {
-        this.lastNotification = lastNotification;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -70,5 +52,6 @@ public class UserData implements Serializable {
     public String getFirstName() {
         return firstName;
     }
+
 
 }
