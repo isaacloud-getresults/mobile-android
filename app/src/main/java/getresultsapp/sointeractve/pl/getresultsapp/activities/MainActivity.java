@@ -6,24 +6,37 @@ import android.app.Activity;
 
 import android.app.Fragment;
 
-import android.app.ProgressDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.json.JSONArray;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.estimote.sdk.BeaconManager;
+import com.estimote.sdk.Beacon;
 import com.estimote.sdk.Region;
+import com.estimote.sdk.Utils;
+import java.util.Date;
+import java.util.ArrayList;
+import android.util.SparseArray;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.io.IOException;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
@@ -34,10 +47,13 @@ import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
+import getresultsapp.sointeractve.pl.getresultsapp.services.trackService;
+import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity{
 
     private static final String TAG = "MainActivity";
     ActionBar.Tab tab1, tab2, tab3;
@@ -75,9 +91,13 @@ public class MainActivity extends Activity {
         new EventLogin().execute();
         // create new data manager which downloads locations and people
         App.createDataManager();
+        
+        Intent i = new Intent(getApplicationContext(), trackService.class);
+        i.putExtra("KEY1", "Value to be used by the service");
+        getApplicationContext().startService(i);
+        Log.d(TAG, "Service started 1");
     }
 
-     
     // LOGIN EVENT
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
@@ -115,7 +135,7 @@ public class MainActivity extends Activity {
         }
     }
 
-        @Override
+    @Override
     protected void onStart() {
         super.onStart();
     }
