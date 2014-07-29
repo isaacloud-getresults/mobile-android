@@ -17,7 +17,11 @@ public class UserData implements Serializable {
     }
 
     public void setUserLocation(int id) {
-        this.userLocation = App.getLocations().get(id).getLabel();
+        for (Location l : App.getLocations()) {
+            if (l.getId() == id) {
+                this.userLocation = l.getLabel();
+            }
+        }
     }
 
     public String getName() {

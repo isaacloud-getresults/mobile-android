@@ -28,6 +28,7 @@ public class EventManager {
     }
 
     public void postEventNewBeacon (String beaconId) {
+        Log.d(TAG + "SPRAWDAZMY BIKONA", beaconId);
         new EventPostNewBeacon().execute(beaconId);
     }
 
@@ -88,8 +89,9 @@ public class EventManager {
         UserData userData = App.loadUserData();
 
         @Override
-        protected Object doInBackground(String... beaconId) {
+        protected Object doInBackground(String... arrayOfStrings) {
             Log.d(TAG, "EventLogin:");
+            String beaconId = arrayOfStrings[0];
             try {
                 JSONObject body = new JSONObject();
                 body.put("place", beaconId);
@@ -183,7 +185,8 @@ public class EventManager {
         UserData userData = App.loadUserData();
 
         @Override
-        protected Object doInBackground(String... beaconId) {
+        protected Object doInBackground(String... arrayOfStrings) {
+            String beaconId = arrayOfStrings[0];
             Log.d(TAG, "EventPostLeftBeacon");
             try {
                 JSONObject body = new JSONObject();

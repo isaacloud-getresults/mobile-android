@@ -22,7 +22,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
+import android.os.Handler;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
@@ -34,8 +34,9 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 public class StatusFragment extends Fragment {
 
     TextView textLocation;
-    private int m_interval = 2000;
 
+    private final int interval = 1000; // 1 Second
+    private Handler handler = new Handler();
     private OnFragmentInteractionListener mListener;
 
     public static StatusFragment newInstance(int page, String title) {
@@ -50,6 +51,12 @@ public class StatusFragment extends Fragment {
         // Required empty public constructor
     }
 
+    private Runnable runnable = new Runnable(){
+        public void run() {
+            updateStatus();
+            handler.postDelayed(this, interval);
+        }
+    };
 
 
     @Override
@@ -57,13 +64,15 @@ public class StatusFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_status, container, false);
         TextView textHey = (TextView) view.findViewById(R.id.textHey);
         textLocation = (TextView) view.findViewById(R.id.textLocation);
         textHey.setText("Hey " + App.loadUserData().getFirstName() + ", " + "you are at:");
-        updateStatus();
+        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
+        handler.postDelayed(runnable, interval);
         return view;
     }
 

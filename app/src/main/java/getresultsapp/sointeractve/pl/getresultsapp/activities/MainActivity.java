@@ -64,13 +64,12 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
 
-
+        // create new data manager which downloads locations and people
+        App.createDataManager();
         // Post login event
         App.getEventManager().postEventLogin();
 
-        // create new data manager which downloads locations and people
-        App.createDataManager();
-        
+        while (App.getLocations() == null) {}
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         i.putExtra("KEY1", "Value to be used by the service");
         getApplicationContext().startService(i);
