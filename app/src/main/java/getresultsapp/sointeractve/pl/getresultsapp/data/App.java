@@ -15,6 +15,7 @@ public class App extends Application {
     private static App obj;
     private static FileManager fileManager;
     private static DataManager dataManager;
+    private static EventManager eventManager;
 
 
     @Override
@@ -23,8 +24,15 @@ public class App extends Application {
         obj = this;
         Log.d("APP:", "FileManager created");
         fileManager = new FileManager();
+        eventManager = new EventManager();
 
     }
+
+
+    public static EventManager getEventManager() {
+        return eventManager;
+    }
+
     public static void saveUserData(UserData userData) {
         fileManager.saveUserData(userData, obj);
     }

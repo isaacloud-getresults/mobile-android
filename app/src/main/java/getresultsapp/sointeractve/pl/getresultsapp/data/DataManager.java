@@ -1,5 +1,8 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
+// Data management class for downloading locations and users.
+// @author: Pawel Dylag
+
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;

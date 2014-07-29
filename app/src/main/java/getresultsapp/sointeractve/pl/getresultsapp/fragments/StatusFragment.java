@@ -1,13 +1,19 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
@@ -15,8 +21,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 
 public class StatusFragment extends Fragment {
 
-    private String title;
-    private int page;
+    TextView textLocation;
 
     private OnFragmentInteractionListener mListener;
 
@@ -32,22 +37,19 @@ public class StatusFragment extends Fragment {
         // Required empty public constructor
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            page = getArguments().getInt("someInt", 0);
-            title = getArguments().getString("someTitle");
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_status, container, false);
         TextView textHey = (TextView) view.findViewById(R.id.textHey);
-        TextView textLocation = (TextView) view.findViewById(R.id.textLocation);
+        textLocation = (TextView) view.findViewById(R.id.textLocation);
         textHey.setText("Hey " + App.loadUserData().getFirstName() + ", " + "you are at:");
-        textLocation.setText("Kitchen");
+        updateStatus();
         return view;
     }
 
@@ -82,6 +84,10 @@ public class StatusFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    public void updateStatus() {
+        textLocation.setText(App.loadUserData().getUserLocation());
     }
 
 }

@@ -10,14 +10,14 @@ public class UserData implements Serializable {
 
     private String name, email, firstName;
     private int userId;
-    private int userLocation;
+    private String userLocation;
 
-    public int getUserLocation() {
+    public String getUserLocation() {
         return userLocation;
     }
 
-    public void setUserLocation(int userLocation) {
-        this.userLocation = userLocation;
+    public void setUserLocation(int id) {
+        this.userLocation = App.getLocations().get(id).getLabel();
     }
 
     public String getName() {
