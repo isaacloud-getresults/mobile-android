@@ -64,6 +64,7 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
 
+
         // Post login event
         App.getEventManager().postEventLogin();
 

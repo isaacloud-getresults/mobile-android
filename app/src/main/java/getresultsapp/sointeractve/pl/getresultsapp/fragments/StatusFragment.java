@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -15,13 +16,25 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
+
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 
 public class StatusFragment extends Fragment {
 
     TextView textLocation;
+    private int m_interval = 2000;
 
     private OnFragmentInteractionListener mListener;
 
@@ -36,6 +49,7 @@ public class StatusFragment extends Fragment {
     public StatusFragment() {
         // Required empty public constructor
     }
+
 
 
     @Override
@@ -87,7 +101,9 @@ public class StatusFragment extends Fragment {
     }
 
     public void updateStatus() {
+
         textLocation.setText(App.loadUserData().getUserLocation());
     }
+
 
 }

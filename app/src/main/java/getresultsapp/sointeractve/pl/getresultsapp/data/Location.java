@@ -29,7 +29,7 @@ public class Location {
         }
     }
 
-    public Location (String name, int id ) {
+    public Location (String label, int id ) {
         this.setLabel(label);
         this.setId(id);
 

@@ -82,6 +82,7 @@ public class DataManager {
                     entries.add(new Location(json));
                 }
                 success = true;
+                entries.add(new Location("Office",0));
                 locations = entries;
 
             } catch (JSONException e) {

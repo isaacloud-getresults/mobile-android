@@ -161,7 +161,6 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             Log.d(TAG, "onPostExecute()");
-
             if (isError) {
                 Log.d(TAG, "onPostExecute() - error detected");
             }
