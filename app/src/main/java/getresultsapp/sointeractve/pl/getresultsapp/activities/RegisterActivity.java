@@ -136,7 +136,7 @@ public class RegisterActivity extends Activity {
             try {
                 jsonBody.put("email", RegisterActivity.this.textEmail.getEditableText().toString());
                 jsonBody.put("password", RegisterActivity.this.textPassword.getEditableText().toString());
-                jsonBody.put("firstName", RegisterActivity.this.textPasswordRepeat.getEditableText().toString());
+                jsonBody.put("firstName", RegisterActivity.this.textFirstName.getEditableText().toString());
                 jsonBody.put("lastName", RegisterActivity.this.textLastName.getEditableText().toString());
                 jsonBody.put("status", 1);
             } catch (JSONException e1) {

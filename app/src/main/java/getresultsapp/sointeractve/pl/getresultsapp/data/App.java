@@ -7,11 +7,15 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import java.util.List;
+
 public class App extends Application {
 
     private static Isaacloud connector;
     private static App obj;
     private static FileManager fileManager;
+    private static DataManager dataManager;
+    private static EventManager eventManager;
 
 
     @Override
@@ -20,8 +24,15 @@ public class App extends Application {
         obj = this;
         Log.d("APP:", "FileManager created");
         fileManager = new FileManager();
+        eventManager = new EventManager();
 
     }
+
+
+    public static EventManager getEventManager() {
+        return eventManager;
+    }
+
     public static void saveUserData(UserData userData) {
         fileManager.saveUserData(userData, obj);
     }
@@ -58,6 +69,22 @@ public class App extends Application {
             return true;
         }
         return false;
+    }
+
+    public static void createDataManager() {
+        dataManager = new DataManager();
+    }
+
+    public static List<Location> getLocations () {
+        return dataManager.getLocations();
+    }
+
+    public static List<Person> getPeople () {
+        return dataManager.getPeople();
+    }
+
+    public static List<Person> getPeopleAtLocation(Location l) {
+        return dataManager.getPeopleAtLocation(l);
     }
 
 }
