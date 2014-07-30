@@ -22,6 +22,7 @@ import org.json.JSONObject;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.LoginData;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import pl.sointeractive.isaacloud.Isaacloud;
@@ -30,7 +31,9 @@ import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LoginActivity extends Activity {
@@ -39,7 +42,6 @@ public class LoginActivity extends Activity {
 
     private Context context;
     private TextView editEmail, editPassword;
-    private LoginData loginData;
     private UserData userData;
     private ProgressDialog dialog;
     private Button buttonLogIn;
@@ -127,6 +129,7 @@ public class LoginActivity extends Activity {
         }
     }
 
+    // LOGIN
     private class LoginTask extends AsyncTask<Object, Object, Object> {
 
         boolean success = false;
@@ -182,21 +185,75 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(Object result) {
             Log.d(TAG, "onPostExecute()");
-            // dismiss progress dialog
             dialog.dismiss();
-            // if the user was found, start new activity, if not, show error
-            // message
             if (success) {
-                Intent intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
+                new EventGetLocations().execute();
             } else {
-             // DEBUG MODE
-             // WHILE ISAA IS OFFLINE
+                //
             }
-            // unlock screen orientation
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+
         }
 
+    }
+
+    // GET LOCATIONS
+    private class EventGetLocations extends AsyncTask<Object, Object, Object> {
+
+        private static final String TAG = "EventGetLocations";
+        public boolean success = false;
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "onPreExecute()");
+            dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
+        }
+
+
+        @Override
+        public Object doInBackground(Object... params) {
+            List<Location> entries = new ArrayList<Location>();
+            try {
+                // LOCATIONS REQUEST
+                HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
+                Log.d(TAG, response.toString());
+                JSONArray locationsArray = response.getJSONArray();
+                for (int i = 0; i < locationsArray.length(); i++) {
+                    JSONObject json = (JSONObject) locationsArray.get(i);
+                    Log.d(TAG, json.getString("label"));
+                    entries.add(new Location(json));
+                }
+                success = true;
+                // ADD EMPTY LOCATION
+                entries.add(new Location("",0));
+                App.getDataManager().setLocations(entries);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            Log.d(TAG, "onPostExecute()");
+            dialog.dismiss();
+            if (success) {
+                runMainActivity();
+            } else {
+                Log.d(TAG, "NOT SUCCES");
+            }
+        }
+
+    }
+
+    public void runMainActivity () {
+        // RUN MAIN ACTIVITY
+        Intent intent = new Intent(context, MainActivity.class);
+        startActivity(intent);
     }
 
 }

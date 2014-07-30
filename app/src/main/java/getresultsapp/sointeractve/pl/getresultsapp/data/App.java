@@ -25,9 +25,12 @@ public class App extends Application {
         Log.d("APP:", "FileManager created");
         fileManager = new FileManager();
         eventManager = new EventManager();
-
+        dataManager = new DataManager();
     }
 
+    public static DataManager getDataManager() {
+        return dataManager;
+    }
 
     public static EventManager getEventManager() {
         return eventManager;
@@ -69,10 +72,6 @@ public class App extends Application {
             return true;
         }
         return false;
-    }
-
-    public static void createDataManager() {
-        dataManager = new DataManager();
     }
 
     public static List<Location> getLocations () {

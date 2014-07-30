@@ -1,14 +1,13 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
+
 import android.content.Context;
-import android.content.Loader;
+
 import android.graphics.Typeface;
-import android.net.Uri;
+
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,21 +16,13 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
-import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
+
 
 public class LocationsFragment extends Fragment {
 
@@ -41,38 +32,31 @@ public class LocationsFragment extends Fragment {
     Context context;
     private static final String TAG = "LocationsFragment";
 
-
-    public static StatusFragment newInstance(int page, String title) {
-        StatusFragment fragmentFirst = new StatusFragment();
-        Bundle args = new Bundle();
-        args.putInt("someInt", page);
-        args.putString("someTitle", title);
-        fragmentFirst.setArguments(args);
-        return fragmentFirst;
+    public static LocationsFragment newInstance() {
+        Log.d(TAG,"newInstance");
+        LocationsFragment f = new LocationsFragment();
+        Bundle b = new Bundle();
+        f.setArguments(b);
+        return f;
     }
 
-    public LocationsFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG,"onCreate");
+        locationsArray = App.getLocations();
+        context = this.getActivity();
+        for (Location l: locationsArray) {
+            Log.d(TAG,"Loading: " + l.getLabel());
+        }
+        listAdapter = new ExpandableListAdapter(context, locationsArray);
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.d(TAG,"onCreateView");
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
         context = getActivity();
-        locationsArray = App.getLocations();
-        for (Location l: locationsArray) {
-            Log.d(TAG,"Loading: " + l.getLabel());
-        }
-        listAdapter = new ExpandableListAdapter(context, locationsArray);
         expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setAdapter(listAdapter);
         return view;
