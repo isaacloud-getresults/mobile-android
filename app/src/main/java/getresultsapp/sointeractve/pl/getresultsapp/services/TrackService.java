@@ -29,7 +29,7 @@ import java.util.List;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 
 public class TrackService extends Service {
-    public trackService() {
+    public TrackService() {
     }
 
     private static final String TAG = "UserActivity";
