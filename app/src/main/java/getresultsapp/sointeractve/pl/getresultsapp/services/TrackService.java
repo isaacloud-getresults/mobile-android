@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 
 public class TrackService extends Service {
     public TrackService() {
@@ -35,16 +36,17 @@ public class TrackService extends Service {
     private static final String TAG = "UserActivity";
 
 
+    // TODO: UUID loaded from QR reader, not hardcoded
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
-    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, null, null);
+    //
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, 6000, null);
     private BeaconManager beaconManager = new BeaconManager(this);
-    private Context context;
-    private static int counter = 0;
     static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     static ArrayList<String> majors= new ArrayList<String>();
     static ArrayList<String> temp;
     static HashMap<String, String> x = new HashMap<String, String>();
     Handler handler = new Handler();
+    static HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -54,28 +56,18 @@ public class TrackService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "Service started 2");
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
                 runOnUiThread(new Runnable() {
-                    DateFormat dateFormat = new SimpleDateFormat(("yyyy/MM/dd HH:mm:ss"));
                     public void run() {
-                        Log.d(TAG, "Service started 3");
-                        Beacon foundBeacon;
                         temp = majors;
                         trackBeacons(beacons);
-                        Date date = new Date();
-                        for (Beacon tempBeacon : beacons) {
-                            foundBeacon = tempBeacon;
-                            if(counter == 5) calculateDistance(foundBeacon);
-                            writeDistance(foundBeacon);
-                            Log.d(TAG, "Found beacon: " + foundBeacon + " distance: " + Utils.computeAccuracy(foundBeacon) + " when: " + dateFormat.format(date));
-                            Log.d(TAG, "Distance: " + beaconDistances.get(foundBeacon.getMajor()));
+                        for (Beacon beacon : beacons) {
+                            writeDistance(beacon);
+                            Log.d(TAG, "Found beacon: " + beacon + " distance: " + Utils.computeAccuracy(beacon));
                         }
-                        if(counter == 5) counter = 0;
                         Log.d(TAG, "Ranged beacons: " + beacons);
-                        counter++;
                     }
                 });
             }
@@ -83,8 +75,6 @@ public class TrackService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override public void onServiceReady() {
                 try {
@@ -120,11 +110,10 @@ public class TrackService extends Service {
         }
         help.add(new Double(Utils.computeAccuracy(beacon)));
         beaconDistances.put(beacon.getMajor(), help);
-        Log.d(TAG, "Counter " + counter);
 
 
     }
-
+    /*
     public void calculateDistance(Beacon beacon) {
         double d = 0;
         ArrayList<Double> distances = beaconDistances.get(beacon.getMajor());
@@ -137,30 +126,35 @@ public class TrackService extends Service {
         beaconDistances.delete(beacon.getMajor());
         Log.d(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + d);
         setAndroidNotification("You entered a new beacon range!", beacon.getMacAddress(), d);
-
     }
+    */
 
     public void trackBeacons(List<Beacon> beacons) {
         ArrayList<String> helper = new ArrayList<String>();
         for(Beacon b : beacons) {
             helper.add(new String(b.getMacAddress()));
+            beaconMap.put(b.getMacAddress(), b);
             if(!(majors.contains(new String(b.getMacAddress())))) {
                 majors.add(new String(b.getMacAddress()));
-                x.put(b.getMacAddress(), b.getMacAddress());
-                Toast.makeText(getApplicationContext(), "Entered " + x.get(b.getMacAddress()) + " range!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
+                App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()) , Integer.toString(b.getMinor()));
             }
 
         }
 
         temp = new ArrayList<String>(majors);
         for(String i : temp) {
+            Beacon tempBeacon = beaconMap.get(i);
             if(!(helper.contains(i))) {
                 majors.remove(i);
-                Toast.makeText(getApplicationContext(), "Left " + x.get(i) + " range!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
+                App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()) , Integer.toString(tempBeacon.getMinor()));
+
             }
         }
     }
 
+    /*
     private void setAndroidNotification(String ticker, String title, double distance) {
         Notification notification = new Notification.Builder(getApplicationContext())
                 .setTicker(ticker)
@@ -173,4 +167,5 @@ public class TrackService extends Service {
         NotificationManager notificationManger = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManger.notify(1, notification);
     }
+    */
 }

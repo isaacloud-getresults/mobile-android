@@ -35,6 +35,7 @@ public class DataManager {
         people.add(new Person("test", "test", 3, 4));
         locations = new ArrayList<Location>();
         new EventGetLocations().execute();
+
     }
 
     public List<Person> getPeople() {
@@ -82,7 +83,8 @@ public class DataManager {
                     entries.add(new Location(json));
                 }
                 success = true;
-                entries.add(new Location("Office",0));
+                // ADD EMPTY LOCATION
+                entries.add(new Location("",0));
                 locations = entries;
 
             } catch (JSONException e) {

@@ -59,10 +59,6 @@ public class LocationsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG,"onCreate");
-        locationsArray = App.getLocations();
-        for (Location l: locationsArray) {
-            Log.d(TAG,"Loading: " + l.getLabel());
-        }
     }
 
 
@@ -72,6 +68,10 @@ public class LocationsFragment extends Fragment {
         Log.d(TAG,"onCreateView");
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
         context = getActivity();
+        locationsArray = App.getLocations();
+        for (Location l: locationsArray) {
+            Log.d(TAG,"Loading: " + l.getLabel());
+        }
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setAdapter(listAdapter);

@@ -10,6 +10,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -67,6 +68,7 @@ public class MainActivity extends Activity {
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         tab1 = actionBar.newTab().setText("Status");
         tab2 = actionBar.newTab().setText("Locations");
@@ -79,6 +81,12 @@ public class MainActivity extends Activity {
         actionBar.addTab(tab1);
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
+
+        // DOWNLOAD LOCATIONS FROM IsaaCloud
+        App.createDataManager();
+
+        // SEND LOGIN EVENT
+        App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         i.putExtra("KEY1", "Value to be used by the service");

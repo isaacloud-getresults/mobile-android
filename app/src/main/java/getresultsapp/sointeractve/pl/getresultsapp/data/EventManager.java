@@ -27,13 +27,13 @@ public class EventManager {
         new EventLogin().execute();
     }
 
-    public void postEventNewBeacon (String beaconId) {
-        Log.d(TAG + "SPRAWDAZMY BIKONA", beaconId);
-        new EventPostNewBeacon().execute(beaconId);
+    public void postEventNewBeacon (String beaconMajor, String beaconMinor) {
+        Log.d(TAG + "SPRAWDAZMY BIKONA: ",beaconMajor + " " + beaconMinor);
+        new EventPostNewBeacon().execute(beaconMajor, beaconMinor);
     }
 
-    public void postEventLeftBeacon (String beaconId) {
-        new EventPostLeftBeacon().execute(beaconId);
+    public void postEventLeftBeacon (String beaconMajor, String beaconMinor) {
+        new EventPostLeftBeacon().execute(beaconMajor, beaconMinor);
     }
 
 
@@ -89,15 +89,13 @@ public class EventManager {
         UserData userData = App.loadUserData();
 
         @Override
-        protected Object doInBackground(String... arrayOfStrings) {
+        protected Object doInBackground(String... data) {
             Log.d(TAG, "EventLogin:");
-            String beaconId = arrayOfStrings[0];
             try {
                 JSONObject body = new JSONObject();
-                body.put("place", beaconId);
+                body.put("place", data[0] + "." + data[1]);
                 response = App.getConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
-                Log.d(TAG, response.toString());
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -185,12 +183,12 @@ public class EventManager {
         UserData userData = App.loadUserData();
 
         @Override
-        protected Object doInBackground(String... arrayOfStrings) {
-            String beaconId = arrayOfStrings[0];
+        protected Object doInBackground(String... data) {
+
             Log.d(TAG, "EventPostLeftBeacon");
             try {
                 JSONObject body = new JSONObject();
-                body.put("place", beaconId+"_exit");
+                body.put("place", data[0] + "." + data[1] + ".exit");
                 response = App.getConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
                 Log.d(TAG, response.toString());
