@@ -28,7 +28,7 @@ import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 
-public class trackService extends Service {
+public class TrackService extends Service {
     public trackService() {
     }
 
