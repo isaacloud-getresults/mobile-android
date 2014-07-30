@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.net.Uri;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +51,18 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         context = this;
 
+        try {
+            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+            intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); // "PRODUCT_MODE for bar codes
+
+            startActivityForResult(intent, 0);
+
+        } catch (Exception e) {
+            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+            Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
+            startActivity(marketIntent);
+        }
+
         // create new wrapper instance for API connection
         initializeConnector();
 
@@ -85,6 +98,22 @@ public class LoginActivity extends Activity {
             }
 
         });
+    }
+
+    // Handler for the result from QR code scanner
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0) {
+
+            if (resultCode == RESULT_OK) {
+                String contents = data.getStringExtra("SCAN_RESULT");
+                Toast.makeText(getApplicationContext(), "Application is configured", Toast.LENGTH_SHORT).show();
+            }
+            if(resultCode == RESULT_CANCELED){
+                //handle cancel
+            }
+        }
     }
 
     public void initializeConnector() {
