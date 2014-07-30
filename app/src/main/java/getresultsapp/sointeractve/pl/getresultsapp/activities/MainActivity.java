@@ -6,15 +6,31 @@ import android.app.Activity;
 
 import android.app.Fragment;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.util.Log;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.estimote.sdk.BeaconManager;
+import com.estimote.sdk.Beacon;
+import com.estimote.sdk.Region;
+import com.estimote.sdk.Utils;
+import java.util.Date;
+import java.util.ArrayList;
+import android.util.SparseArray;
+import android.widget.Toast;
+
+import java.util.List;
 
 import java.io.IOException;
 
@@ -26,19 +42,20 @@ import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.TabListener;
 import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
+import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "UserActivity";
     ActionBar.Tab tab1, tab2, tab3;
     Fragment fragmentTab1 = new StatusFragment();
     Fragment fragmentTab2 = new LocationsFragment();
     Fragment fragmentTab3 = new ProfileFragment();
     boolean success = false;
 
-    public Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +67,6 @@ public class MainActivity extends Activity{
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
 
         tab1 = actionBar.newTab().setText("Status");
         tab2 = actionBar.newTab().setText("Locations");
@@ -64,27 +80,9 @@ public class MainActivity extends Activity{
         actionBar.addTab(tab2);
         actionBar.addTab(tab3);
 
-        // create new data manager which downloads locations and people
-        App.createDataManager();
-        // Post login event
-        App.getEventManager().postEventLogin();
-
-        while (App.getLocations() == null) {}
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         i.putExtra("KEY1", "Value to be used by the service");
         getApplicationContext().startService(i);
         Log.d(TAG, "Service started 1");
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // beaconManager.disconnect();
     }
 }
