@@ -1,34 +1,19 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 import android.os.Handler;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
-import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
+
 
 
 public class StatusFragment extends Fragment {
@@ -39,13 +24,12 @@ public class StatusFragment extends Fragment {
     private Handler handler = new Handler();
     private OnFragmentInteractionListener mListener;
 
-    public static StatusFragment newInstance(int page, String title) {
-        StatusFragment fragmentFirst = new StatusFragment();
-        Bundle args = new Bundle();
-        args.putInt("someInt", page);
-        args.putString("someTitle", title);
-        fragmentFirst.setArguments(args);
-        return fragmentFirst;
+    public static StatusFragment newInstance() {
+        StatusFragment f = new StatusFragment();
+        Bundle b = new Bundle();
+        f.setArguments(b);
+
+        return f;
     }
     public StatusFragment() {
         // Required empty public constructor

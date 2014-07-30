@@ -5,6 +5,6 @@ public class Settings {
 
     // connection
     public static final String instanceId = "157";
-    public static final String appSecret = "59f8d59eb77eaec6f7ef9f1023815550";
+    public static final String appSecret = "a02048f98c7f262fae8f155fffe4bff7";
 
 }
