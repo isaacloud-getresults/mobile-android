@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class App extends Application {
         eventManager = new EventManager();
         dataManager = new DataManager();
     }
+
 
     public static DataManager getDataManager() {
         return dataManager;
@@ -76,10 +78,6 @@ public class App extends Application {
 
     public static List<Location> getLocations () {
         return dataManager.getLocations();
-    }
-
-    public static List<Person> getPeople () {
-        return dataManager.getPeople();
     }
 
     public static List<Person> getPeopleAtLocation(Location l) {

@@ -9,6 +9,7 @@ import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
@@ -33,6 +35,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -211,21 +214,36 @@ public class LoginActivity extends Activity {
 
         @Override
         public Object doInBackground(Object... params) {
-            List<Location> entries = new ArrayList<Location>();
+            SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+            List<Location> locations = new ArrayList<Location>();
             try {
-                // LOCATIONS REQUEST
+                //--- LOCATIONS REQUEST
                 HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
                 Log.d(TAG, response.toString());
+                // all locations from isa
                 JSONArray locationsArray = response.getJSONArray();
-                for (int i = 0; i < locationsArray.length(); i++) {
-                    JSONObject json = (JSONObject) locationsArray.get(i);
-                    Log.d(TAG, json.getString("label"));
-                    entries.add(new Location(json));
+                for(int i = 0; i < locationsArray.length();i++) {
+                    JSONObject locJson = (JSONObject) locationsArray.get(i);
+                    Location loc = new Location(locJson);
+                    entries.put(loc.getId() , new LinkedList<Person>());
+                    locations.add(loc);
+                }
+                entries.put(0, new LinkedList<Person>());
+
+                // USERS REQUEST
+                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").get();
+                Log.d(TAG, usersResponse.toString());
+                JSONArray usersArray = usersResponse.getJSONArray();
+                // for every user
+                for (int i = 0; i < usersArray.length(); i++) {
+                    JSONObject userJson = (JSONObject) usersArray.get(i);
+                    Person p = new Person(userJson);
+                    entries.get(p.getActualLocation()).add(p);
                 }
                 success = true;
-                // ADD EMPTY LOCATION
-                entries.add(new Location("",0));
-                App.getDataManager().setLocations(entries);
+
+                App.getDataManager().setLocations(locations);
+                App.getDataManager().setPeople(entries);
 
             } catch (JSONException e) {
                 e.printStackTrace();

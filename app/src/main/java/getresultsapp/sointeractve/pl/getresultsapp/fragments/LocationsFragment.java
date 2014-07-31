@@ -2,12 +2,16 @@ package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +23,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
@@ -31,6 +36,15 @@ public class LocationsFragment extends Fragment {
     List<Location> locationsArray;
     Context context;
     private static final String TAG = "LocationsFragment";
+    private BroadcastReceiver receiverLocations = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // intent can contain anydata
+            Log.d(TAG,"onReceive called");
+
+        }
+    };
 
     public static LocationsFragment newInstance() {
         Log.d(TAG,"newInstance");
@@ -50,6 +64,8 @@ public class LocationsFragment extends Fragment {
             Log.d(TAG,"Loading: " + l.getLabel());
         }
         listAdapter = new ExpandableListAdapter(context, locationsArray);
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
+                new IntentFilter(Settings.broadcastIntent));
     }
 
     @Override

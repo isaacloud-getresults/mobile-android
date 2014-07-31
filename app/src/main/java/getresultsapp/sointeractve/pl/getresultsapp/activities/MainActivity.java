@@ -4,12 +4,14 @@ import android.app.ActionBar;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 
 import android.support.v4.app.FragmentActivity;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 
@@ -28,6 +30,7 @@ public class MainActivity extends FragmentActivity implements
     private ActionBar actionBar;
     private String[] tabs = { "Status", "Locations", "Profile" };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,7 @@ public class MainActivity extends FragmentActivity implements
 
         mAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
+        // add Broadcast manager
 
         // Adding Tabs
         for (String tab_name : tabs) {
@@ -60,10 +64,16 @@ public class MainActivity extends FragmentActivity implements
         // SEND LOGIN EVENT
         App.getEventManager().postEventLogin();
 
+
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         i.putExtra("KEY1", "Value to be used by the service");
         getApplicationContext().startService(i);
         Log.d(TAG, "Service started 1");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

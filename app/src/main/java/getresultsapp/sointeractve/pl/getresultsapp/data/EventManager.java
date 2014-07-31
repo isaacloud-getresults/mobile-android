@@ -1,7 +1,11 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -10,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
@@ -20,7 +25,11 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 public class EventManager {
 
     public static final String TAG = "EventManager";
+    Context context;
 
+    public EventManager(){
+        this.context = App.getInstance().getApplicationContext();
+    }
 
 
     public void postEventLogin () {
@@ -161,6 +170,8 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             Log.d(TAG, "onPostExecute()");
+            Intent intent = new Intent(Settings.broadcastIntent);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             if (isError) {
                 Log.d(TAG, "onPostExecute() - error detected");
             }

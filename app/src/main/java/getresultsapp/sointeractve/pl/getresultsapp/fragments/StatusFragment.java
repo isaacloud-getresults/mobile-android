@@ -1,9 +1,15 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +18,7 @@ import android.widget.TextView;
 import android.os.Handler;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 
 
@@ -19,10 +26,19 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 public class StatusFragment extends Fragment {
 
     TextView textLocation;
+    Context context;
 
-    private final int interval = 1000; // 1 Second
-    private Handler handler = new Handler();
     private OnFragmentInteractionListener mListener;
+    private static final String TAG = "StatusFragment";
+    private BroadcastReceiver receiverStatus = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // intent can contain anydata
+            Log.d(TAG, "onReceive called");
+            updateStatus();
+        }
+    };
 
     public static StatusFragment newInstance() {
         StatusFragment f = new StatusFragment();
@@ -35,17 +51,13 @@ public class StatusFragment extends Fragment {
         // Required empty public constructor
     }
 
-    private Runnable runnable = new Runnable(){
-        public void run() {
-            updateStatus();
-            handler.postDelayed(this, interval);
-        }
-    };
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this.getActivity();
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiverStatus,
+                new IntentFilter(Settings.broadcastIntent));
     }
 
 
@@ -55,8 +67,6 @@ public class StatusFragment extends Fragment {
         TextView textHey = (TextView) view.findViewById(R.id.textHey);
         textLocation = (TextView) view.findViewById(R.id.textLocation);
         textHey.setText("Hey " + App.loadUserData().getFirstName() + ", " + "you are at:");
-        handler.postAtTime(runnable, System.currentTimeMillis()+interval);
-        handler.postDelayed(runnable, interval);
         return view;
     }
 

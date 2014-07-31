@@ -13,29 +13,14 @@ import java.util.List;
 public class Location {
 
     private String label;
-    private int id,visitorsNumber;
+    private int id;
 
-    public int getVisitorsNumber() {
-        return visitorsNumber;
-    }
-
-    public void AddVisitor() {
-        this.visitorsNumber++;
-    }
-
-    public void RemoveVisitor() {
-        if (visitorsNumber != 0) {
-            this.visitorsNumber--;
-        }
-    }
 
     public Location (String label, int id ) {
         this.setLabel(label);
         this.setId(id);
 
     }
-
-
 
     public Location (JSONObject json) throws JSONException {
         this.setLabel(json.getString("label"));
@@ -58,9 +43,6 @@ public class Location {
         this.label = label;
     }
 
-    public String print () {
-        return this.label;
-    }
 
 
 
