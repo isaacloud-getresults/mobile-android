@@ -33,7 +33,7 @@ public class TrackService extends Service {
     public TrackService() {
     }
 
-    private static final String TAG = "UserActivity";
+    private static final String TAG = "TrackService";
 
 
     // TODO: UUID loaded from QR reader, not hardcoded

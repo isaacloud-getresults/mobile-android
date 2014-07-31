@@ -42,7 +42,7 @@ public class LocationsFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             // intent can contain anydata
             Log.d(TAG,"onReceive called");
-
+            listAdapter.notifyDataSetChanged();
         }
     };
 

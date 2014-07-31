@@ -18,6 +18,7 @@ import android.util.Log;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
 import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
 
 
@@ -66,9 +67,9 @@ public class MainActivity extends FragmentActivity implements
 
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
-        i.putExtra("KEY1", "Value to be used by the service");
         getApplicationContext().startService(i);
-        Log.d(TAG, "Service started 1");
+        Intent j = new Intent(getApplicationContext(), DataService.class);
+        getApplicationContext().startService(j);
     }
 
     @Override

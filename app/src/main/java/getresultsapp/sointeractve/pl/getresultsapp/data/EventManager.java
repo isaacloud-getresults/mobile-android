@@ -7,12 +7,16 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.util.SparseArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
@@ -43,6 +47,10 @@ public class EventManager {
 
     public void postEventLeftBeacon (String beaconMajor, String beaconMinor) {
         new EventPostLeftBeacon().execute(beaconMajor, beaconMinor);
+    }
+
+    public void postEventUpdateData (){
+        new EventUpdateData().execute();
     }
 
 
@@ -228,4 +236,58 @@ public class EventManager {
     }
 
 
+    /////////////////////////////////////////////////////
+    // ================ UPDATE DATA EVENT ===============
+    /////////////////////////////////////////////////////
+
+    private class EventUpdateData extends AsyncTask<String, Object, Object> {
+
+        String TAG = "EventUpdateData";
+        HttpResponse response;
+        boolean isError = false;
+        UserData userData = App.loadUserData();
+
+        @Override
+        protected Object doInBackground(String... data) {
+            SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+            List<Location> locationsArray = App.getLocations();
+            for(Location loc : locationsArray) {
+                entries.put(loc.getId() , new LinkedList<Person>());
+            }
+            entries.put(0, new LinkedList<Person>());
+            try {
+
+                 // USERS REQUEST
+                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").get();
+                Log.d(TAG, usersResponse.toString());
+                JSONArray usersArray = usersResponse.getJSONArray();
+                // for every user
+                for (int i = 0; i < usersArray.length(); i++) {
+                    JSONObject userJson = (JSONObject) usersArray.get(i);
+                    Person p = new Person(userJson);
+                    entries.get(p.getActualLocation()).add(p);
+                }
+                App.getDataManager().setPeople(entries);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Object result) {
+            Log.d(TAG, "onPostExecute()");
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent (Settings.broadcastIntent));
+            if (isError) {
+                Log.d(TAG, "onPostExecute() - error detected");
+            }
+            if (response != null) {
+                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+            }
+        }
+    }
 }
