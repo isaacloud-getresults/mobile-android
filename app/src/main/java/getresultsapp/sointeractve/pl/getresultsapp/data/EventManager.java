@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 //
+// Class with IsaaCloud connection via AsyncTasks
 // @author: Pawel Dylag
 //
 public class EventManager {
@@ -51,6 +53,10 @@ public class EventManager {
 
     public void postEventUpdateData (){
         new EventUpdateData().execute();
+    }
+
+    public void postEventCheckAchievements () {
+        new EventCheckAchievements().execute();
     }
 
 
@@ -178,6 +184,10 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             Log.d(TAG, "onPostExecute()");
+
+            // CHECK FOR NEW ACHIEVEMENTS
+            new EventCheckAchievements().execute();
+
             Intent intent = new Intent(Settings.broadcastIntent);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             if (isError) {
@@ -245,7 +255,6 @@ public class EventManager {
         String TAG = "EventUpdateData";
         HttpResponse response;
         boolean isError = false;
-        UserData userData = App.loadUserData();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -260,6 +269,7 @@ public class EventManager {
                  // USERS REQUEST
                 HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").get();
                 Log.d(TAG, usersResponse.toString());
+
                 JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
                 for (int i = 0; i < usersArray.length(); i++) {
@@ -290,4 +300,55 @@ public class EventManager {
             }
         }
     }
+
+
+    private class EventCheckAchievements extends AsyncTask<Object,Object,Object> {
+
+        UserData userData;
+        List<Achievement> entries = new ArrayList<Achievement>();
+
+        @Override
+        protected Object doInBackground(Object... params) {
+            userData = App.loadUserData();
+            try {
+                // ACHIEVEMENTS REQUEST
+                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                HttpResponse responseUser = App
+                        .getConnector()
+                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").get();
+                JSONObject achievementsJson = responseUser.getJSONObject();
+                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                for (int i = 0; i < arrayUser.length(); i++) {
+                    JSONObject json = (JSONObject) arrayUser.get(i);
+                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
+                }
+                HttpResponse responseGeneral = App.getConnector()
+                        .path("/cache/achievements").withLimit(1000).get();
+                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                for (int i = 0; i < arrayGeneral.length(); i++) {
+                    JSONObject json = (JSONObject) arrayGeneral.get(i);
+                    if (idMap.containsKey(json.getInt("id"))) {
+                        entries.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Object result) {
+            if (entries.size() != App.getDataManager().getAchievements().size()) {
+                App.getDataManager().setAchievements(entries);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.broadcastIntentNewAchievement));
+            } else {
+                Log.d(TAG, "No new achievements.");
+            }
+        }
+    }
+
 }

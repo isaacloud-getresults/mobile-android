@@ -22,7 +22,9 @@ import org.json.JSONObject;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.LoginData;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
@@ -216,8 +218,10 @@ public class LoginActivity extends Activity {
         public Object doInBackground(Object... params) {
             SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
             List<Location> locations = new ArrayList<Location>();
+            List<Achievement> achievements = new ArrayList<Achievement>();
+            locations.add(new Location ("Nowhere", 0));
             try {
-                //--- LOCATIONS REQUEST
+                // LOCATIONS REQUEST
                 HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
                 Log.d(TAG, response.toString());
                 // all locations from isa
@@ -240,10 +244,35 @@ public class LoginActivity extends Activity {
                     Person p = new Person(userJson);
                     entries.get(p.getActualLocation()).add(p);
                 }
-                success = true;
 
-                App.getDataManager().setLocations(locations);
-                App.getDataManager().setPeople(entries);
+                // ACHIEVEMENTS REQUEST
+                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                HttpResponse responseUser = App
+                        .getConnector()
+                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").get();
+                JSONObject achievementsJson = responseUser.getJSONObject();
+                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                for (int i = 0; i < arrayUser.length(); i++) {
+                    JSONObject json = (JSONObject) arrayUser.get(i);
+                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
+                }
+
+                HttpResponse responseGeneral = App.getConnector()
+                        .path("/cache/achievements").withLimit(1000).get();
+                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                Log.d("TEST", arrayGeneral.toString(3));
+                for (int i = 0; i < arrayGeneral.length(); i++) {
+                    JSONObject json = (JSONObject) arrayGeneral.get(i);
+                    if (idMap.containsKey(json.getInt("id"))) {
+                        achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
+                    }
+                }
+                success = true;
+                DataManager dm = App.getDataManager();
+                dm.setLocations(locations);
+                dm.setPeople(entries);
+                dm.setAchievements(achievements);
+                Log.d(TAG,"ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
 
             } catch (JSONException e) {
                 e.printStackTrace();

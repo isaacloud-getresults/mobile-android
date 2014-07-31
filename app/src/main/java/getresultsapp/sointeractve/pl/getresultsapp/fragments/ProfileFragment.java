@@ -1,6 +1,9 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -10,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +34,7 @@ import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
@@ -37,10 +43,21 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class ProfileFragment extends ListFragment {
 
+    private static final String TAG = "ProfileFragment";
+
     MainActivity context;
     ArrayList<Achievement> array;
-    boolean isLoaded = false;
     AchievementAdapter adapter;
+    private BroadcastReceiver receiverProfile = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG,"onReceive called");
+            adapter.setData(App.getDataManager().getAchievements());
+            adapter.notifyDataSetChanged();
+            Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!", Toast.LENGTH_LONG).show();
+        }
+    };
 
     public static ProfileFragment newInstance() {
         ProfileFragment f = new ProfileFragment();
@@ -53,7 +70,8 @@ public class ProfileFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        new DataListLoader().execute();
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
+                new IntentFilter(Settings.broadcastIntentNewAchievement));
     }
 
     @Override
@@ -62,57 +80,11 @@ public class ProfileFragment extends ListFragment {
         context = (MainActivity) getActivity();
         array = new ArrayList<Achievement>();
         adapter = new AchievementAdapter(context);
+        adapter.setData(App.getDataManager().getAchievements());
         setListAdapter(adapter);
     }
 
 
-
-    public static class DataListLoader extends AsyncTask<Object,Object,Object> {
-
-        UserData userData;
-        List<Achievement> mModels;
-
-        @Override
-        protected Object doInBackground(Object... params) {
-            userData = App.loadUserData();
-            List<Achievement> entries = new ArrayList<Achievement>();
-            try {
-                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
-                HttpResponse responseUser = App
-                        .getConnector()
-                        .path("/admin/users/" + userData.getUserId()
-                                + "/gainedachievements").withLimit(1000).get();
-                JSONArray arrayUser = responseUser.getJSONArray();
-                for (int i = 0; i < arrayUser.length(); i++) {
-                    JSONObject json = (JSONObject) arrayUser.get(i);
-                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
-                }
-                HttpResponse responseGeneral = App.getConnector()
-                        .path("/cache/achievements").withLimit(1000).get();
-                JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                Log.d("TEST", arrayGeneral.toString(3));
-                for (int i = 0; i < arrayGeneral.length(); i++) {
-                    JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.containsKey(json.getInt("id"))) {
-                        entries.add(
-                                0,
-                                new Achievement(json, true, idMap.get(json
-                                        .getInt("id"))));
-                    } else {
-
-                        entries.add(new Achievement(json, false));
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            return null;
-        }
-    }
 
     private class AchievementAdapter extends ArrayAdapter<Achievement> {
         private final LayoutInflater mInflater;
