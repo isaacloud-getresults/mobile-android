@@ -26,6 +26,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 public class StatusFragment extends Fragment {
 
     TextView textLocation;
+    TextView textVisits;
     Context context;
 
     private OnFragmentInteractionListener mListener;
@@ -34,9 +35,13 @@ public class StatusFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            // intent can contain anydata
             Log.d(TAG, "onReceive called");
-            updateStatus();
+            int visits = 0;
+            if (App.loadUserData().getUserLocationId() == 4) {
+                visits = App.loadUserData().getLocationVisits();
+            }
+
+            updateStatus(visits);
         }
     };
 
@@ -66,7 +71,8 @@ public class StatusFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_status, container, false);
         TextView textHey = (TextView) view.findViewById(R.id.textHey);
         textLocation = (TextView) view.findViewById(R.id.textLocation);
-        textHey.setText("Hey " + App.loadUserData().getFirstName() + ", " + "you are at:");
+        textVisits = (TextView) view.findViewById(R.id.textVisits);
+        textHey.setText(App.loadUserData().getName());
         return view;
     }
 
@@ -103,8 +109,8 @@ public class StatusFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-    public void updateStatus() {
-
+    public void updateStatus(int stats) {
+        textVisits.setText("Total visits here: " + stats);
         textLocation.setText(App.loadUserData().getUserLocation());
     }
 

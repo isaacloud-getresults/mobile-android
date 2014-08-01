@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Vibrator;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.content.Context;
@@ -55,7 +56,9 @@ public class ProfileFragment extends ListFragment {
             Log.d(TAG,"onReceive called");
             adapter.setData(App.getDataManager().getAchievements());
             adapter.notifyDataSetChanged();
-            Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
+            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(250);
         }
     };
 

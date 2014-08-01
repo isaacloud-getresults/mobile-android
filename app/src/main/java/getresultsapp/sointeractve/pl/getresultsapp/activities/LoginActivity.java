@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -219,7 +220,6 @@ public class LoginActivity extends Activity {
             SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
             List<Location> locations = new ArrayList<Location>();
             List<Achievement> achievements = new ArrayList<Achievement>();
-            locations.add(new Location ("Nowhere", 0));
             try {
                 // LOCATIONS REQUEST
                 HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
@@ -229,13 +229,15 @@ public class LoginActivity extends Activity {
                 for(int i = 0; i < locationsArray.length();i++) {
                     JSONObject locJson = (JSONObject) locationsArray.get(i);
                     Location loc = new Location(locJson);
-                    entries.put(loc.getId() , new LinkedList<Person>());
-                    locations.add(loc);
+                    if (loc.getId() != 1 &&  loc.getId() != 2) {
+                        entries.put(loc.getId(), new LinkedList<Person>());
+                        locations.add(loc);
+                    }
                 }
-                entries.put(0, new LinkedList<Person>());
+
 
                 // USERS REQUEST
-                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").get();
+                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").withLimit(0).get();
                 Log.d(TAG, usersResponse.toString());
                 JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
@@ -247,9 +249,10 @@ public class LoginActivity extends Activity {
 
                 // ACHIEVEMENTS REQUEST
                 HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                Log.d(TAG, "ACTUAL USER ID IS from object: " + userData.getUserId());
                 HttpResponse responseUser = App
                         .getConnector()
-                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").get();
+                        .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
                 JSONObject achievementsJson = responseUser.getJSONObject();
                 JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
                 for (int i = 0; i < arrayUser.length(); i++) {

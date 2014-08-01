@@ -1,9 +1,7 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -18,9 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
-import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
@@ -150,6 +148,7 @@ public class EventManager {
     private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
 
         String TAG = "EventGetNewLocation";
+        Intent message = new Intent(Settings.broadcastIntent);
         HttpResponse response;
         boolean isError = false;
         UserData userData = App.loadUserData();
@@ -157,6 +156,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(Object... beaconId) {
+
             try {
                 int id = userData.getUserId();
                 HttpResponse response = App.getConnector().path("/cache/users/"+id).get();
@@ -166,9 +166,13 @@ public class EventManager {
 
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject o = (JSONObject) array.get(i);
-                    if (o.getString("counter").equals("6")) {
+                    if (o.getString("counter").equals(Settings.locationCounter)) {
                         userData.setUserLocation(Integer.parseInt(o.getString("value")));
                     }
+                    if (o.getString("counter").equals(Settings.kitchenVisitedCounter)) {
+                        userData.setLocationVisits(Integer.parseInt(o.getString("value")));
+                    }
+
                 }
                 App.saveUserData(userData);
             } catch (IsaaCloudConnectionException e) {
@@ -187,9 +191,8 @@ public class EventManager {
 
             // CHECK FOR NEW ACHIEVEMENTS
             new EventCheckAchievements().execute();
-
-            Intent intent = new Intent(Settings.broadcastIntent);
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            // send broadcast
+            LocalBroadcastManager.getInstance(context).sendBroadcast(message);
             if (isError) {
                 Log.d(TAG, "onPostExecute() - error detected");
             }
@@ -267,7 +270,7 @@ public class EventManager {
             try {
 
                  // USERS REQUEST
-                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").get();
+                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").withLimit(0).get();
                 Log.d(TAG, usersResponse.toString());
 
                 JSONArray usersArray = usersResponse.getJSONArray();
@@ -305,7 +308,7 @@ public class EventManager {
     private class EventCheckAchievements extends AsyncTask<Object,Object,Object> {
 
         UserData userData;
-        List<Achievement> entries = new ArrayList<Achievement>();
+        List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(Object... params) {
@@ -315,7 +318,7 @@ public class EventManager {
                 HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
                 HttpResponse responseUser = App
                         .getConnector()
-                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").get();
+                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
                 JSONObject achievementsJson = responseUser.getJSONObject();
                 JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
                 for (int i = 0; i < arrayUser.length(); i++) {
@@ -328,7 +331,7 @@ public class EventManager {
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
                     if (idMap.containsKey(json.getInt("id"))) {
-                        entries.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
+                        newAchievements.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
             } catch (JSONException e) {
@@ -342,9 +345,21 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            if (entries.size() != App.getDataManager().getAchievements().size()) {
-                App.getDataManager().setAchievements(entries);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.broadcastIntentNewAchievement));
+            List<Achievement> actualAchievements = App.getDataManager().getAchievements();
+            if (newAchievements.size() != actualAchievements.size()) {
+                // search for new achievement
+                Achievement recentAchievement = null;
+                int i = 0;
+                while (recentAchievement == null) {
+                    if (!actualAchievements.contains(newAchievements.get(i))) {
+                        recentAchievement = newAchievements.get(i);
+                    }
+                    i++;
+                }
+                Intent intent = new Intent(Settings.broadcastIntentNewAchievement);
+                intent.putExtra("label", recentAchievement.getLabel());
+                App.getDataManager().setAchievements(newAchievements);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             } else {
                 Log.d(TAG, "No new achievements.");
             }

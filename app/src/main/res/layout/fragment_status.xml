@@ -3,24 +3,40 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 xmlns:android="http://schemas.android.com/apk/res/android">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text=""
-    android:id="@+id/textLocation"
-    android:layout_gravity="center"
-    android:textSize="52dp" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:id="@+id/textHey"
-    android:layout_gravity="center_horizontal|top"
-    android:paddingTop="120dp"
-    android:text="Test"
-    android:singleLine="true"
-    android:textSize="16dp"
-    android:textIsSelectable="true" />
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/textHey"
+        android:layout_gravity="center_horizontal|top"
+        android:paddingTop="60dp"
+        android:text="Test"
+        android:singleLine="true"
+        android:textSize="16dp"
+        android:textIsSelectable="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text=""
+            android:id="@+id/textLocation"
+            android:layout_gravity="center"
+            android:textSize="52dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textVisits"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+
+
 </FrameLayout>

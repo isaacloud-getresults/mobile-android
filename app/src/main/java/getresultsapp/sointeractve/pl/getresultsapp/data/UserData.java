@@ -9,11 +9,22 @@ public class UserData implements Serializable {
 
 
     private String name, email, firstName;
-    private int userId;
+    private int userId, locationVisits;
     private String userLocation;
+
 
     public String getUserLocation() {
         return userLocation;
+    }
+
+    public int getUserLocationId(){
+        int id = 0;
+        for (Location l : App.getLocations()) {
+            if (this.userLocation == l.getLabel()) {
+                id = l.getId();
+            }
+        }
+       return id;
     }
 
     public void setUserLocation(int id) {
@@ -22,6 +33,14 @@ public class UserData implements Serializable {
                 this.userLocation = l.getLabel();
             }
         }
+    }
+
+    public int getLocationVisits() {
+        return locationVisits;
+    }
+
+    public void setLocationVisits(int locationVisits) {
+        this.locationVisits = locationVisits;
     }
 
     public String getName() {

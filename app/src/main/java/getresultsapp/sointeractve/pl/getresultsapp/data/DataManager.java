@@ -46,6 +46,4 @@ public class DataManager {
     public void setAchievements(List<Achievement> achievements) {
         this.achievements = achievements;
     }
-
-
 }
