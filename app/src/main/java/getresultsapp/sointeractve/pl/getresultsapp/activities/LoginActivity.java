@@ -1,10 +1,12 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +14,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.net.Uri;
@@ -32,6 +36,19 @@ import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.plus.Plus;
+import android.accounts.AccountManager;
+import android.accounts.Account;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +56,28 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    private static final int RC_SIGN_IN = 0;
+    // Logcat tag
+
+    // Profile pic image size in pixels
+    private static final int PROFILE_PIC_SIZE = 400;
+
+    // Google client to interact with Google API
+    private GoogleApiClient mGoogleApiClient;
+
+    /**
+     * A flag indicating that a PendingIntent is in progress and prevents us
+     * from starting further intents.
+     */
+    private boolean mIntentInProgress;
+
+    private boolean mSignInClicked;
+
+    private ConnectionResult mConnectionResult;
+
+    private LinearLayout llProfileLayout;
     private static final String TAG = "LoginActivity";
 
     private Context context;
@@ -49,6 +86,8 @@ public class LoginActivity extends Activity {
     private ProgressDialog dialog;
     private Button buttonLogIn;
     private Button buttonNewUser;
+    private SignInButton btnSignIn;
+    private Button btnRevokeAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +99,29 @@ public class LoginActivity extends Activity {
             Intent intent = new Intent("com.google.zxing.client.android.SCAN");
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); // "PRODUCT_MODE for bar codes
 
-            startActivityForResult(intent, 0);
+//            startActivityForResult(intent, 0);
 
         } catch (Exception e) {
             Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
             Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
-            startActivity(marketIntent);
+//            startActivity(marketIntent);
         }
 
         // create new wrapper instance for API connection
         initializeConnector();
 
         // find relevant views and add listeners
+        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
+        btnRevokeAccess = (Button) findViewById(R.id.button_revoke_access);
         buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
         buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
         editEmail = (TextView) findViewById(R.id.editEmail);
         editPassword = (TextView) findViewById(R.id.editPassword);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
         // add listeners
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
@@ -103,6 +149,71 @@ public class LoginActivity extends Activity {
             }
 
         });
+
+        btnSignIn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                signInWithGplus();
+            }
+        });
+
+        btnRevokeAccess.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                revokeGplusAccess();
+            }
+        });
+
+    }
+
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    public void onConnectionFailed(ConnectionResult result) {
+        if (!result.hasResolution()) {
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                    0).show();
+            return;
+        }
+
+        if (!mIntentInProgress) {
+            // Store the ConnectionResult for later usage
+            mConnectionResult = result;
+
+            if (mSignInClicked) {
+                // The user has already clicked 'sign-in' so we attempt to
+                // resolve all
+                // errors until the user is signed in, or they cancel.
+                resolveSignInError();
+            }
+        }
+
+    }
+
+    private void resolveSignInError() {
+        if (mConnectionResult.hasResolution()) {
+            try {
+                mIntentInProgress = true;
+                mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
+            } catch (IntentSender.SendIntentException e) {
+                mIntentInProgress = false;
+                mGoogleApiClient.connect();
+            }
+        }
+    }
+
+    private void signInWithGplus() {
+        if (!mGoogleApiClient.isConnecting()) {
+            mSignInClicked = true;
+            resolveSignInError();
+        }
     }
 
     // Handler for the result from QR code scanner
@@ -112,13 +223,69 @@ public class LoginActivity extends Activity {
         if (requestCode == 0) {
 
             if (resultCode == RESULT_OK) {
-                String contents = data.getStringExtra("SCAN_RESULT");
-                Toast.makeText(getApplicationContext(), "Application is configured", Toast.LENGTH_SHORT).show();
+//                String contents = data.getStringExtra("SCAN_RESULT");
+//                Toast.makeText(getApplicationContext(), "Application is configured", Toast.LENGTH_SHORT).show();
             }
             if(resultCode == RESULT_CANCELED){
                 //handle cancel
             }
         }
+
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode != RESULT_OK) {
+                mSignInClicked = false;
+            }
+
+            mIntentInProgress = false;
+
+            if (!mGoogleApiClient.isConnecting()) {
+                mGoogleApiClient.connect();
+            }
+        }
+
+    }
+
+    public void onConnected(Bundle arg0) {
+        mSignInClicked = false;
+        if(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+            AccountManager accManager = AccountManager.get(this);
+            Account[] accounts = accManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+            String names[] = new String[accounts.length];
+            for(int j = 0; j < accounts.length; j++) names[j] = accounts[j].name;
+            String plusName = Plus.AccountApi.getAccountName(mGoogleApiClient);
+            String res = "Account: ";
+            for(int i = 0; i < names.length; i++) {
+                 res = res + names[i] + "\n";
+            }
+            com.google.android.gms.plus.model.people.Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            String info = currentPerson.getName().getGivenName() + " " + currentPerson.getName().getFamilyName() + "\n" + Plus.AccountApi.getAccountName(mGoogleApiClient) + "\n" + res;
+            Toast.makeText(this, info, Toast.LENGTH_LONG).show();
+
+        } else
+        Toast.makeText(this, "Person information is null", Toast.LENGTH_LONG).show();
+
+
+    }
+
+    private void revokeGplusAccess() {
+        if (mGoogleApiClient.isConnected()) {
+            Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+            Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status arg0) {
+                            Toast.makeText(getApplicationContext(), "Access revoked!", Toast.LENGTH_SHORT).show();
+                            mGoogleApiClient.connect();
+
+                        }
+
+                    });
+        }
+    }
+
+    public void onConnectionSuspended(int arg0) {
+        mGoogleApiClient.connect();
+
     }
 
     public void initializeConnector() {
@@ -275,3 +442,4 @@ public class LoginActivity extends Activity {
     }
 
 }
+
