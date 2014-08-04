@@ -15,7 +15,7 @@
         android:layout_marginRight="@dimen/login_container_margin"
         android:layout_marginTop="@dimen/login_container_margin_top"
         android:orientation="vertical"
-        >
+        android:id="@+id/linearLayout">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -75,21 +75,28 @@
                 android:id="@+id/buttonNewUser"
                 android:layout_below="@+id/buttonLogIn"/>
 
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/btn_sign_in"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/buttonNewUser"/>
-            <Button
-                android:layout_width="@dimen/login_button_width"
-                android:layout_height="@dimen/login_button_height"
-                android:text="Revoke Access"
-                android:id="@+id/button_revoke_access"
-                android:layout_below="@+id/btn_sign_in"/>
-
 
         </RelativeLayout>
 
     </LinearLayout>
+
+    <com.google.android.gms.common.SignInButton
+        android:layout_width="@dimen/login_button_width"
+        android:layout_height="@dimen/login_button_height"
+        android:id="@+id/btn_sign_in"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout"
+        android:layout_marginBottom="38dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="25dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up with Google+ account"
+        android:id="@+id/textView"
+        android:layout_above="@+id/btn_sign_in"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

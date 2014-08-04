@@ -72,7 +72,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
      * from starting further intents.
      */
     private boolean mIntentInProgress;
-
+    private boolean googleLogin = false;
     private boolean mSignInClicked;
 
     private ConnectionResult mConnectionResult;
@@ -112,7 +112,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         // find relevant views and add listeners
         btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
-        btnRevokeAccess = (Button) findViewById(R.id.button_revoke_access);
+//        btnRevokeAccess = (Button) findViewById(R.id.button_revoke_access);
         buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
         buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
         editEmail = (TextView) findViewById(R.id.editEmail);
@@ -155,13 +155,13 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 signInWithGplus();
             }
         });
-
+/*
         btnRevokeAccess.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 revokeGplusAccess();
             }
         });
-
+*/
     }
 
     protected void onStart() {
@@ -247,19 +247,24 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     public void onConnected(Bundle arg0) {
         mSignInClicked = false;
+        googleLogin = true;
         if(Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+/*
             AccountManager accManager = AccountManager.get(this);
             Account[] accounts = accManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
             String names[] = new String[accounts.length];
-            for(int j = 0; j < accounts.length; j++) names[j] = accounts[j].name;
+            HashMap<String, Account> localAccounts = new HashMap<String, Account>();
+            for(Account a : accounts) localAccounts.put(a.name, a);
             String plusName = Plus.AccountApi.getAccountName(mGoogleApiClient);
-            String res = "Account: ";
-            for(int i = 0; i < names.length; i++) {
-                 res = res + names[i] + "\n";
+            Account currentAccount = null;
+            for(String s : names) {
+                 if(plusName.equals(s)) currentAccount = localAccounts.get(s);
             }
+*/
             com.google.android.gms.plus.model.people.Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            String info = currentPerson.getName().getGivenName() + " " + currentPerson.getName().getFamilyName() + "\n" + Plus.AccountApi.getAccountName(mGoogleApiClient) + "\n" + res;
+            String info = currentPerson.getName().getGivenName() + " " + currentPerson.getName().getFamilyName() + "\n" + Plus.AccountApi.getAccountName(mGoogleApiClient);
             Toast.makeText(this, info, Toast.LENGTH_LONG).show();
+            new LoginTask().execute();
 
         } else
         Toast.makeText(this, "Person information is null", Toast.LENGTH_LONG).show();
@@ -317,7 +322,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
             Log.d(TAG, "doInBackground()");
             try {
-                String email = LoginActivity.this.editEmail.getEditableText().toString();
+                String email;
+                boolean register = true;
+                if(googleLogin) email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+                else email = LoginActivity.this.editEmail.getEditableText().toString();
                 HttpResponse response = App.getConnector().path("/admin/users")
                         .withLimit(1000).get();
                 Log.d(TAG, response.toString());
@@ -325,6 +333,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject json = (JSONObject) array.get(i);
                     if (email.equals(json.get("email"))) {
+
                         String userFirstName = json.getString("firstName");
                         String userLastName = json.getString("lastName");
                         String userEmail = json.getString("email");
@@ -338,10 +347,35 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         App.saveUserData(userData);
                         // report user found
                         success = true;
+                        register = false;
                         // break the loop
                         break;
                     }
                 }
+                        if(googleLogin && register) {
+//                            dialog = ProgressDialog.show(context, "Registering account", "Please wait");
+                            JSONObject jsonBody = new JSONObject();
+                            jsonBody.put("email", Plus.AccountApi.getAccountName(mGoogleApiClient));
+                            jsonBody.put("password", "Google@1998");
+                            jsonBody.put("firstName", Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getName().getGivenName());
+                            jsonBody.put("lastName", Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getName().getFamilyName());
+                            jsonBody.put("status", 1);
+
+                            UserData userData = App.loadUserData();
+                            HttpResponse registerResponse;
+                            response = App.getConnector().path("/admin/users")
+                                    .post(jsonBody);
+                            JSONObject Json = response.getJSONObject();
+                            userData.setUserId(Json.getInt("id"));
+                            userData.setName(Json.getString("firstName") + " "
+                                    + Json.getString("lastName"));
+                            userData.setEmail(Json.getString("email"));
+                            App.saveUserData(userData);
+                            success = true;
+
+                        }
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
@@ -434,6 +468,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
 
     }
+
+
 
     public void runMainActivity () {
         // RUN MAIN ACTIVITY
