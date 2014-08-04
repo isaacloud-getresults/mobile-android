@@ -92,4 +92,8 @@ public class MainActivity extends FragmentActivity implements
 
     }
 
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
 }
