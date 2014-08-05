@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -86,7 +87,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private ProgressDialog dialog;
     private Button buttonLogIn;
     private Button buttonNewUser;
-    private SignInButton btnSignIn;
+    private SignInButton buttonSignIn;
+    private Button buttonScan;
     private Button btnRevokeAccess;
 
     @Override
@@ -95,26 +97,19 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         setContentView(R.layout.activity_login);
         context = this;
 
-        try {
-            Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            intent.putExtra("SCAN_MODE", "QR_CODE_MODE"); // "PRODUCT_MODE for bar codes
+        configureApplication();
 
-//            startActivityForResult(intent, 0);
-
-        } catch (Exception e) {
-            Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-            Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
-//            startActivity(marketIntent);
-        }
+        Toast.makeText(this, "InstanceId: " + Settings.instanceId + "\nappSecret: " + Settings.appSecret, Toast.LENGTH_SHORT).show();
 
         // create new wrapper instance for API connection
         initializeConnector();
 
         // find relevant views and add listeners
-        btnSignIn = (SignInButton) findViewById(R.id.btn_sign_in);
-//        btnRevokeAccess = (Button) findViewById(R.id.button_revoke_access);
+        buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
+//        btnRevokeAccess = (Button) findViewById(R.id.buttonRevokeAccess);
         buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
         buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
+        buttonScan = (Button) findViewById(R.id.buttonScan);
         editEmail = (TextView) findViewById(R.id.editEmail);
         editPassword = (TextView) findViewById(R.id.editPassword);
 
@@ -132,7 +127,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     Toast.makeText(context, R.string.error_empty,
                             Toast.LENGTH_LONG).show();
                 } else {
-                    Log.d("ButtonAction", "Login clicked");
+                    Log.d(editEmail.getEditableText().toString(), editPassword.getEditableText().toString());
                     userData = App.loadUserData();
                     new LoginTask().execute();
                 }
@@ -150,9 +145,24 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         });
 
-        btnSignIn.setOnClickListener(new View.OnClickListener() {
+        buttonSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 signInWithGplus();
+            }
+        });
+
+        buttonScan.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                    intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+                    startActivityForResult(intent, 0);
+
+                } catch (Exception e) {
+                    Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+                    Intent marketIntent = new Intent(Intent.ACTION_VIEW,marketUri);
+                    startActivity(marketIntent);
+                }
             }
         });
 /*
@@ -223,12 +233,23 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         if (requestCode == 0) {
 
             if (resultCode == RESULT_OK) {
-//                String contents = data.getStringExtra("SCAN_RESULT");
-//                Toast.makeText(getApplicationContext(), "Application is configured", Toast.LENGTH_SHORT).show();
+                String contents = data.getStringExtra("SCAN_RESULT");
+                if(contents.contains("/?*#$!%@/")) {
+                    // String for QR code: 179/?*#$!%@/3f14569b750b69a8bc352cb34ad3e
+                    StringTokenizer tokenizer = new StringTokenizer((contents), "/?*#$!%@/");
+                    String conf = (String)(tokenizer.nextElement() + "/" + tokenizer.nextElement());
+                    App.saveConfigData(conf);
+
+                    Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
+                }
+                else Toast.makeText(getApplicationContext(), "Inappropriate QR code", Toast.LENGTH_SHORT).show();
             }
             if(resultCode == RESULT_CANCELED){
                 //handle cancel
             }
+            configureApplication();
+            initializeConnector();
+            Log.d(TAG, "After configureApplication() " + Settings.instanceId + Settings.appSecret);
         }
 
         if (requestCode == RC_SIGN_IN) {
@@ -301,6 +322,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             App.setConnector(new Isaacloud(config));
         } catch (InvalidConfigException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void configureApplication() {
+        String s = App.loadConfigData();
+        StringTokenizer tok = new StringTokenizer((s), "/");
+        while(tok.hasMoreElements()) {
+            Settings.instanceId = (String) tok.nextElement();
+            Settings.appSecret = (String) tok.nextElement();
         }
     }
 
@@ -393,7 +423,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (success) {
                 new EventGetLocations().execute();
             } else {
-                //
+                Log.d(TAG, "Here!");
             }
 
         }
@@ -461,6 +491,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
+                Log.d(TAG, "NOT SUCCES");
                 runMainActivity();
             } else {
                 Log.d(TAG, "NOT SUCCES");

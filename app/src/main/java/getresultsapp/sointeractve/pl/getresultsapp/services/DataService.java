@@ -27,7 +27,7 @@ public class DataService extends Service{
     {
         super.onCreate();
         context = this;
-        Log.d(TAG, "omCreate");
+        Log.d(TAG, "onCreate");
     }
 
     public int onStartCommand(Intent intent, int flags, int startId)

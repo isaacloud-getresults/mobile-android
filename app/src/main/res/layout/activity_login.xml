@@ -39,7 +39,7 @@
                 android:inputType="textPersonName"
                 android:id="@+id/editEmail"
                 android:layout_toRightOf="@id/textHello"
-                android:text="getresultsdev@gmail.com" />
+                android:text="sergey.brin35@gmail.com" />
 
             <TextView
                 android:layout_width="@dimen/login_text_width"
@@ -57,7 +57,7 @@
                 android:id="@+id/editPassword"
                 android:layout_below="@+id/editEmail"
                 android:layout_toRightOf="@+id/textHey"
-                android:text="!Ad*5@i"
+                android:text="Google@1998"
                 android:password="true" />
 
             <Button
@@ -75,6 +75,13 @@
                 android:id="@+id/buttonNewUser"
                 android:layout_below="@+id/buttonLogIn"/>
 
+            <Button
+                android:layout_width="@dimen/login_button_width"
+                android:layout_height="@dimen/login_button_height"
+                android:text="@string/buttonScan"
+                android:id="@+id/buttonScan"
+                android:layout_below="@+id/buttonNewUser"/>
+
 
         </RelativeLayout>
 
@@ -83,7 +90,7 @@
     <com.google.android.gms.common.SignInButton
         android:layout_width="@dimen/login_button_width"
         android:layout_height="@dimen/login_button_height"
-        android:id="@+id/btn_sign_in"
+        android:id="@+id/buttonGoogle"
         android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/linearLayout"
         android:layout_alignStart="@+id/linearLayout"
@@ -96,7 +103,7 @@
         android:layout_height="wrap_content"
         android:text="Sign up with Google+ account"
         android:id="@+id/textView"
-        android:layout_above="@+id/btn_sign_in"
+        android:layout_above="@+id/buttonGoogle"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

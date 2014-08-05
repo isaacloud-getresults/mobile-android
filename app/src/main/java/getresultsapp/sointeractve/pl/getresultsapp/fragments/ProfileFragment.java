@@ -38,7 +38,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 public class ProfileFragment extends ListFragment {
 
     MainActivity context;
-    ArrayList<Achievement> array;
+    static ArrayList<Achievement> array;
     boolean isLoaded = false;
     AchievementAdapter adapter;
 
@@ -53,7 +53,12 @@ public class ProfileFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        array = new ArrayList<Achievement>();
         new DataListLoader().execute();
+        context = (MainActivity) getActivity();
+        adapter = new AchievementAdapter(context);
+        adapter.setData(array);
+        setListAdapter(adapter);
     }
 
     @Override
@@ -61,7 +66,9 @@ public class ProfileFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
         context = (MainActivity) getActivity();
         array = new ArrayList<Achievement>();
+        new DataListLoader().execute();
         adapter = new AchievementAdapter(context);
+        adapter.setData(array);
         setListAdapter(adapter);
     }
 
@@ -101,6 +108,8 @@ public class ProfileFragment extends ListFragment {
                     } else {
 
                         entries.add(new Achievement(json, false));
+                        array = (ArrayList<Achievement>) entries;
+                        for(Achievement a : array) Log.d("TEST", a.getDesc());
                     }
                 }
             } catch (JSONException e) {
@@ -110,7 +119,7 @@ public class ProfileFragment extends ListFragment {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            return null;
+            return entries;
         }
     }
 
@@ -123,7 +132,7 @@ public class ProfileFragment extends ListFragment {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
-        public void setData(List<Achievement> data) {
+        public void setData(ArrayList<Achievement> data) {
             clear();
             if (data != null) {
                 for (Achievement appEntry : data) {
