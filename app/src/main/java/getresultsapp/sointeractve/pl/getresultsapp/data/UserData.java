@@ -10,29 +10,26 @@ public class UserData implements Serializable {
 
     private String name, email, firstName;
     private int userId, locationVisits;
-    private String userLocation;
+    private Location userLocation;
 
-
-    public String getUserLocation() {
-        return userLocation;
+    public Location getUserLocation() {
+        return this.userLocation;
     }
 
     public int getUserLocationId(){
-        int id = 0;
-        for (Location l : App.getLocations()) {
-            if (this.userLocation == l.getLabel()) {
-                id = l.getId();
-            }
-        }
-       return id;
+       return this.userLocation.getId();
     }
 
     public void setUserLocation(int id) {
         for (Location l : App.getLocations()) {
             if (l.getId() == id) {
-                this.userLocation = l.getLabel();
+                this.userLocation = l;
             }
         }
+    }
+
+    public void setUserLocation (Location newLocation) {
+        this.userLocation = newLocation;
     }
 
     public int getLocationVisits() {

@@ -219,7 +219,6 @@ public class LoginActivity extends Activity {
         public Object doInBackground(Object... params) {
             SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
             List<Location> locations = new ArrayList<Location>();
-            List<Achievement> achievements = new ArrayList<Achievement>();
             try {
                 // LOCATIONS REQUEST
                 HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
@@ -233,19 +232,54 @@ public class LoginActivity extends Activity {
                         entries.put(loc.getId(), new LinkedList<Person>());
                         locations.add(loc);
                     }
+                    if (loc.getId() == Integer.parseInt(Settings.nullRoomCounter)) {
+                        UserData userData = App.loadUserData();
+                        userData.setUserLocation(loc);
+                        App.saveUserData(userData);
+                    }
                 }
+                success = true;
+                DataManager dm = App.getDataManager();
+                dm.setLocations(locations);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            Log.d(TAG, "onPostExecute()");
+            if (success) {
+                new EventGetAchievements().execute();
+            } else {
+                Log.d(TAG, "NOT SUCCES");
+            }
+        }
+
+    }
+
+    // GET LOCATIONS
+    private class EventGetAchievements extends AsyncTask<Object, Object, Object> {
+
+        private static final String TAG = "EventGetLocations";
+        public boolean success = false;
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "onPreExecute()");
+        }
 
 
-                // USERS REQUEST
-                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").withLimit(0).get();
-                Log.d(TAG, usersResponse.toString());
-                JSONArray usersArray = usersResponse.getJSONArray();
-                // for every user
-                for (int i = 0; i < usersArray.length(); i++) {
-                    JSONObject userJson = (JSONObject) usersArray.get(i);
-                    Person p = new Person(userJson);
-                    entries.get(p.getActualLocation()).add(p);
-                }
+        @Override
+        public Object doInBackground(Object... params) {
+            List<Achievement> achievements = new ArrayList<Achievement>();
+            try {
 
                 // ACHIEVEMENTS REQUEST
                 HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
@@ -272,8 +306,6 @@ public class LoginActivity extends Activity {
                 }
                 success = true;
                 DataManager dm = App.getDataManager();
-                dm.setLocations(locations);
-                dm.setPeople(entries);
                 dm.setAchievements(achievements);
                 Log.d(TAG,"ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
 

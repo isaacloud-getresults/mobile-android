@@ -3,6 +3,7 @@ package getresultsapp.sointeractve.pl.getresultsapp.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * Data storage class for locations.
  */
 
-public class Location {
+public class Location implements Serializable {
 
     private String label;
     private int id;

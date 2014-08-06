@@ -26,8 +26,11 @@ public class DataManager {
     }
 
     public List<Person> getPeopleAtLocation (Location l) {
-        int id = l.getId();
-        return people.get(id);
+        if ( l != null) {
+            int id = l.getId();
+            return people.get(id);
+        }
+        else return null;
     }
 
     public void setLocations(List<Location> locations) {

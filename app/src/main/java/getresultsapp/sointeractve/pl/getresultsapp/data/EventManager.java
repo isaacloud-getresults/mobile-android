@@ -350,7 +350,7 @@ public class EventManager {
                 // search for new achievement
                 Achievement recentAchievement = null;
                 int i = 0;
-                while (recentAchievement == null) {
+                while (recentAchievement == null && i < newAchievements.size()) {
                     if (!actualAchievements.contains(newAchievements.get(i))) {
                         recentAchievement = newAchievements.get(i);
                     }
