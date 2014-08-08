@@ -11,6 +11,9 @@
     <string name="OK">OK</string>
     <string name="hello">Hello</string>
     <string name="loading">Loading...</string>
+    <string name="buttonLogoutFromGoogle">Logout from Google</string>
+    <string name="buttonRevokeAccess">Revoke Access</string>
+    <string name="buttonScan">Reconfigure application</string>
 
     <!-- RegisterActivity -->
     <string name="activity_register_text_hint_email">Email</string>

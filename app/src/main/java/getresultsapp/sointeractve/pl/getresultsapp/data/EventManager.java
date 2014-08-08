@@ -1,23 +1,34 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
+import android.app.NotificationManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
@@ -29,7 +40,9 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 public class EventManager {
 
     public static final String TAG = "EventManager";
-    Context context;
+    static Context context;
+    static int notificationId = 0;
+    static boolean internetConnection;
 
     public EventManager(){
         this.context = App.getInstance().getApplicationContext();
@@ -111,6 +124,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
+            generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.d(TAG, "EventLogin:");
             try {
                 JSONObject body = new JSONObject();
@@ -147,6 +161,7 @@ public class EventManager {
 
     private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
 
+
         String TAG = "EventGetNewLocation";
         Intent message = new Intent(Settings.broadcastIntent);
         HttpResponse response;
@@ -156,7 +171,6 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(Object... beaconId) {
-
             try {
                 int id = userData.getUserId();
                 HttpResponse response = App.getConnector().path("/cache/users/"+id).get();
@@ -216,7 +230,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
-
+            generateNotification("Left beacon range", "Outside location", "Meeting room");
             Log.d(TAG, "EventPostLeftBeacon");
             try {
                 JSONObject body = new JSONObject();
@@ -346,6 +360,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
+
             if (newAchievements.size() != actualAchievements.size()) {
                 // search for new achievement
                 Achievement recentAchievement = null;
@@ -365,5 +380,26 @@ public class EventManager {
             }
         }
     }
+
+    private static void generateNotification(String ticker, String title, String message){
+
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setTicker(ticker)
+                .setContentTitle(title)
+                .setContentIntent(intent)
+//                .setPriority(PRIORITY_HIGH) //private static final PRIORITY_HIGH = 5;
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(notificationId, mBuilder.build());
+        notificationId++;
+    }
+
 
 }
