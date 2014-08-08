@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -19,6 +21,9 @@ import com.estimote.sdk.Utils;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +53,8 @@ public class TrackService extends Service {
     Handler handler = new Handler();
     static HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
     Beacon lastBeacon;
+    Context context = App.getInstance().getApplicationContext();
+    static boolean internetConnection;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -57,6 +64,9 @@ public class TrackService extends Service {
 
     public void onCreate() {
         super.onCreate();
+        Thread thread = new Thread(new InternetRunnable());
+        thread.start();
+
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
@@ -94,7 +104,7 @@ public class TrackService extends Service {
         super.onDestroy();
         beaconManager.disconnect();
         Toast.makeText(this, "Services stopped", Toast.LENGTH_LONG).show();
-        if(lastBeacon != null) App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()) , Integer.toString(lastBeacon.getMinor()));
+        if(lastBeacon != null && internetConnection) App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()) , Integer.toString(lastBeacon.getMinor()));
     }
 
     public void runOnUiThread(Runnable runnable) {
@@ -140,7 +150,7 @@ public class TrackService extends Service {
             if(!(majors.contains(new String(b.getMacAddress())))) {
                 majors.add(new String(b.getMacAddress()));
                 Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
-                App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()) , Integer.toString(b.getMinor()));
+                if(internetConnection) App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
                 lastBeacon = b;
             }
 
@@ -152,7 +162,7 @@ public class TrackService extends Service {
             if(!(helper.contains(i))) {
                 majors.remove(i);
                 Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
-                App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()) , Integer.toString(tempBeacon.getMinor()));
+                if(internetConnection) App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()) , Integer.toString(tempBeacon.getMinor()));
             }
         }
     }
@@ -171,4 +181,43 @@ public class TrackService extends Service {
         notificationManger.notify(1, notification);
     }
     */
+
+    public class InternetRunnable implements Runnable {
+        public void run() {
+            while(true) {
+                internetConnection = hasActiveInternetConnection();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+
+                }
+                Log.d(TAG, "Connected: " + internetConnection);
+            }
+        }
+    }
+
+    public boolean hasActiveInternetConnection() {
+        if (isNetworkAvailable()) {
+            try {
+                HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+                urlc.setRequestProperty("User-Agent", "Test");
+                urlc.setRequestProperty("Connection", "close");
+                urlc.setConnectTimeout(1500);
+                urlc.connect();
+                return (urlc.getResponseCode() == 200);
+            } catch (IOException e) {
+
+            }
+        } else {
+//            Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
 }

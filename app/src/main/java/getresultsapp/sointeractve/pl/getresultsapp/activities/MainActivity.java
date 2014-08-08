@@ -65,13 +65,13 @@ public class MainActivity extends FragmentActivity implements
 
 
             // SEND LOGIN EVENT
-/*        App.getEventManager().postEventLogin();
+        App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
-        Toast.makeText(this, "Services started", Toast.LENGTH_LONG).show();   */
+        Toast.makeText(this, "Services started", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -98,5 +98,7 @@ public class MainActivity extends FragmentActivity implements
     public void onBackPressed() {
         moveTaskToBack(true);
     }
+
+
 
 }
