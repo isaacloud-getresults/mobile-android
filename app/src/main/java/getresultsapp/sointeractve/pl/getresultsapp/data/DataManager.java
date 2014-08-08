@@ -12,14 +12,13 @@ import java.util.List;
 
 public class DataManager {
 
-    SparseArray<List<Person>> people = new SparseArray<List<Person>>();
+    private SparseArray<List<Person>> people = new SparseArray<List<Person>>();
     private List<Location> locations;
+    private List<Achievement> achievements;
 
     public DataManager() {
         people = new SparseArray<List<Person>>();
         locations = new ArrayList<Location>();
-        // DEBUG MODE, TODO: NEED A SERVICE TO DOWNLOAD PEOPLE
-
     }
 
     public List<Location> getLocations() {
@@ -27,8 +26,11 @@ public class DataManager {
     }
 
     public List<Person> getPeopleAtLocation (Location l) {
-        int id = l.getId();
-        return people.get(id);
+        if ( l != null) {
+            int id = l.getId();
+            return people.get(id);
+        }
+        else return null;
     }
 
     public void setLocations(List<Location> locations) {
@@ -40,4 +42,11 @@ public class DataManager {
     }
 
 
+    public List<Achievement> getAchievements() {
+        return achievements;
+    }
+
+    public void setAchievements(List<Achievement> achievements) {
+        this.achievements = achievements;
+    }
 }

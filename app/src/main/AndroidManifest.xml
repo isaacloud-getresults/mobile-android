@@ -7,9 +7,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+=======
+    <uses-permission android:name="android.permission.VIBRATE"/>
+>>>>>>> master
 
     <application
         android:name=".data.App"
@@ -33,7 +37,8 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTop" >
         </activity>
         <activity
             android:name=".activities.RegisterActivity"

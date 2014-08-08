@@ -10,6 +10,7 @@ import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
@@ -26,11 +27,15 @@ import org.json.JSONObject;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.LoginData;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
+import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
@@ -448,7 +453,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
             List<Location> locations = new ArrayList<Location>();
             try {
-                //--- LOCATIONS REQUEST
+                // LOCATIONS REQUEST
                 HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
                 Log.d(TAG, response.toString());
                 // all locations from isa
@@ -456,25 +461,86 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 for(int i = 0; i < locationsArray.length();i++) {
                     JSONObject locJson = (JSONObject) locationsArray.get(i);
                     Location loc = new Location(locJson);
-                    entries.put(loc.getId() , new LinkedList<Person>());
-                    locations.add(loc);
-                }
-                entries.put(0, new LinkedList<Person>());
-
-                // USERS REQUEST
-                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").get();
-                Log.d(TAG, usersResponse.toString());
-                JSONArray usersArray = usersResponse.getJSONArray();
-                // for every user
-                for (int i = 0; i < usersArray.length(); i++) {
-                    JSONObject userJson = (JSONObject) usersArray.get(i);
-                    Person p = new Person(userJson);
-                    entries.get(p.getActualLocation()).add(p);
+                    if (loc.getId() != 1 &&  loc.getId() != 2) {
+                        entries.put(loc.getId(), new LinkedList<Person>());
+                        locations.add(loc);
+                    }
+                    if (loc.getId() == Integer.parseInt(Settings.nullRoomCounter)) {
+                        UserData userData = App.loadUserData();
+                        userData.setUserLocation(loc);
+                        App.saveUserData(userData);
+                    }
                 }
                 success = true;
+                DataManager dm = App.getDataManager();
+                dm.setLocations(locations);
 
-                App.getDataManager().setLocations(locations);
-                App.getDataManager().setPeople(entries);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            Log.d(TAG, "onPostExecute()");
+            if (success) {
+                new EventGetAchievements().execute();
+            } else {
+                Log.d(TAG, "NOT SUCCES");
+            }
+        }
+
+    }
+
+    // GET LOCATIONS
+    private class EventGetAchievements extends AsyncTask<Object, Object, Object> {
+
+        private static final String TAG = "EventGetLocations";
+        public boolean success = false;
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "onPreExecute()");
+        }
+
+
+        @Override
+        public Object doInBackground(Object... params) {
+            List<Achievement> achievements = new ArrayList<Achievement>();
+            try {
+
+                // ACHIEVEMENTS REQUEST
+                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                Log.d(TAG, "ACTUAL USER ID IS from object: " + userData.getUserId());
+                HttpResponse responseUser = App
+                        .getConnector()
+                        .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
+                JSONObject achievementsJson = responseUser.getJSONObject();
+                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                for (int i = 0; i < arrayUser.length(); i++) {
+                    JSONObject json = (JSONObject) arrayUser.get(i);
+                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
+                }
+
+                HttpResponse responseGeneral = App.getConnector()
+                        .path("/cache/achievements").withLimit(1000).get();
+                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                Log.d("TEST", arrayGeneral.toString(3));
+                for (int i = 0; i < arrayGeneral.length(); i++) {
+                    JSONObject json = (JSONObject) arrayGeneral.get(i);
+                    if (idMap.containsKey(json.getInt("id"))) {
+                        achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
+                    }
+                }
+                success = true;
+                DataManager dm = App.getDataManager();
+                dm.setAchievements(achievements);
+                Log.d(TAG,"ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -493,6 +559,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (success) {
                 Log.d(TAG, "NOT SUCCES");
                 runMainActivity();
+
+                App.getEventManager().postEventLogin();
+
+                Intent i = new Intent(getApplicationContext(), TrackService.class);
+                getApplicationContext().startService(i);
+                Intent j = new Intent(getApplicationContext(), DataService.class);
+                getApplicationContext().startService(j);
+                Toast.makeText(getApplicationContext(), "Services started", Toast.LENGTH_LONG).show();
             } else {
                 Log.d(TAG, "NOT SUCCES");
             }
@@ -508,5 +582,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         startActivity(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "onDestroy()", Toast.LENGTH_LONG).show();
+    }
 }
 

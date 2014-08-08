@@ -14,9 +14,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.widget.Toast;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
 import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
@@ -37,7 +39,6 @@ public class MainActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -62,19 +63,21 @@ public class MainActivity extends FragmentActivity implements
                     }
                 });
 
-        // SEND LOGIN EVENT
-        App.getEventManager().postEventLogin();
 
+            // SEND LOGIN EVENT
+/*        App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
+        Toast.makeText(this, "Services started", Toast.LENGTH_LONG).show();   */
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Toast.makeText(this, "onResume()", Toast.LENGTH_LONG).show();
     }
 
     @Override

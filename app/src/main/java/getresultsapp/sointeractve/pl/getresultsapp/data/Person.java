@@ -25,14 +25,16 @@ public class Person {
         this.setFirstName(json.getString("firstName"));
         this.setLastName(json.getString("lastName"));
         this.setId(json.getInt("id"));
-        this.setActualLocation(0);
+        this.setActualLocation(3);
         // getting user location
         JSONArray array = json.getJSONArray("counterValues");
-        for (int j = 0; j<array.length(); j++ ) {
-            JSONObject counter = (JSONObject) array.get(j);
-            // get user location counter
-            if (counter.getString("counter").equals(Settings.locationCounter)) {
-                this.actualLocation = Integer.parseInt(counter.getString("value"));
+        if (array.length() != 0) {
+            for (int j = 0; j < array.length(); j++) {
+                JSONObject counter = (JSONObject) array.get(j);
+                // get user location counter
+                if (counter.getString("counter").equals(Settings.locationCounter)) {
+                    this.actualLocation = Integer.parseInt(counter.getString("value"));
+                }
             }
         }
     }
