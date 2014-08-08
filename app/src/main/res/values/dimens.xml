@@ -13,6 +13,7 @@
     <!-- Card -->
     <dimen name="card_base_empty_height">96dp</dimen>
     <dimen name="card_status_height">120dp</dimen>
+    <dimen name="card_profile_height">200dp</dimen>
     <dimen name="card_background_default_radius">2dip</dimen>
 
     <!-- Main -->

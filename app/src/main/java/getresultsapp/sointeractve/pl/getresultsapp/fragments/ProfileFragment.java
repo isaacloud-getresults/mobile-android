@@ -37,6 +37,7 @@ import java.util.List;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.AchievementCard;
+import getresultsapp.sointeractve.pl.getresultsapp.cards.ProfileCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.StatusCard;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
@@ -56,6 +57,8 @@ public class ProfileFragment extends Fragment {
     ArrayList<Card> achievementCards = new ArrayList<Card>();
     Context context;
     CardGridArrayAdapter cardGridAdapter;
+    ProfileCard profileCard;
+    CardView cardView;
 
     private BroadcastReceiver receiverProfile = new BroadcastReceiver() {
 
@@ -82,6 +85,7 @@ public class ProfileFragment extends Fragment {
                 new IntentFilter(Settings.broadcastIntentNewAchievement));
         context = this.getActivity();
         initAchievementCards();
+        profileCard = new ProfileCard(context,R.layout.profile_card_content);
         cardGridAdapter = new CardGridArrayAdapter(context,achievementCards);
     }
 
@@ -90,11 +94,9 @@ public class ProfileFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         context = getActivity();
-        // MAIN CARD INIT
-        Card card = new Card(context);
-        CardView cardView = (CardView) view.findViewById(R.id.cardProfile);
-        card.setShadow(false);
-        cardView.setCard(card);
+        // PROFILE CARD INIT
+        cardView = (CardView) view.findViewById(R.id.cardProfile);
+        cardView.setCard(this.profileCard);
         // ACHIEVEMENTS GRID INIT
         CardGridView gridView = (CardGridView) view.findViewById(R.id.achievementsGrid);
         if (gridView!=null){
