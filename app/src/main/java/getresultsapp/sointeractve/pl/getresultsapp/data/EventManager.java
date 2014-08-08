@@ -346,7 +346,6 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
-            generateNotification("You unlocked new achievement!", "Hello", "World");
             if (newAchievements.size() != actualAchievements.size()) {
                 // search for new achievement
                 Achievement recentAchievement = null;
@@ -365,26 +364,6 @@ public class EventManager {
                 Log.d(TAG, "No new achievements.");
             }
         }
-    }
-
-    private static void generateNotification(String ticker, String title, String message) {
-
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentIntent(intent)
-                .setTicker(ticker)
-                .setContentTitle(title)
-//                .setPriority(PRIORITY_HIGH) //private static final PRIORITY_HIGH = 5;
-                .setContentText(message)
-                .setAutoCancel(true);
-//                .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS);
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(0, mBuilder.build());
-
     }
 
 }

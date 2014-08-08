@@ -1,11 +1,20 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
@@ -19,6 +28,7 @@ import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -34,6 +44,7 @@ public class RegisterActivity extends Activity {
     private Context context;
     private ProgressDialog dialog;
     private EditText textEmail, textPassword, textPasswordRepeat,textFirstName, textLastName;
+    private UserData userData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,14 +116,6 @@ public class RegisterActivity extends Activity {
         finish();
     }
 
-    /**
-     * This AsyncTask is used to communicate with the API. It posts a request to
-     * create a new user and checks for errors. After a successful registration
-     * a new UserActivity is started.
-     *
-     * @author Mateusz Renes
-     *
-     */
     private class RegisterTask extends AsyncTask<Object, Object, Object> {
 
         boolean success = false;
@@ -139,10 +142,11 @@ public class RegisterActivity extends Activity {
                 jsonBody.put("firstName", RegisterActivity.this.textFirstName.getEditableText().toString());
                 jsonBody.put("lastName", RegisterActivity.this.textLastName.getEditableText().toString());
                 jsonBody.put("status", 1);
+
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-            UserData userData = App.loadUserData();
+            userData = App.loadUserData();
             HttpResponse response;
             // send request and retrieve response
             try {
@@ -170,13 +174,112 @@ public class RegisterActivity extends Activity {
             Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
-                Intent intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
+                new EventGetLocations().execute();
             } else {
                // error login activity here;
             }
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();
+        }
+
+    }
+
+    // GET LOCATIONS
+    private class EventGetLocations extends AsyncTask<Object, Object, Object> {
+
+        private static final String TAG = "EventGetLocations";
+        public boolean success = false;
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "onPreExecute()");
+            dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
+        }
+
+
+        @Override
+        public Object doInBackground(Object... params) {
+            SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+            List<Location> locations = new ArrayList<Location>();
+            List<Achievement> achievements = new ArrayList<Achievement>();
+            locations.add(new Location ("Nowhere", 0));
+            userData = App.loadUserData();
+            try {
+                // LOCATIONS REQUEST
+                HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
+                Log.d(TAG, response.toString());
+                // all locations from isa
+                JSONArray locationsArray = response.getJSONArray();
+                for(int i = 0; i < locationsArray.length();i++) {
+                    JSONObject locJson = (JSONObject) locationsArray.get(i);
+                    Location loc = new Location(locJson);
+                    if (loc.getId() != 1 &&  loc.getId() != 2) {
+                        entries.put(loc.getId(), new LinkedList<Person>());
+                        locations.add(loc);
+                    }
+                }
+
+
+                // USERS REQUEST
+                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").withLimit(0).get();
+                Log.d(TAG, usersResponse.toString());
+                JSONArray usersArray = usersResponse.getJSONArray();
+                // for every user
+                for (int i = 0; i < usersArray.length(); i++) {
+                    JSONObject userJson = (JSONObject) usersArray.get(i);
+                    Person p = new Person(userJson);
+                    entries.get(p.getActualLocation()).add(p);
+                }
+
+                // ACHIEVEMENTS REQUEST
+                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                HttpResponse responseUser = App
+                        .getConnector()
+                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
+                JSONObject achievementsJson = responseUser.getJSONObject();
+                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                for (int i = 0; i < arrayUser.length(); i++) {
+                    JSONObject json = (JSONObject) arrayUser.get(i);
+                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
+                }
+
+                HttpResponse responseGeneral = App.getConnector()
+                        .path("/cache/achievements").withLimit(1000).get();
+                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                Log.d("TEST", arrayGeneral.toString(3));
+                for (int i = 0; i < arrayGeneral.length(); i++) {
+                    JSONObject json = (JSONObject) arrayGeneral.get(i);
+                    if (idMap.containsKey(json.getInt("id"))) {
+                        achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
+                    }
+                }
+                success = true;
+                DataManager dm = App.getDataManager();
+                dm.setLocations(locations);
+                dm.setPeople(entries);
+                dm.setAchievements(achievements);
+                Log.d(TAG,"ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+            Log.d(TAG, "onPostExecute()");
+            dialog.dismiss();
+            if (success) {
+                Intent intent = new Intent(context, MainActivity.class);
+                startActivity(intent);
+            } else {
+                Log.d(TAG, "NOT SUCCES");
+            }
         }
 
     }

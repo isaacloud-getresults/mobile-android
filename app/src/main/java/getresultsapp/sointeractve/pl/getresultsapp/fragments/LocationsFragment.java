@@ -23,10 +23,14 @@ import android.widget.TextView;
 import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.cards.StatusCard;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
+import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.CardExpand;
+import it.gmariotti.cardslib.library.view.CardView;
 
 
 public class LocationsFragment extends Fragment {
@@ -34,15 +38,23 @@ public class LocationsFragment extends Fragment {
     ExpandableListAdapter listAdapter;
     ExpandableListView expandableListView;
     List<Location> locationsArray;
+    StatusCard statusCard;
+    CardView cardView;
     Context context;
+
     private static final String TAG = "LocationsFragment";
     private BroadcastReceiver receiverLocations = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            // intent can contain anydata
             Log.d(TAG,"onReceive called");
-            listAdapter.notifyDataSetChanged();
+            if ( listAdapter != null) {
+                listAdapter.notifyDataSetChanged();
+            }
+            statusCard.initLocation(App.loadUserData().getUserLocation());
+            statusCard.setOnClickListener(null);
+            statusCard.setClickable(false);
+            cardView.refreshCard(statusCard);
         }
     };
 
@@ -63,6 +75,8 @@ public class LocationsFragment extends Fragment {
         for (Location l: locationsArray) {
             Log.d(TAG,"Loading: " + l.getLabel());
         }
+        statusCard = new StatusCard(context, R.layout.status_card_content);
+        statusCard.initLocation(App.loadUserData().getUserLocation());
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.broadcastIntent));
@@ -73,6 +87,8 @@ public class LocationsFragment extends Fragment {
         Log.d(TAG,"onCreateView");
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
         context = getActivity();
+        cardView = (CardView) view.findViewById(R.id.cardStatus);
+        cardView.setCard(this.statusCard);
         expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setAdapter(listAdapter);
         return view;
@@ -167,7 +183,7 @@ public class LocationsFragment extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
-            String headerStats = "People here: " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
+            //String headerStats = "People here: " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -179,7 +195,7 @@ public class LocationsFragment extends Fragment {
                     .findViewById(R.id.lblListHeaderVisits);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
-            lblListHeaderVisits.setText(headerStats);
+            //lblListHeaderVisits.setText(headerStats);
             return convertView;
         }
 
