@@ -54,6 +54,10 @@ public class App extends Application {
         return fileManager.loadLoginData(obj);
     }
 
+    public static String loadConfigData() { return fileManager.loadConfigData(obj); }
+
+    public static void saveConfigData(String data) { fileManager.saveConfigData(data, obj); }
+
     public static App getInstance() {
         return obj;
     }

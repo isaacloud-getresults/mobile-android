@@ -47,6 +47,7 @@ public class TrackService extends Service {
     static HashMap<String, String> x = new HashMap<String, String>();
     Handler handler = new Handler();
     static HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
+    Beacon lastBeacon;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -92,6 +93,8 @@ public class TrackService extends Service {
     public void onDestroy() {
         super.onDestroy();
         beaconManager.disconnect();
+        Toast.makeText(this, "Services stopped", Toast.LENGTH_LONG).show();
+        if(lastBeacon != null) App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()) , Integer.toString(lastBeacon.getMinor()));
     }
 
     public void runOnUiThread(Runnable runnable) {
@@ -138,6 +141,7 @@ public class TrackService extends Service {
                 majors.add(new String(b.getMacAddress()));
                 Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                 App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()) , Integer.toString(b.getMinor()));
+                lastBeacon = b;
             }
 
         }

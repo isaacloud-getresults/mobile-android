@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.util.StringTokenizer;
 
 import android.content.Context;
+
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 
 /**
  * This is a helper class for saving and loading files from the application
@@ -22,6 +25,7 @@ public class FileManager {
 
     private static final String userDataFileName = "user_data.dat";
     private static final String loginDataFileName = "login_data.dat";
+    private static final String configDataFileName = "config_data.dat";
 
     public UserData loadUserData(App app) {
         UserData data = null;
@@ -99,6 +103,48 @@ public class FileManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String loadConfigData(App app) {
+        String data = null;
+        //Check if the file exists. If not, create a new one.
+        File checkFile = new File(app.getFilesDir(), configDataFileName);
+        if (!checkFile.exists()) {
+            saveConfigData(new String(), app);
+        }
+        //load the file
+        try {
+            FileInputStream fis = app.openFileInput(configDataFileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            data = (String) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (StreamCorruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public void saveConfigData(String data, App app) {
+        //save the file
+        try {
+            FileOutputStream fos = app.openFileOutput(configDataFileName,
+                    Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(data);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        StringTokenizer tokenizer = new StringTokenizer((data), "/");
+//        Settings.instanceId = (String) tokenizer.nextElement();
+//        Settings.appSecret = (String) tokenizer.nextElement();
     }
 
     public void resetUserData(App app) {
