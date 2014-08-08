@@ -27,6 +27,8 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.LoginData;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
+import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
@@ -261,6 +263,14 @@ public class LoginActivity extends Activity {
             dialog.dismiss();
             if (success) {
                 runMainActivity();
+
+                App.getEventManager().postEventLogin();
+
+                Intent i = new Intent(getApplicationContext(), TrackService.class);
+                getApplicationContext().startService(i);
+                Intent j = new Intent(getApplicationContext(), DataService.class);
+                getApplicationContext().startService(j);
+                Toast.makeText(getApplicationContext(), "Services started", Toast.LENGTH_LONG).show();
             } else {
                 Log.d(TAG, "NOT SUCCES");
             }
@@ -274,4 +284,9 @@ public class LoginActivity extends Activity {
         startActivity(intent);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "onDestroy()", Toast.LENGTH_LONG).show();
+    }
 }

@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.widget.Toast;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
@@ -62,19 +63,21 @@ public class MainActivity extends FragmentActivity implements
                     }
                 });
 
-        // SEND LOGIN EVENT
-        App.getEventManager().postEventLogin();
 
+            // SEND LOGIN EVENT
+/*        App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
+        Toast.makeText(this, "Services started", Toast.LENGTH_LONG).show();   */
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Toast.makeText(this, "onResume()", Toast.LENGTH_LONG).show();
     }
 
     @Override
