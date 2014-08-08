@@ -21,4 +21,78 @@
 
     </style>
 
+    <!-- Style for Content ******************************************************-->
+
+    <!--Style for Content View-->
+    <style name="card.content_outer_layout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:minHeight">@dimen/card_base_empty_height</item>
+        <item name="android:layout_marginTop">@dimen/card_content_outer_view_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/card_content_outer_view_margin_bottom</item>
+        <item name="android:layout_marginLeft">@dimen/card_content_outer_view_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/card_content_outer_view_margin_right</item>
+    </style>
+
+    <!--Style for simple title inner main view-->
+    <style name="card.base_simple_title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_gravity">left|center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/card_main_simple_title_margin_left</item>
+        <item name="android:layout_marginTop">@dimen/card_main_simple_title_margin_top</item>
+    </style>
+
+    <!-- CARDS -->
+
+    <!-- Style for Main Layout ****************************************-->
+
+    <!-- Style for Main Layout-->
+    <style name="card.main_layout">
+        <item name="android:background">@drawable/card_selector</item>
+        <item name="android:layout_marginTop">@dimen/card_main_layout_view_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/card_main_layout_view_margin_bottom</item>
+        <item name="android:layout_marginLeft">@dimen/card_main_layout_view_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/card_main_layout_view_margin_right</item>
+    </style>
+
+    <!-- Style for Main Layout kitkat-->
+    <style name="card.main_layout.kitkat">
+        <item name="android:background">@drawable/card_kitkat_selector</item>
+    </style>
+
+    <!-- Style for Main Layout with foreground selector-->
+    <style name="card.main_layout_foreground">
+        <item name="android:background">@drawable/card_background</item>
+        <item name="android:foreground">@drawable/card_foreground_selector</item>
+        <item name="android:layout_marginTop">@dimen/card_main_layout_view_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/card_main_layout_view_margin_bottom</item>
+        <item name="android:layout_marginLeft">@dimen/card_main_layout_view_margin_left</item>
+        <item name="android:layout_marginRight">@dimen/card_main_layout_view_margin_right</item>
+    </style>
+
+    <!-- Style for Main Layout with foreground selector kitkat-->
+    <style name="card.main_layout_foreground.kitkat">
+        <item name="android:foreground">@drawable/card_foreground_kitkat_selector</item>
+    </style>
+
+
+    <!-- Style for Hidden Expand Layout ****************************************-->
+
+    <style name="card.main_contentExpand">
+        <item name="android:background">@color/card_backgroundExpand</item>
+        <item name="android:padding">@dimen/card_expand_layout_padding</item>
+    </style>
+
+
+    <!--Style for simple title expand/collapse inner view-->
+    <style name="card.expand_simple_title">
+        <item name="android:layout_gravity">left|center_vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">@dimen/card_expand_simple_title_text_size</item>
+        <item name="android:paddingLeft">@dimen/card_expand_simple_title_paddingLeft</item>
+        <item name="android:paddingRight">@dimen/card_expand_simple_title_paddingRight</item>
+        <item name="android:textColor">@color/card_expand_title_color</item>
+    </style>
+
+
+
 </resources>

@@ -149,7 +149,6 @@ public class TrackService extends Service {
                 majors.remove(i);
                 Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                 App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()) , Integer.toString(tempBeacon.getMinor()));
-
             }
         }
     }

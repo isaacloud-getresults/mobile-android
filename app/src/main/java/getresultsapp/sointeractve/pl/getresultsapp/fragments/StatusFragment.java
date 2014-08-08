@@ -26,6 +26,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 public class StatusFragment extends Fragment {
 
     TextView textLocation;
+    TextView textVisits;
     Context context;
 
     private OnFragmentInteractionListener mListener;
@@ -34,9 +35,13 @@ public class StatusFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            // intent can contain anydata
             Log.d(TAG, "onReceive called");
-            updateStatus();
+            int visits = 0;
+            if (App.loadUserData().getUserLocationId() == 4) {
+                visits = App.loadUserData().getLocationVisits();
+            }
+
+            updateStatus(visits);
         }
     };
 
@@ -64,9 +69,6 @@ public class StatusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_status, container, false);
-        TextView textHey = (TextView) view.findViewById(R.id.textHey);
-        textLocation = (TextView) view.findViewById(R.id.textLocation);
-        textHey.setText("Hey " + App.loadUserData().getFirstName() + ", " + "you are at:");
         return view;
     }
 
@@ -88,24 +90,13 @@ public class StatusFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
 
-    public void updateStatus() {
+    public void updateStatus(int stats) {
 
-        textLocation.setText(App.loadUserData().getUserLocation());
     }
 
 

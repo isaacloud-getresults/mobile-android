@@ -39,7 +39,7 @@
                 android:inputType="textPersonName"
                 android:id="@+id/editEmail"
                 android:layout_toRightOf="@id/textHello"
-                android:text="getresultsdev@gmail.com" />
+                android:text="getresults@gmail.com" />
 
             <TextView
                 android:layout_width="@dimen/login_text_width"
