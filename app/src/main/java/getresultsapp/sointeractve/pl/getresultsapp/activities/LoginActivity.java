@@ -95,6 +95,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private SignInButton buttonSignIn;
     private Button buttonScan;
     private Button btnRevokeAccess;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

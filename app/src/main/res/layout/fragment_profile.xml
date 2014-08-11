@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment">
+    tools:context="getresultsapp.sointeractve.pl.getresultsapp.fragments.AchievementsFragment">
 
     <it.gmariotti.cardslib.library.view.CardView
         android:id="@+id/cardProfile"
@@ -13,20 +13,6 @@
         android:layout_marginRight="12dp"
         android:layout_marginTop="12dp"
         />
-
-    <it.gmariotti.cardslib.library.view.CardGridView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:columnWidth="190dp"
-        android:numColumns="3"
-        android:verticalSpacing="3dp"
-        android:horizontalSpacing="2dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        android:id="@+id/achievementsGrid"/>
 
 
 

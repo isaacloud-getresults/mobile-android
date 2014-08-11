@@ -2,10 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".LoginActivity">
 
     <LinearLayout
@@ -17,93 +13,71 @@
         android:orientation="vertical"
         android:id="@+id/linearLayout">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="-3dp"
-            android:paddingLeft="-2dp"
-            android:paddingRight="1dp"
-            android:paddingTop="-2dp" >
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:background="@drawable/login_background">
 
-            <TextView
-                android:layout_width="@dimen/login_text_width"
-                android:layout_height="@dimen/login_items_height"
-                android:text="Your email:"
-                style="@style/labelStyle"
-                android:id="@+id/textHello" />
 
             <EditText
-                android:layout_width="@dimen/login_edit_width"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/login_items_height"
                 style="@style/editStyle"
+                android:layout_marginTop="30dp"
                 android:inputType="textPersonName"
                 android:id="@+id/editEmail"
-                android:layout_toRightOf="@id/textHello"
                 android:text="getresults@gmail.com" />
 
-            <TextView
-                android:layout_width="@dimen/login_text_width"
-                android:layout_height="@dimen/login_items_height"
-                android:text="Password:"
-                style="@style/labelStyle"
-                android:id="@+id/textHey"
-                android:layout_below="@+id/editEmail" />
 
             <EditText
-                android:layout_width="@dimen/login_edit_width"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/login_items_height"
                 style="@style/editStyle"
+                android:layout_marginTop="5dp"
                 android:inputType="textEmailAddress"
                 android:id="@+id/editPassword"
-                android:layout_below="@+id/editEmail"
-                android:layout_toRightOf="@+id/textHey"
                 android:text="Google@1998"
                 android:password="true" />
 
+         </LinearLayout>
+
+         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
             <Button
-                android:layout_width="@dimen/login_button_width"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/login_button_height"
+                style="@style/buttonStyle"
                 android:text="@string/buttonLogIn"
-                android:background="#006699"
-                android:id="@+id/buttonLogIn"
-                android:layout_below="@+id/textHey" />
+                android:id="@+id/buttonLogIn"/>
 
             <Button
-                android:layout_width="@dimen/login_button_width"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/login_button_height"
+                style="@style/buttonStyle"
                 android:text="@string/buttonNewUser"
-                android:id="@+id/buttonNewUser"
-                android:layout_below="@+id/buttonLogIn"/>
+                android:id="@+id/buttonNewUser"/>
 
             <Button
-                android:layout_width="@dimen/login_button_width"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/login_button_height"
+                style="@style/buttonStyle"
                 android:text="@string/buttonScan"
-                android:id="@+id/buttonScan"
-                android:layout_below="@+id/buttonNewUser"/>
+                android:id="@+id/buttonScan"/>
+
+             <com.google.android.gms.common.SignInButton
+                 android:layout_width="match_parent"
+                 android:layout_height="@dimen/login_button_height"
+                 android:id="@+id/buttonGoogle"/>
 
 
-        </RelativeLayout>
+
+         </LinearLayout>
 
     </LinearLayout>
-
-    <com.google.android.gms.common.SignInButton
-        android:layout_width="@dimen/login_button_width"
-        android:layout_height="@dimen/login_button_height"
-        android:id="@+id/buttonGoogle"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/linearLayout"
-        android:layout_alignStart="@+id/linearLayout"
-        android:layout_marginBottom="38dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="25dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign up with Google+ account"
-        android:id="@+id/textView"
-        android:layout_above="@+id/buttonGoogle"
-        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

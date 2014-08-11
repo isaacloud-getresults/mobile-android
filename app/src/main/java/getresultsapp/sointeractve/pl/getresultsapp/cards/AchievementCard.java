@@ -20,6 +20,7 @@ public class AchievementCard extends Card {
         super(context);
         this.achievementData = a;
         this.setTitle(a.getLabel());
+        this.setShadow(false);
     }
 
     public Achievement getAchievementData() {

@@ -6,7 +6,7 @@
     android:layout_height="60dp"
     android:layout_marginRight="20dp"
     android:layout_marginLeft="20dp"
-    android:background="#282828">
+    android:background="@color/color_theme_gray">
 
     <ImageView
         android:id="@+id/locationImage"
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
                 android:textSize="20sp"
-                android:textColor="#FFFFFF" />
+                android:textColor="@color/color_theme_text_light" />
 
             <TextView
                 android:id="@+id/lblListHeaderVisits"

@@ -54,9 +54,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
-    ArrayList<Card> achievementCards = new ArrayList<Card>();
     Context context;
-    CardGridArrayAdapter cardGridAdapter;
     ProfileCard profileCard;
     CardView cardView;
 
@@ -65,10 +63,6 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG,"onReceive called");
-            Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
-            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(250);
-            initAchievementCards();
 
         }
     };
@@ -81,12 +75,10 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
-                new IntentFilter(Settings.broadcastIntentNewAchievement));
         context = this.getActivity();
-        initAchievementCards();
         profileCard = new ProfileCard(context,R.layout.profile_card_content);
-        cardGridAdapter = new CardGridArrayAdapter(context,achievementCards);
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
+                new IntentFilter(Settings.broadcastIntent));
     }
 
     @Override
@@ -97,11 +89,6 @@ public class ProfileFragment extends Fragment {
         // PROFILE CARD INIT
         cardView = (CardView) view.findViewById(R.id.cardProfile);
         cardView.setCard(this.profileCard);
-        // ACHIEVEMENTS GRID INIT
-        CardGridView gridView = (CardGridView) view.findViewById(R.id.achievementsGrid);
-        if (gridView!=null){
-            gridView.setAdapter(cardGridAdapter);
-        }
         return view;
     }
 
@@ -111,18 +98,6 @@ public class ProfileFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
     }
-
-    public void initAchievementCards () {
-        for ( Achievement a: App.getDataManager().getAchievements()) {
-            //Create a Card
-            Card card = new AchievementCard(context, a);
-            achievementCards.add(card);
-        }
-    }
-
-
-
-
 
 
 
