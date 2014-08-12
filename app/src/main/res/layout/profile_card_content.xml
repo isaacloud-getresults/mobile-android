@@ -14,13 +14,14 @@
         android:layout_height="wrap_content"
         android:text="{fa-user}"
         android:textSize="60dp"
-        android:textColor="@color/color_theme_gray_light"
+        android:textColor="@color/color_theme_gray"
         android:gravity="center"/>
 
     <TextView
             android:id="@+id/profile_card_text_name"
             android:textSize="24sp"
             android:textAllCaps="true"
+            android:textColor="@color/color_theme_text_dark"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -46,7 +47,7 @@
                 android:id="@+id/profile_card_text_level"
                 android:textSize="18sp"
                 android:layout_marginTop="5dp"
-                android:textColor="@color/color_theme_gray"
+                android:textColor="@color/color_theme_text_dark"
                 android:text="{fa-user}  Level:"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
@@ -75,7 +76,7 @@
                 android:layout_marginTop="5dp"
                 android:id="@+id/profile_card_text_score"
                 android:textSize="18sp"
-                android:textColor="@color/color_theme_gray"
+                android:textColor="@color/color_theme_text_dark"
                 android:text="{fa-star}  Total score:"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
@@ -106,7 +107,7 @@
                 android:layout_marginTop="5dp"
                 android:id="@+id/profile_card_text_achievements"
                 android:textSize="18sp"
-                android:textColor="@color/color_theme_gray"
+                android:textColor="@color/color_theme_text_dark"
                 android:text="{fa-trophy}  Achievements gained:"
                 android:layout_alignParentLeft="true"/>
 

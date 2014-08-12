@@ -5,7 +5,7 @@
     android:shape="oval">
 
     <solid
-        android:color="#BBBBBB"/>
+        android:color="@color/color_theme_gray_light"/>
 
     <size
         android:width="40dp"

@@ -79,6 +79,7 @@ public class LocationsFragment extends Fragment {
             Log.d(TAG,"Loading: " + l.getLabel());
         }
         statusCard = new StatusCard(context, R.layout.status_card_content);
+        statusCard.setBackgroundResourceId(R.drawable.status_card_background);
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.broadcastIntent));
@@ -193,7 +194,7 @@ public class LocationsFragment extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
-            String headerStats = "People here: " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
+            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size() + " " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -203,14 +204,12 @@ public class LocationsFragment extends Fragment {
             TextView lblListHeader = (TextView) convertView
                     .findViewById(R.id.lblListHeader);
             TextView lblListHeaderVisits = (TextView) convertView
-                    .findViewById(R.id.lblListHeaderVisits);
+                    .findViewById(R.id.locationStatsCounter);
             String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
             indicator.setText(state);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
-
-            //lblListHeaderVisits.setText(headerStats);
             return convertView;
         }
 

@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="60dp"
     android:layout_marginRight="20dp"
+    android:layout_marginTop="10dp"
     android:layout_marginLeft="20dp"
-    android:background="@color/color_theme_gray">
+    android:background="@drawable/list_group_background">
 
     <ImageView
         android:id="@+id/locationImage"
@@ -25,21 +26,18 @@
 
             <TextView
                 android:id="@+id/lblListHeader"
-                android:layout_marginTop="10dp"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
                 android:textSize="20sp"
                 android:textColor="@color/color_theme_text_light" />
 
-            <TextView
-                android:id="@+id/lblListHeaderVisits"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-                android:textSize="15sp"
-                android:textColor="#FFFFFF" />
-
+        <IconTextView
+            android:id="@+id/locationStatsCounter"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textColor="@color/color_theme_text_light"/>
 
     </LinearLayout>
 

@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="55dip"
     android:orientation="vertical"
-    android:background="@color/color_theme_gray_light">
+    android:layout_margin="5dp"
+    android:background="@drawable/list_item_background">
 
     <TextView
         android:id="@+id/lblListItem"
