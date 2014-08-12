@@ -3,6 +3,7 @@ package getresultsapp.sointeractve.pl.getresultsapp.activities;
 import android.app.ActionBar;
 
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -18,6 +19,9 @@ import com.joanzapata.android.iconify.Iconify;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
+import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
 
 
 public class MainActivity extends FragmentActivity implements
