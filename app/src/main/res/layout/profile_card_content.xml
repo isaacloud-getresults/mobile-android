@@ -6,12 +6,16 @@
     android:orientation="vertical"
     android:gravity="center">
 
-    <ImageView
+    <IconTextView
         android:id="@+id/userImage"
         android:background="@drawable/avatar"
         android:layout_margin="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="{fa-user}"
+        android:textSize="60dp"
+        android:textColor="@color/color_theme_gray_light"
+        android:gravity="center"/>
 
     <TextView
             android:id="@+id/profile_card_text_name"
@@ -39,23 +43,11 @@
             android:layout_margin="10dp">
 
             <IconTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/iconLevel"
-                android:layout_marginTop="5dp"
-                android:text="{fa-user}"
-                android:textSize="20dp"
-                android:textColor="@color/color_theme_gray"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="15dp"/>
-
-            <TextView
                 android:id="@+id/profile_card_text_level"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"
                 android:textColor="@color/color_theme_gray"
-                android:text="Level:"
-                android:layout_toRightOf="@+id/iconLevel"
+                android:text="{fa-user}  Level:"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"/>
@@ -63,10 +55,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/profile_card_text_level"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/count_background"
-                android:id="@+id/counterLevel"/>
+                android:id="@+id/counterLevel"
+                android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
         <View
@@ -78,24 +70,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp">
 
-            <IconTextView
-                android:layout_marginTop="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/iconScore"
-                android:text="{fa-star}"
-                android:textSize="20dp"
-                android:textColor="@color/color_theme_gray"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="15dp"/>
 
-            <TextView
+            <IconTextView
                 android:layout_marginTop="5dp"
                 android:id="@+id/profile_card_text_score"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textColor="@color/color_theme_gray"
-                android:text="Total score:"
-                android:layout_toRightOf="@+id/iconScore"
+                android:text="{fa-star}  Total score:"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"/>
@@ -103,10 +84,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/profile_card_text_score"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/count_background"
-                android:id="@+id/counterScore"/>
+                android:id="@+id/counterScore"
+                android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
         <View
@@ -119,34 +100,23 @@
             android:layout_margin="10dp">
 
             <IconTextView
-                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/iconAchievements"
-                android:text="{fa-trophy}"
-                android:textSize="20dp"
-                android:textColor="@color/color_theme_gray"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="15dp"/>
-
-            <TextView
+                android:layout_gravity="left"
                 android:layout_marginTop="5dp"
                 android:id="@+id/profile_card_text_achievements"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textColor="@color/color_theme_gray"
-                android:text="Achievements gained:"
-                android:layout_toRightOf="@+id/iconAchievements"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"/>
+                android:text="{fa-trophy}  Achievements gained:"
+                android:layout_alignParentLeft="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/profile_card_text_achievements"
+                android:layout_marginRight="5dp"
                 android:background="@drawable/count_background"
-                android:id="@+id/counterAchievements"/>
+                android:id="@+id/counterAchievements"
+                android:layout_alignParentRight="true"/>
 
         </RelativeLayout>
 
