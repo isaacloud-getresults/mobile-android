@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.IconTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -190,13 +191,13 @@ public class LocationsFragment extends Fragment {
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_group, null);
             }
-            ImageView indicator = (ImageView) convertView.findViewById(R.id.indicator);
+            IconTextView indicator = (IconTextView) convertView.findViewById(R.id.indicator);
             TextView lblListHeader = (TextView) convertView
                     .findViewById(R.id.lblListHeader);
             TextView lblListHeaderVisits = (TextView) convertView
                     .findViewById(R.id.lblListHeaderVisits);
-            int imageResourceId = isExpanded ? android.R.drawable.arrow_up_float : android.R.drawable.arrow_down_float;
-            indicator.setImageResource(imageResourceId);
+            String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
+            indicator.setText(state);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);

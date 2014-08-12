@@ -8,7 +8,6 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
@@ -17,22 +16,18 @@ import it.gmariotti.cardslib.library.view.CardView;
 /**
  * Created by mac on 06.08.2014.
  */
-public class ProfileCard extends Card {
+public class SettingsCard extends Card {
 
-    TextView name;
-
-    public ProfileCard(Context context, int layout) {
-        super(context, layout);
+    public SettingsCard(Context context) {
+        super(context, R.layout.settings_card_content);
         this.setShadow(false);
     }
 
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
         //Example on the card
-
-        this.name = (TextView) view.findViewById(R.id.profile_card_text_name);
-        this.name.setText(App.loadUserData().getName());
-
+        ViewToClickToExpand viewToClickToExpand = ViewToClickToExpand.builder().setupView(getCardView());
+        setViewToClickToExpand(viewToClickToExpand);
 
     }
 

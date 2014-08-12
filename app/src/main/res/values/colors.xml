@@ -27,7 +27,7 @@
 
     <!-- APP THEME COLORS -->
     <color name="color_theme_background">@android:color/white</color>
-    <color name="color_theme_gray">#C7C7C7</color>
+    <color name="color_theme_gray">#ffa8a8a8</color>
     <color name="color_theme_gray_light">#EBEBEB</color>
     <color name="color_theme_primary">#72CFA9</color>
     <color name="color_theme_secondary">#E06760</color>

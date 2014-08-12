@@ -43,13 +43,14 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:layout_toRightOf="@+id/locationText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <IconTextView
         android:id="@+id/indicator"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:src="@android:drawable/arrow_down_float"/>
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@+id/locationText"
+        android:layout_marginTop="10dp"
+        android:text="{fa-chevron-down}"
+        android:textSize="20dp"
+        android:textColor="@color/color_theme_gray_light" />
 
 </RelativeLayout>
