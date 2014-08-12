@@ -5,7 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -13,9 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import android.os.Handler;
+
+import java.io.InputStream;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
@@ -28,6 +34,8 @@ public class StatusFragment extends Fragment {
     TextView textLocation;
     TextView textVisits;
     Context context;
+    ImageView imageView;
+    View v;
 
     private OnFragmentInteractionListener mListener;
     private static final String TAG = "StatusFragment";
@@ -63,12 +71,15 @@ public class StatusFragment extends Fragment {
         context = this.getActivity();
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverStatus,
                 new IntentFilter(Settings.broadcastIntent));
+
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_status, container, false);
+        imageView = (ImageView) view.findViewById(R.id.imageView1);
+        new DownloadImageTask((ImageView) view.findViewById(R.id.imageView1)).execute("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png");
         return view;
     }
 
@@ -99,5 +110,29 @@ public class StatusFragment extends Fragment {
 
     }
 
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
 
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+            imageView.setImageBitmap(result);
+        }
+    }
 }
