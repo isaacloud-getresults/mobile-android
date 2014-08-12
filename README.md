@@ -7,3 +7,10 @@ KONTAKT Z ISAA CLOUD:
   - Obsługa pobierania achievementow oraz danych osób jest w serwisie DataService, który pobiera dane z isaaCloud co 5 sek.
   - NOTYFIKACJE: narazie brak, czekamy ne websocket
   
+
+UŻYTE BIBLIOTEKI:
+  - IsaaCloud android SDK
+  - Estimote SDK for Android
+  - Google Collections 
+  - CardsLib by Gabriele Mariotti
+  - Android Iconify 
