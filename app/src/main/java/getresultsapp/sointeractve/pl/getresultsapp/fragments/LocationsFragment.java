@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -140,7 +141,7 @@ public class LocationsFragment extends Fragment {
         }
 
         @Override
-        public View getChildView(int groupPosition, final int childPosition,
+        public View getChildView(final int groupPosition, final int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
             final String childText = getChild(groupPosition, childPosition).getFullName();
@@ -155,6 +156,13 @@ public class LocationsFragment extends Fragment {
                     .findViewById(R.id.lblListItem);
 
             txtListChild.setText(childText);
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Person person = getChild(groupPosition, childPosition);
+                    Toast.makeText(context, person.getFullName() + "\n" + person.getActualLocation(), Toast.LENGTH_SHORT).show();
+                }
+            });
             return convertView;
         }
 
@@ -195,6 +203,7 @@ public class LocationsFragment extends Fragment {
                     .findViewById(R.id.lblListHeaderVisits);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
+
             //lblListHeaderVisits.setText(headerStats);
             return convertView;
         }

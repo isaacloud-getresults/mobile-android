@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.activities.LoginActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
@@ -371,10 +372,12 @@ public class EventManager {
                     }
                     i++;
                 }
-                Intent intent = new Intent(Settings.broadcastIntentNewAchievement);
-                intent.putExtra("label", recentAchievement.getLabel());
-                App.getDataManager().setAchievements(newAchievements);
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                if(recentAchievement != null) {
+                    Intent intent = new Intent(Settings.broadcastIntentNewAchievement);
+                    intent.putExtra("label", recentAchievement.getLabel());
+                    App.getDataManager().setAchievements(newAchievements);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
             } else {
                 Log.d(TAG, "No new achievements.");
             }
@@ -382,17 +385,16 @@ public class EventManager {
     }
 
     private static void generateNotification(String ticker, String title, String message){
-
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-//        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+        Intent notificationIntent;
+        notificationIntent = new Intent(context, MainActivity.class);
+        notificationIntent.putExtra("achPointer", 1);
+        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setTicker(ticker)
                 .setContentTitle(title)
                 .setContentIntent(intent)
-//                .setPriority(PRIORITY_HIGH) //private static final PRIORITY_HIGH = 5;
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL);

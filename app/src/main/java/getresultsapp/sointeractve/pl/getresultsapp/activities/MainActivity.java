@@ -33,10 +33,17 @@ public class MainActivity extends FragmentActivity implements
     private ActionBar actionBar;
     private String[] tabs = { "Status", "Locations", "Profile" };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            if(extras.containsKey("achPointer")) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -71,13 +78,23 @@ public class MainActivity extends FragmentActivity implements
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
-        Toast.makeText(this, "Services started", Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Toast.makeText(this, "onResume()", Toast.LENGTH_LONG).show();
+        onNewIntent(getIntent());
+    }
+
+    public void onNewIntent(Intent intent){
+        Bundle extras = intent.getExtras();
+        if(extras != null){
+            if(extras.containsKey("achPointer"))
+            {
+                Toast.makeText(this, "onResume() extras = " + extras.getInt("achPointer"), Toast.LENGTH_LONG).show();
+                actionBar.setSelectedNavigationItem(extras.getInt("achPointer"));
+            }
+        }
     }
 
     @Override
@@ -99,6 +116,8 @@ public class MainActivity extends FragmentActivity implements
         moveTaskToBack(true);
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

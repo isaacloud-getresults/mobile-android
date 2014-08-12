@@ -99,17 +99,17 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private SignInButton buttonSignIn;
     private Button buttonScan;
     private Button btnRevokeAccess;
-    static boolean internetConnection;
+    static boolean internetConnection = true;
+    Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         context = this;
-        Thread thread = new Thread(new InternetRunnable());
+        thread = new Thread(new InternetRunnable());
         thread.start();
         configureApplication();
-        Toast.makeText(this, "InstanceId: " + Settings.instanceId + "\nappSecret: " + Settings.appSecret, Toast.LENGTH_SHORT).show();
 
         // create new wrapper instance for API connection
         initializeConnector();
