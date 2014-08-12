@@ -28,10 +28,17 @@ public class MainActivity extends FragmentActivity implements
     private PagerAdapter mAdapter;
     private ActionBar actionBar;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            if(extras.containsKey("achPointer")) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -65,19 +72,29 @@ public class MainActivity extends FragmentActivity implements
 
 
             // SEND LOGIN EVENT
-/*        App.getEventManager().postEventLogin();
+        App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
-        Toast.makeText(this, "Services started", Toast.LENGTH_LONG).show();   */
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Toast.makeText(this, "onResume()", Toast.LENGTH_LONG).show();
+        onNewIntent(getIntent());
+    }
+
+    public void onNewIntent(Intent intent){
+        Bundle extras = intent.getExtras();
+        if(extras != null){
+            if(extras.containsKey("achPointer"))
+            {
+                Toast.makeText(this, "onResume() extras = " + extras.getInt("achPointer"), Toast.LENGTH_LONG).show();
+                actionBar.setSelectedNavigationItem(extras.getInt("achPointer"));
+            }
+        }
     }
 
     @Override
@@ -99,4 +116,8 @@ public class MainActivity extends FragmentActivity implements
         moveTaskToBack(true);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
