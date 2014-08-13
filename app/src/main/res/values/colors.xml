@@ -29,7 +29,7 @@
     <color name="color_theme_background">@android:color/white</color>
     <color name="color_theme_gray">#ffc7c7c7</color>
     <color name="color_theme_gray_light">#EBEBEB</color>
-    <color name="color_theme_primary">#72CFA9</color>
+    <color name="color_theme_primary">#E06760</color>
     <color name="color_theme_secondary">#E06760</color>
     <color name="color_theme_text_dark">#ff838383</color>
     <color name="color_theme_text_light">@android:color/white</color>

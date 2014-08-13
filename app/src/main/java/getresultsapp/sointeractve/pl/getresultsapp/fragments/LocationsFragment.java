@@ -94,6 +94,8 @@ public class LocationsFragment extends Fragment {
         cardView.setCard(this.statusCard);
         expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setGroupIndicator(null);
+        expandableListView.setDivider(getResources().getDrawable(R.drawable.divider));
+        expandableListView.setChildDivider(getResources().getDrawable(R.drawable.child_divider));
         expandableListView.setAdapter(listAdapter);
         return view;
     }
@@ -144,7 +146,7 @@ public class LocationsFragment extends Fragment {
         }
 
         @Override
-        public View getChildView(final int groupPosition, final int childPosition,
+        public View getChildView( int groupPosition, int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
             final String childText = getChild(groupPosition, childPosition).getFullName();
@@ -154,18 +156,11 @@ public class LocationsFragment extends Fragment {
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_item, null);
             }
-
+            convertView.setPadding(0, 0, 10, 0);
             TextView txtListChild = (TextView) convertView
                     .findViewById(R.id.lblListItem);
 
             txtListChild.setText(childText);
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Person person = getChild(groupPosition, childPosition);
-                    Toast.makeText(context, person.getFullName() + "\n" + person.getActualLocation(), Toast.LENGTH_SHORT).show();
-                }
-            });
             return convertView;
         }
 
@@ -194,7 +189,7 @@ public class LocationsFragment extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
-            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size() + " " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size();
+            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size() + "   " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -207,7 +202,6 @@ public class LocationsFragment extends Fragment {
                     .findViewById(R.id.locationStatsCounter);
             String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
             indicator.setText(state);
-            lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
             return convertView;

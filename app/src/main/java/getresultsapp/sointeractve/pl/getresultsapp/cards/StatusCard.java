@@ -3,11 +3,13 @@ package getresultsapp.sointeractve.pl.getresultsapp.cards;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.IconTextView;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
@@ -20,6 +22,7 @@ public class StatusCard extends Card {
 
     Location actualLocation;
     TextView title;
+    IconTextView stats;
 
     public StatusCard(Context context, int layout) {
         super(context, layout);
@@ -33,13 +36,16 @@ public class StatusCard extends Card {
         setViewToClickToExpand(viewToClickToExpand);
 
         title = (TextView) view.findViewById(R.id.status_card_main_text);
-
+        stats = (IconTextView) view.findViewById(R.id.status_card_stats);
     }
 
     public void initLocation (Location newLocation) {
         this.actualLocation = newLocation;
         if(title != null) {
             title.setText(actualLocation.getLabel());
+        }
+        if (stats != null) {
+            stats.setText("{fa-users}" + " " + App.getPeopleAtLocation(actualLocation).size() + "   " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size());
         }
     }
 }

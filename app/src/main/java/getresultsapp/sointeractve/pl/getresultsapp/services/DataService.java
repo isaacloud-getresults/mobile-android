@@ -55,6 +55,7 @@ public class DataService extends Service{
         public void run() {
             Log.d(TAG, "postEventUpdateData");
             App.getEventManager().postEventUpdateData();
+
         }
     }
 

@@ -65,11 +65,9 @@ public class ProfileFragment extends Fragment {
         profileCardView = (CardView) view.findViewById(R.id.cardProfile);
         CardView settingsCardView = (CardView) view.findViewById(R.id.cardSettings);
         CardView statsCardView = (CardView) view.findViewById(R.id.cardStats);
-        CardView logoutCardView = (CardView) view.findViewById(R.id.cardLogout);
         profileCardView.setCard(this.profileCard);
         settingsCardView.setCard(this.settingsCard);
         statsCardView.setCard(this.statsCard);
-        logoutCardView.setCard(new LogoutCard(context));
 
         return view;
     }

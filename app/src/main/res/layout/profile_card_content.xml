@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="{fa-user}"
         android:textSize="60dp"
-        android:textColor="@color/color_theme_gray"
+        android:textColor="@color/color_theme_gray_light"
         android:gravity="center"/>
 
     <TextView
@@ -34,9 +34,10 @@
         android:orientation="vertical">
 
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="300dp"
             android:layout_height="1dp"
-            android:background="@color/color_theme_gray"/>
+            android:background="@color/color_theme_gray"
+            android:layout_gravity="center"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -63,9 +64,10 @@
 
         </RelativeLayout>
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="300dp"
             android:layout_height="1dp"
-            android:background="@color/color_theme_gray"/>
+            android:background="@color/color_theme_gray"
+            android:layout_gravity="center"/>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,13 +94,16 @@
 
         </RelativeLayout>
         <View
-            android:layout_width="fill_parent"
+            android:layout_width="300dp"
             android:layout_height="1dp"
-            android:background="@color/color_theme_gray"/>
+            android:background="@color/color_theme_gray"
+            android:layout_gravity="center"/>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp">
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
 
             <IconTextView
                 android:layout_width="wrap_content"
