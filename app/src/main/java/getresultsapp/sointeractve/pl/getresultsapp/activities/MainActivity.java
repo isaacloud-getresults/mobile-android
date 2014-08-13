@@ -17,7 +17,6 @@ import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
 import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
-import getresultsapp.sointeractve.pl.getresultsapp.utils.CacheManager;
 
 
 public class MainActivity extends FragmentActivity implements
@@ -79,8 +78,6 @@ public class MainActivity extends FragmentActivity implements
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
-
-        CacheManager.INSTANCE.reload();
     }
 
     @Override

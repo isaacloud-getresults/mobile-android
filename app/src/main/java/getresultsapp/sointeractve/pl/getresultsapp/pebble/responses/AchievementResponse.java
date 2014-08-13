@@ -25,18 +25,16 @@ public class AchievementResponse implements ResponseItem {
         int descriptionMaxLength = PebbleSettings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
         descriptionMaxLength -= name.length();
 
-        final String descriptionToSend;
-        if (description.length() > descriptionMaxLength) {
-            descriptionToSend = description.substring(0, descriptionMaxLength - 3) + "...";
-        } else {
-            descriptionToSend = description;
-        }
-
         return new DictionaryBuilder(RESPONSE_ID)
                 .addInt(id)
                 .addString(name)
-                .addString(descriptionToSend)
+                .addInt(getDescriptionPartsNumber())
                 .pack();
+    }
 
+    private int getDescriptionPartsNumber() {
+        final double stringLength = description.length();
+        final double partSize = PebbleSettings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
+        return (int) Math.ceil(stringLength / partSize);
     }
 }

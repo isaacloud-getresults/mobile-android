@@ -7,7 +7,7 @@ import java.util.List;
 import getresultsapp.sointeractve.pl.getresultsapp.utils.DictionaryBuilder;
 
 public class PersonOutResponse implements ResponseItem {
-    private static final int RESPONSE_ID = 5;
+    private static final int RESPONSE_ID = 6;
 
     private final int id;
     private final String name;

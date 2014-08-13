@@ -27,6 +27,10 @@ public class DictionaryBuilder {
         return this;
     }
 
+    public PebbleDictionary build() {
+        return dictionary;
+    }
+
     public List<PebbleDictionary> pack() {
         return Arrays.asList(dictionary);
     }

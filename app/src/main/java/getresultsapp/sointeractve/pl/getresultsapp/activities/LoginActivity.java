@@ -51,6 +51,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.utils.CacheManager;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
@@ -177,6 +178,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
+        CacheManager.INSTANCE.reload();
     }
 
     protected void onStart() {

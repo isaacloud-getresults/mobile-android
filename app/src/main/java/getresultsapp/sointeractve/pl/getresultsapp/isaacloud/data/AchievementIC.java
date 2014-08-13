@@ -3,6 +3,10 @@ package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.AchievementDescriptionResponse;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.AchievementResponse;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
@@ -19,6 +23,10 @@ public class AchievementIC {
 
     public String getName() {
         return name;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -41,5 +49,11 @@ public class AchievementIC {
 
     public ResponseItem toAchievementResponse() {
         return new AchievementResponse(id, name, description);
+    }
+
+    public Collection<ResponseItem> toAchievementDescriptionResponse() {
+        final Collection<ResponseItem> responseItems = new LinkedList<ResponseItem>();
+        responseItems.add(new AchievementDescriptionResponse(id, description));
+        return responseItems;
     }
 }
