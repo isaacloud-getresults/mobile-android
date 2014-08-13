@@ -16,7 +16,7 @@
         android:layout_height="30dp"
         android:layout_toRightOf="@id/borderLeft"
         android:orientation="vertical"
-        android:padding="5dp"
+        android:padding="3dp"
         android:background="@drawable/list_item_background">
 
         <TextView

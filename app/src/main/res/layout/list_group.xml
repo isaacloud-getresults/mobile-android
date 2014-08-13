@@ -20,8 +20,7 @@
             android:id="@+id/locationText"
             android:layout_width="220dp"
             android:layout_height="fill_parent"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
+            android:orientation="vertical">
 
 
             <TextView
@@ -44,8 +43,9 @@
         android:id="@+id/indicator"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_toRightOf="@+id/locationText"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
         android:text="{fa-chevron-down}"
         android:textSize="20dp"
         android:textColor="@color/color_theme_gray_light" />
