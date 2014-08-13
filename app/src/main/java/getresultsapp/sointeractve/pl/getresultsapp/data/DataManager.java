@@ -3,11 +3,9 @@ package getresultsapp.sointeractve.pl.getresultsapp.data;
 // Data management class for downloading locations and users.
 // @author: Pawel Dylag
 
-import android.util.Log;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -26,13 +24,13 @@ public class DataManager {
         return locations;
     }
 
-    public List<Person> getPeopleAtLocation (Location l) {
-            int id = l.getId();
-            return people.get(id);
-    }
-
     public void setLocations(List<Location> locations) {
         this.locations = locations;
+    }
+
+    public List<Person> getPeopleAtLocation(Location l) {
+        int id = l.getId();
+        return people.get(id);
     }
 
     public void setPeople(SparseArray<List<Person>> people) {

@@ -5,8 +5,8 @@ import org.json.JSONObject;
 
 /**
  * Data store class for Achievements.
- * @author Mateusz Renes
  *
+ * @author Mateusz Renes
  */
 public class Achievement {
 
@@ -20,13 +20,13 @@ public class Achievement {
         this.setGained(isGained);
     }
 
-    public Achievement(JSONObject json, boolean isGained) throws JSONException{
+    public Achievement(JSONObject json, boolean isGained) throws JSONException {
         this.setLabel(json.getString("label"));
         this.setDesc(json.getString("description"));
         this.setGained(isGained);
     }
 
-    public Achievement(JSONObject json, boolean isGained, int amount) throws JSONException{
+    public Achievement(JSONObject json, boolean isGained, int amount) throws JSONException {
         this.setLabel(json.getString("label"));
         this.setDesc(json.getString("description"));
         this.setGained(isGained);

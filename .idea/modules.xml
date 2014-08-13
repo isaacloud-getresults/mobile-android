@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/PEBBLE_KIT/PEBBLE_KIT.iml" filepath="$PROJECT_DIR$/PEBBLE_KIT/PEBBLE_KIT.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/getResultsApp.iml" filepath="$PROJECT_DIR$/getResultsApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/isaacloudandroidsdk/isaacloudandroidsdk.iml" filepath="$PROJECT_DIR$/isaacloudandroidsdk/isaacloudandroidsdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile-android.iml" filepath="$PROJECT_DIR$/mobile-android.iml" />
     </modules>
   </component>

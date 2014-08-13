@@ -4,8 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Data storage class for locations.
@@ -17,13 +15,13 @@ public class Location implements Serializable {
     private int id;
 
 
-    public Location (String label, int id ) {
+    public Location(String label, int id) {
         this.setLabel(label);
         this.setId(id);
 
     }
 
-    public Location (JSONObject json) throws JSONException {
+    public Location(JSONObject json) throws JSONException {
         this.setLabel(json.getString("label"));
         this.setId(json.getInt("id"));
     }
@@ -43,8 +41,6 @@ public class Location implements Serializable {
     public void setLabel(String label) {
         this.label = label;
     }
-
-
 
 
 }

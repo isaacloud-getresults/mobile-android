@@ -1,8 +1,6 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class UserData implements Serializable {
@@ -16,10 +14,6 @@ public class UserData implements Serializable {
         return this.userLocation;
     }
 
-    public int getUserLocationId(){
-       return this.userLocation.getId();
-    }
-
     public void setUserLocation(int id) {
         for (Location l : App.getLocations()) {
             if (l.getId() == id) {
@@ -28,8 +22,12 @@ public class UserData implements Serializable {
         }
     }
 
-    public void setUserLocation (Location newLocation) {
+    public void setUserLocation(Location newLocation) {
         this.userLocation = newLocation;
+    }
+
+    public int getUserLocationId() {
+        return this.userLocation.getId();
     }
 
     public int getLocationVisits() {
@@ -65,12 +63,12 @@ public class UserData implements Serializable {
         this.userId = userId;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getFirstName() {
         return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
 

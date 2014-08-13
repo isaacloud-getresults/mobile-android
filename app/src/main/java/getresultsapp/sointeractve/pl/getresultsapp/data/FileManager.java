@@ -1,5 +1,7 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
+import android.content.Context;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,18 +10,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
-import java.util.StringTokenizer;
-
-import android.content.Context;
-
-import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 
 /**
  * This is a helper class for saving and loading files from the application
  * folder.
  *
  * @author Mateusz Renes
- *
  */
 public class FileManager {
 

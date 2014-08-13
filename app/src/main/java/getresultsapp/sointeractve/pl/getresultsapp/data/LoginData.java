@@ -3,7 +3,7 @@ package getresultsapp.sointeractve.pl.getresultsapp.data;
 import java.io.Serializable;
 
 
-public class LoginData implements Serializable{
+public class LoginData implements Serializable {
 
     private boolean remembered;
     private String email;

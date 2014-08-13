@@ -1,16 +1,11 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
 
 import android.app.ActionBar;
-
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Typeface;
 import android.os.Bundle;
-
-
 import android.support.v4.app.FragmentActivity;
-
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
@@ -22,6 +17,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
 import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
+import getresultsapp.sointeractve.pl.getresultsapp.utils.CacheManager;
 
 
 public class MainActivity extends FragmentActivity implements
@@ -36,8 +32,8 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            if(extras.containsKey("achPointer")) {
+        if (extras != null) {
+            if (extras.containsKey("achPointer")) {
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -70,18 +66,21 @@ public class MainActivity extends FragmentActivity implements
                 new ViewPager.SimpleOnPageChangeListener() {
                     @Override
                     public void onPageSelected(int position) {
-                       actionBar.setSelectedNavigationItem(position);
+                        actionBar.setSelectedNavigationItem(position);
                     }
-                });
+                }
+        );
 
 
-            // SEND LOGIN EVENT
+        // SEND LOGIN EVENT
         App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
+
+        CacheManager.INSTANCE.reload();
     }
 
     @Override
@@ -90,11 +89,10 @@ public class MainActivity extends FragmentActivity implements
         onNewIntent(getIntent());
     }
 
-    public void onNewIntent(Intent intent){
+    public void onNewIntent(Intent intent) {
         Bundle extras = intent.getExtras();
-        if(extras != null){
-            if(extras.containsKey("achPointer"))
-            {
+        if (extras != null) {
+            if (extras.containsKey("achPointer")) {
                 Toast.makeText(this, "onResume() extras = " + extras.getInt("achPointer"), Toast.LENGTH_LONG).show();
                 actionBar.setSelectedNavigationItem(extras.getInt("achPointer"));
             }

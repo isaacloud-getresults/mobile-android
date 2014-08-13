@@ -1,25 +1,5 @@
 package getresultsapp.sointeractve.pl.getresultsapp.activities;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
-import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
-import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
-
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -35,6 +15,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
+
 
 public class RegisterActivity extends Activity {
 
@@ -43,7 +43,7 @@ public class RegisterActivity extends Activity {
     private Button buttonRegister;
     private Context context;
     private ProgressDialog dialog;
-    private EditText textEmail, textPassword, textPasswordRepeat,textFirstName, textLastName;
+    private EditText textEmail, textPassword, textPasswordRepeat, textFirstName, textLastName;
     private UserData userData;
 
     @Override
@@ -54,14 +54,14 @@ public class RegisterActivity extends Activity {
         context = this;
 
         // find views
-            // text edits
-            textEmail = (EditText) findViewById(R.id.editRegisterEmail);
-            textPassword = (EditText) findViewById(R.id.editRegisterPassword);
-            textPasswordRepeat = (EditText) findViewById(R.id.editRegisterRePassword);
-            textFirstName = (EditText) findViewById(R.id.editRegisterFirstName);
-            textLastName = (EditText) findViewById(R.id.editRegisterLastName);
-            //buttons
-            buttonRegister = (Button) findViewById(R.id.buttonRegister);
+        // text edits
+        textEmail = (EditText) findViewById(R.id.editRegisterEmail);
+        textPassword = (EditText) findViewById(R.id.editRegisterPassword);
+        textPasswordRepeat = (EditText) findViewById(R.id.editRegisterRePassword);
+        textFirstName = (EditText) findViewById(R.id.editRegisterFirstName);
+        textLastName = (EditText) findViewById(R.id.editRegisterLastName);
+        //buttons
+        buttonRegister = (Button) findViewById(R.id.buttonRegister);
 
         // set button listeners
         setButtonListeners();
@@ -150,7 +150,7 @@ public class RegisterActivity extends Activity {
             HttpResponse response;
             // send request and retrieve response
             try {
-                response = App.getConnector().path("/admin/users")
+                response = App.getIsaacloudConnector().path("/admin/users")
                         .post(jsonBody);
                 JSONObject json = response.getJSONObject();
                 userData.setUserId(json.getInt("id"));
@@ -176,7 +176,7 @@ public class RegisterActivity extends Activity {
             if (success) {
                 new EventGetLocations().execute();
             } else {
-               // error login activity here;
+                // error login activity here;
             }
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();
@@ -202,18 +202,18 @@ public class RegisterActivity extends Activity {
             SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
             List<Location> locations = new ArrayList<Location>();
             List<Achievement> achievements = new ArrayList<Achievement>();
-            locations.add(new Location ("Nowhere", 0));
+            locations.add(new Location("Nowhere", 0));
             userData = App.loadUserData();
             try {
                 // LOCATIONS REQUEST
-                HttpResponse response = App.getConnector().path("/cache/users/groups").withFields("label", "id").get();
+                HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
                 Log.d(TAG, response.toString());
                 // all locations from isa
                 JSONArray locationsArray = response.getJSONArray();
-                for(int i = 0; i < locationsArray.length();i++) {
+                for (int i = 0; i < locationsArray.length(); i++) {
                     JSONObject locJson = (JSONObject) locationsArray.get(i);
                     Location loc = new Location(locJson);
-                    if (loc.getId() != 1 &&  loc.getId() != 2) {
+                    if (loc.getId() != 1 && loc.getId() != 2) {
                         entries.put(loc.getId(), new LinkedList<Person>());
                         locations.add(loc);
                     }
@@ -221,7 +221,7 @@ public class RegisterActivity extends Activity {
 
 
                 // USERS REQUEST
-                HttpResponse usersResponse = App.getConnector().path("/cache/users").withFields("firstName", "lastName","id","counterValues").withLimit(0).get();
+                HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
                 Log.d(TAG, usersResponse.toString());
                 JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
@@ -234,7 +234,7 @@ public class RegisterActivity extends Activity {
                 // ACHIEVEMENTS REQUEST
                 HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
                 HttpResponse responseUser = App
-                        .getConnector()
+                        .getIsaacloudConnector()
                         .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
                 JSONObject achievementsJson = responseUser.getJSONObject();
                 JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
@@ -243,7 +243,7 @@ public class RegisterActivity extends Activity {
                     idMap.put(json.getInt("achievement"), json.getInt("amount"));
                 }
 
-                HttpResponse responseGeneral = App.getConnector()
+                HttpResponse responseGeneral = App.getIsaacloudConnector()
                         .path("/cache/achievements").withLimit(1000).get();
                 JSONArray arrayGeneral = responseGeneral.getJSONArray();
                 Log.d("TEST", arrayGeneral.toString(3));
@@ -258,7 +258,7 @@ public class RegisterActivity extends Activity {
                 dm.setLocations(locations);
                 dm.setPeople(entries);
                 dm.setAchievements(achievements);
-                Log.d(TAG,"ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
+                Log.d(TAG, "ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
 
             } catch (JSONException e) {
                 e.printStackTrace();

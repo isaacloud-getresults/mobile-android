@@ -1,14 +1,11 @@
 package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
@@ -19,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.IconTextView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,27 +27,22 @@ import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardExpand;
 import it.gmariotti.cardslib.library.view.CardView;
 
 
 public class LocationsFragment extends Fragment {
 
+    private static final String TAG = "LocationsFragment";
     ExpandableListAdapter listAdapter;
     ExpandableListView expandableListView;
     List<Location> locationsArray;
     StatusCard statusCard;
-    CardView cardView;
-    Context context;
-
-    private static final String TAG = "LocationsFragment";
     private BroadcastReceiver receiverLocations = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG,"onReceive called");
-            if ( listAdapter != null) {
+            Log.d(TAG, "onReceive called");
+            if (listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
             statusCard.initLocation(App.loadUserData().getUserLocation());
@@ -60,9 +51,11 @@ public class LocationsFragment extends Fragment {
             cardView.refreshCard(statusCard);
         }
     };
+    CardView cardView;
+    Context context;
 
     public static LocationsFragment newInstance() {
-        Log.d(TAG,"newInstance");
+        Log.d(TAG, "newInstance");
         LocationsFragment f = new LocationsFragment();
         Bundle b = new Bundle();
         f.setArguments(b);
@@ -75,8 +68,8 @@ public class LocationsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         locationsArray = App.getLocations();
         context = this.getActivity();
-        for (Location l: locationsArray) {
-            Log.d(TAG,"Loading: " + l.getLabel());
+        for (Location l : locationsArray) {
+            Log.d(TAG, "Loading: " + l.getLabel());
         }
         statusCard = new StatusCard(context, R.layout.status_card_content);
         listAdapter = new ExpandableListAdapter(context, locationsArray);
@@ -85,8 +78,8 @@ public class LocationsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        Log.d(TAG,"onCreateView");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView");
         View view = inflater.inflate(R.layout.fragment_locations, container, false);
         context = getActivity();
         cardView = (CardView) view.findViewById(R.id.cardStatus);
@@ -134,7 +127,7 @@ public class LocationsFragment extends Fragment {
         public Person getChild(int groupPosition, int childPosition) {
             List<Person> list = App.getPeopleAtLocation(locationsList.get(groupPosition));
             Person child = list.get(childPosition);
-            return  child;
+            return child;
         }
 
         @Override

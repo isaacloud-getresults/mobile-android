@@ -14,14 +14,14 @@ public class Person {
     private String firstName, lastName;
     private int id, actualLocation;
 
-    public Person (String firstName, String lastName, int actualLocation, int id) {
+    public Person(String firstName, String lastName, int actualLocation, int id) {
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setActualLocation(actualLocation);
         this.setId(id);
     }
 
-    public Person (JSONObject json) throws JSONException  {
+    public Person(JSONObject json) throws JSONException {
         this.setFirstName(json.getString("firstName"));
         this.setLastName(json.getString("lastName"));
         this.setId(json.getInt("id"));
@@ -59,7 +59,9 @@ public class Person {
         this.lastName = lastName;
     }
 
-    public String getFullName() { return firstName + " " + lastName;}
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 
     public int getActualLocation() {
         return actualLocation;
