@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.NewPeopleChecker;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.PersonIC;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.providers.PeopleProvider;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
 public class PeopleCache {
@@ -45,25 +45,25 @@ public class PeopleCache {
         final SparseArray<Collection<ResponseItem>> oldResponses = peopleResponses;
 
         peopleResponses = new SparseArray<Collection<ResponseItem>>();
-        final Collection<PersonIC> people = PeopleProvider.INSTANCE.getData();
+        final Collection<Person> people = App.getDataManager().getPeople();
         updatePeopleList(people);
 
         findChanges(oldResponses);
     }
 
-    private void updatePeopleList(final Iterable<PersonIC> people) {
+    private void updatePeopleList(final Iterable<Person> people) {
         int room;
-        for (final PersonIC person : people) {
-            room = person.getBeacon();
+        for (final Person person : people) {
+            room = person.getLocation();
             addPersonToRoom(room, person);
         }
     }
 
-    private void addPersonToRoom(final int roomId, final PersonIC person) {
+    private void addPersonToRoom(final int roomId, final Person person) {
         if (peopleResponses.get(roomId) == null) {
             peopleResponses.put(roomId, new ArrayList<ResponseItem>());
         }
-        peopleResponses.get(roomId).add(person.toPersonInResponse(roomId));
+        peopleResponses.get(roomId).add(person.toPersonInResponse());
     }
 
     private void findChanges(final SparseArray<Collection<ResponseItem>> oldResponses) {
@@ -86,7 +86,6 @@ public class PeopleCache {
     }
 
     public void clear() {
-        PeopleProvider.INSTANCE.clear();
         peopleResponses.clear();
         clearObservedRoom();
     }

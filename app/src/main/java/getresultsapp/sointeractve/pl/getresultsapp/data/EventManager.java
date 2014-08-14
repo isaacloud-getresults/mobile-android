@@ -24,6 +24,12 @@ import java.util.List;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.NewAchievementsNotifier;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
@@ -304,10 +310,10 @@ public class EventManager {
                 for (int i = 0; i < usersArray.length(); i++) {
                     JSONObject userJson = (JSONObject) usersArray.get(i);
                     Person p = new Person(userJson);
-                    entries.get(p.getActualLocation()).add(p);
+                    entries.get(p.getLocation()).add(p);
                 }
                 App.getDataManager().setPeople(entries);
-
+                LoginCache.INSTANCE.logIn();
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
@@ -387,6 +393,7 @@ public class EventManager {
                     intent.putExtra("label", recentAchievement.getLabel());
                     App.getDataManager().setAchievements(newAchievements);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    NewAchievementsNotifier.notifyAchievements(newAchievements);
                 }
             } else {
                 Log.d(TAG, "No new achievements.");

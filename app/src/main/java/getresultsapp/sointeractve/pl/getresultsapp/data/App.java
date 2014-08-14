@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
 import getresultsapp.sointeractve.pl.getresultsapp.utils.PebbleConnector;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
@@ -45,6 +50,7 @@ public class App extends Application {
 
     public static void saveUserData(UserData userData) {
         fileManager.saveUserData(userData, obj);
+        LoginCache.INSTANCE.reload();
     }
 
     public static UserData loadUserData() {
@@ -75,10 +81,6 @@ public class App extends Application {
         return isaacloudConnector;
     }
 
-    public static void setIsaacloudConnector(Isaacloud isaacloudConnector) {
-        App.isaacloudConnector = isaacloudConnector;
-    }
-
     public static boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) obj.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -97,11 +99,7 @@ public class App extends Application {
         return dataManager.getPeopleAtLocation(l);
     }
 
-    private void initPebbleConnector() {
-        pebbleConnector = new PebbleConnector(this);
-    }
-
-    private void initIsaacloudConnector() {
+    private static void initIsaacloudConnector() {
         Log.i(TAG, "Action: Initialize IsaaCloud isaacloudConnector");
 
         try {
@@ -111,13 +109,17 @@ public class App extends Application {
         }
     }
 
-    private Map<String, String> getIsaacloudConfig() {
+    private static Map<String, String> getIsaacloudConfig() {
         final Map<String, String> config = new HashMap<String, String>();
 
         config.put("instanceId", IsaaCloudSettings.INSTANCE_ID);
         config.put("appSecret", IsaaCloudSettings.APP_SECRET);
 
         return config;
+    }
+
+    private void initPebbleConnector() {
+        pebbleConnector = new PebbleConnector(this);
     }
 
     @Override

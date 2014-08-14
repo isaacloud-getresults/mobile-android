@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.BeaconsInfoChangeChecker;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.RoomIC;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.providers.RoomsProvider;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.BeaconResponse;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
@@ -20,23 +20,20 @@ public class BeaconsCache {
     }
 
     public Collection<ResponseItem> getData() {
-        if (beaconsResponse.isEmpty()) {
-            reload();
-        }
         return beaconsResponse;
     }
 
     public void reload() {
         final Collection<ResponseItem> oldBeaconsResponse = beaconsResponse;
-        final Collection<RoomIC> rooms = RoomsProvider.INSTANCE.getData();
+        final Collection<Location> rooms = App.getDataManager().getLocations();
         loadNewResponses(rooms);
 
         BeaconsInfoChangeChecker.check(oldBeaconsResponse, beaconsResponse);
     }
 
-    private void loadNewResponses(final Iterable<RoomIC> rooms) {
+    private void loadNewResponses(final Iterable<Location> rooms) {
         beaconsResponse = new LinkedList<ResponseItem>();
-        for (final RoomIC room : rooms) {
+        for (final Location room : rooms) {
             final int peopleNumber = PeopleCache.INSTANCE.getSize(room.getId());
             beaconsResponse.add(room.toBeaconResponse(peopleNumber));
         }
@@ -58,7 +55,6 @@ public class BeaconsCache {
     }
 
     public void clear() {
-        RoomsProvider.INSTANCE.clear();
         beaconsResponse.clear();
     }
 }

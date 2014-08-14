@@ -80,7 +80,6 @@ public class PebbleActivity extends Activity implements Observer {
         if (pebbleConnector.isPebbleConnected()) {
             if (pebbleConnector.areAppMessagesSupported()) {
                 showInfo(R.string.ok_connection_to_pebble);
-                CacheManager.INSTANCE.setAutoReload(context);
                 onPebbleConnected();
             } else {
                 showInfo(R.string.app_messages_not_supported);

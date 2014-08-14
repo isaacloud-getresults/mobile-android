@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.data;
+package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
 
 import org.json.JSONException;
 import org.json.JSONObject;

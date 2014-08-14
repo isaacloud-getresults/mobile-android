@@ -32,6 +32,8 @@ public class DataService extends Service {
 
 
     public DataService() {
+        //TODO: Use this sockets
+        //SocketIONotifier.INSTANCE.connect(userId);
     }
 
     public void onCreate() {
@@ -43,7 +45,7 @@ public class DataService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "startService");
         timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.dataDownloadInterval);
-        connectWebSocket();
+        //connectWebSocket();
         return Service.START_NOT_STICKY;
     }
 

@@ -11,6 +11,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+
 /**
  * This is a helper class for saving and loading files from the application
  * folder.

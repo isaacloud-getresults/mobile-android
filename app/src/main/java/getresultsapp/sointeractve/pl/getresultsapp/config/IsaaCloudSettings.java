@@ -23,5 +23,5 @@ public class IsaaCloudSettings {
     public static final int CACHE_RELOAD_INTERVAL_SECONDS = 5;
 
     // Log in settings
-    public static String LOGIN_EMAIL = "yoda@op.pl";
+    public static String LOGIN_EMAIL = "getresultsdev@gmail.com";
 }

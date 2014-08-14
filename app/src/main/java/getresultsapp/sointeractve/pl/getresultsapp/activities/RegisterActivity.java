@@ -26,12 +26,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
@@ -228,7 +228,7 @@ public class RegisterActivity extends Activity {
                 for (int i = 0; i < usersArray.length(); i++) {
                     JSONObject userJson = (JSONObject) usersArray.get(i);
                     Person p = new Person(userJson);
-                    entries.get(p.getActualLocation()).add(p);
+                    entries.get(p.getLocation()).add(p);
                 }
 
                 // ACHIEVEMENTS REQUEST

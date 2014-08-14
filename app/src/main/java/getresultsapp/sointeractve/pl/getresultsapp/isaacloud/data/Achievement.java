@@ -1,7 +1,14 @@
-package getresultsapp.sointeractve.pl.getresultsapp.data;
+package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Collection;
+import java.util.LinkedList;
+
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.AchievementDescriptionResponse;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.AchievementResponse;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
 /**
  * Data store class for Achievements.
@@ -14,19 +21,10 @@ public class Achievement {
     private int counter = 0;
     private boolean isGained;
 
-    public Achievement(String label, String desc, boolean isGained) {
-        this.setLabel(label);
-        this.setDesc(desc);
-        this.setGained(isGained);
-    }
-
-    public Achievement(JSONObject json, boolean isGained) throws JSONException {
-        this.setLabel(json.getString("label"));
-        this.setDesc(json.getString("description"));
-        this.setGained(isGained);
-    }
+    private int id;
 
     public Achievement(JSONObject json, boolean isGained, int amount) throws JSONException {
+        this.setId(json.getInt("id"));
         this.setLabel(json.getString("label"));
         this.setDesc(json.getString("description"));
         this.setGained(isGained);
@@ -75,5 +73,23 @@ public class Achievement {
 
     public void setCounter(int counter) {
         this.counter = counter;
+    }
+
+    public ResponseItem toAchievementResponse() {
+        return new AchievementResponse(id, label, description);
+    }
+
+    public Collection<ResponseItem> toAchievementDescriptionResponse() {
+        final Collection<ResponseItem> responseItems = new LinkedList<ResponseItem>();
+        responseItems.add(new AchievementDescriptionResponse(id, description));
+        return responseItems;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
     }
 }

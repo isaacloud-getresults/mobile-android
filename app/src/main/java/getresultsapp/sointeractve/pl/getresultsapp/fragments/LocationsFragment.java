@@ -25,8 +25,8 @@ import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.StatusCard;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
 import it.gmariotti.cardslib.library.view.CardView;
 
 
@@ -155,7 +155,7 @@ public class LocationsFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     Person person = getChild(groupPosition, childPosition);
-                    Toast.makeText(context, person.getFullName() + "\n" + person.getActualLocation(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, person.getFullName() + "\n" + person.getLocation(), Toast.LENGTH_SHORT).show();
                 }
             });
             return convertView;

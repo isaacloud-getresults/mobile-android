@@ -219,7 +219,7 @@ public class TrackService extends Service {
     public class InternetRunnable implements Runnable {
         public void run() {
             while (true) {
-                internetConnection = hasActiveInternetConnection();
+                internetConnection = isNetworkAvailable();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

@@ -5,8 +5,8 @@ import android.util.SparseArray;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.AchievementIC;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.providers.AchievementsProvider;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
 public class AchievementsCache {
@@ -19,9 +19,9 @@ public class AchievementsCache {
         // Exists only to defeat instantiation.
     }
 
-    public static Collection<ResponseItem> makeResponse(final Iterable<AchievementIC> collection) {
+    public static Collection<ResponseItem> makeResponse(final Iterable<Achievement> collection) {
         final Collection<ResponseItem> response = new LinkedList<ResponseItem>();
-        for (final AchievementIC achievement : collection) {
+        for (final Achievement achievement : collection) {
             response.add(achievement.toAchievementResponse());
 
             final Collection<ResponseItem> achievementDescriptionResponse = achievement.toAchievementDescriptionResponse();
@@ -31,24 +31,15 @@ public class AchievementsCache {
     }
 
     public Collection<ResponseItem> getData() {
-        reloadIfNeeded();
         return achievementsResponse;
     }
 
     public Collection<ResponseItem> getDescriptionData(final int id) {
-        reloadIfNeeded();
         return achievementDescriptionResponses.get(id, new LinkedList<ResponseItem>());
     }
 
-    private void reloadIfNeeded() {
-        if (achievementsResponse.isEmpty()) {
-            final Collection<AchievementIC> achievements = AchievementsProvider.INSTANCE.getData();
-            achievementsResponse = makeResponse(achievements);
-        }
-    }
-
     public void reload() {
-        final Collection<AchievementIC> achievements = AchievementsProvider.INSTANCE.getData();
+        final Collection<Achievement> achievements = App.getDataManager().getAchievements();
         achievementsResponse = makeResponse(achievements);
     }
 
@@ -57,7 +48,6 @@ public class AchievementsCache {
     }
 
     public void clear() {
-        AchievementsProvider.INSTANCE.clear();
         achievementsResponse.clear();
     }
 }

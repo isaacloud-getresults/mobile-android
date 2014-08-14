@@ -2,7 +2,7 @@ package getresultsapp.sointeractve.pl.getresultsapp.cards;
 
 import android.content.Context;
 
-import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
 import it.gmariotti.cardslib.library.internal.Card;
 
 /**

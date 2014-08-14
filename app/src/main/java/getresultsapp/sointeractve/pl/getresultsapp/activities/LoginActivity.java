@@ -34,8 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -45,16 +43,14 @@ import java.util.StringTokenizer;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.data.UserData;
-import getresultsapp.sointeractve.pl.getresultsapp.utils.CacheManager;
-import pl.sointeractive.isaacloud.Isaacloud;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -178,7 +174,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
-        CacheManager.INSTANCE.reload();
     }
 
     protected void onStart() {
@@ -310,14 +305,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     public void initializeConnector() {
-        Map<String, String> config = new HashMap<String, String>();
+        /*Map<String, String> config = new HashMap<String, String>();
         config.put("instanceId", Settings.instanceId);
         config.put("appSecret", Settings.appSecret);
         try {
             App.setIsaacloudConnector(new Isaacloud(config));
         } catch (InvalidConfigException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void configureApplication() {
@@ -342,19 +337,17 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     public boolean hasActiveInternetConnection() {
-        if (isNetworkAvailable()) {
+        return isNetworkAvailable();
+        /*if(isNetworkAvailable()) {
             try {
-                HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
-                urlc.setRequestProperty("User-Agent", "Test");
-                urlc.setRequestProperty("Connection", "close");
-                urlc.setConnectTimeout(1500);
-                urlc.connect();
-                return (urlc.getResponseCode() == 200);
-            } catch (IOException e) {
-
+                Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+                int returnVal = p1.waitFor();
+                return (returnVal == 0);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        return false;
+        return false;*/
     }
 
     private boolean isNetworkAvailable() {
@@ -379,39 +372,50 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected Object doInBackground(Object... params) {
-
             Log.d(TAG, "doInBackground()");
-            try {
-                String email;
-                boolean register = true;
-                if (googleLogin) email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-                else email = LoginActivity.this.editEmail.getEditableText().toString();
-                HttpResponse response = App.getIsaacloudConnector().path("/admin/users")
-                        .withLimit(1000).get();
-                Log.d(TAG, response.toString());
-                JSONArray array = response.getJSONArray();
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject json = (JSONObject) array.get(i);
-                    if (email.equals(json.get("email"))) {
 
-                        String userFirstName = json.getString("firstName");
-                        String userLastName = json.getString("lastName");
-                        String userEmail = json.getString("email");
-                        int userId = json.getInt("id");
-                        // send loaded data to App.UserData
-                        UserData userData = new UserData();
-                        userData.setName(userFirstName + " " + userLastName);
-                        userData.setFirstName(userFirstName);
-                        userData.setEmail(userEmail);
-                        userData.setUserId(userId);
-                        App.saveUserData(userData);
-                        // report user found
-                        success = true;
-                        register = false;
-                        // break the loop
-                        break;
-                    }
+            String email;
+            boolean register = true;
+            if (googleLogin) email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+            else email = LoginActivity.this.editEmail.getEditableText().toString();
+            final Map<String, Object> query = new HashMap<String, Object>();
+            query.put("email", email);
+
+            int id = -1;
+            try {
+                HttpResponse idResponse = App.getIsaacloudConnector().path("/cache/users").withFields("id").withQuery(query).get();
+                id = idResponse.getJSONArray().getJSONObject(0).getInt("id");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (id > 0) {
+                    HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id)
+                            .withFields("id", "firstName", "lastName", "level", "email", "counterValues", "leaderboards").get();
+                    Log.d(TAG, response.toString());
+                    final JSONObject userJSON = response.getJSONObject();
+                    String userFirstName = userJSON.getString("firstName");
+                    String userLastName = userJSON.getString("lastName");
+                    String userEmail = userJSON.getString("email");
+                    int userId = userJSON.getInt("id");
+                    // send loaded data to App.UserData
+                    UserData userData = new UserData();
+                    userData.setName(userFirstName + " " + userLastName);
+                    userData.setFirstName(userFirstName);
+                    userData.setEmail(userEmail);
+                    userData.setUserId(userId);
+                    userData.setLeaderboardData(userJSON);
+                    App.saveUserData(userData);
+                    // report user found
+                    success = true;
+                    register = false;
                 }
+
                 if (googleLogin && register) {
                     JSONObject jsonBody = new JSONObject();
                     jsonBody.put("email", Plus.AccountApi.getAccountName(mGoogleApiClient));
@@ -421,19 +425,16 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     jsonBody.put("status", 1);
 
                     UserData userData = App.loadUserData();
-                    HttpResponse registerResponse;
-                    response = App.getIsaacloudConnector().path("/admin/users")
+                    HttpResponse registerResponse = App.getIsaacloudConnector().path("/admin/users")
                             .post(jsonBody);
-                    JSONObject Json = response.getJSONObject();
+                    JSONObject Json = registerResponse.getJSONObject();
                     userData.setUserId(Json.getInt("id"));
                     userData.setName(Json.getString("firstName") + " "
                             + Json.getString("lastName"));
                     userData.setEmail(Json.getString("email"));
                     App.saveUserData(userData);
                     success = true;
-
                 }
-
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -583,9 +584,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             dialog.dismiss();
             if (success) {
                 Log.d(TAG, "SUCCES");
+                LoginCache.INSTANCE.logIn();
                 runMainActivity();
-
-
             } else {
                 Log.d(TAG, "NOT SUCCES");
             }
