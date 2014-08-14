@@ -315,10 +315,13 @@ public class EventManager {
                 App.getDataManager().setPeople(entries);
                 LoginCache.INSTANCE.logIn();
             } catch (JSONException e) {
+                Log.e(TAG, "Error: JSON");
                 e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
+                Log.e(TAG, "Error: IC connection");
                 e.printStackTrace();
             } catch (IOException e1) {
+                Log.e(TAG, "Error: IO, " + e1.getMessage());
                 e1.printStackTrace();
             }
             return null;

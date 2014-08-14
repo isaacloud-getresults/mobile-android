@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
@@ -50,7 +51,9 @@ import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
+import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -251,7 +254,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
             configureApplication();
             initializeConnector();
-            Log.d(TAG, "After configureApplication() " + Settings.instanceId + Settings.appSecret);
+            Log.d(TAG, "After configureApplication() " + IsaaCloudSettings.INSTANCE_ID + " / " + IsaaCloudSettings.APP_SECRET);
         }
 
         if (requestCode == RC_SIGN_IN) {
@@ -305,22 +308,22 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     public void initializeConnector() {
-        /*Map<String, String> config = new HashMap<String, String>();
-        config.put("instanceId", Settings.instanceId);
-        config.put("appSecret", Settings.appSecret);
+        Map<String, String> config = new HashMap<String, String>();
+        config.put("instanceId", IsaaCloudSettings.INSTANCE_ID);
+        config.put("appSecret", IsaaCloudSettings.APP_SECRET);
         try {
             App.setIsaacloudConnector(new Isaacloud(config));
         } catch (InvalidConfigException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     public void configureApplication() {
         String s = App.loadConfigData();
         StringTokenizer tok = new StringTokenizer((s), "/");
         while (tok.hasMoreElements()) {
-            Settings.instanceId = (String) tok.nextElement();
-            Settings.appSecret = (String) tok.nextElement();
+            IsaaCloudSettings.INSTANCE_ID = (String) tok.nextElement();
+            IsaaCloudSettings.APP_SECRET = (String) tok.nextElement();
         }
     }
 

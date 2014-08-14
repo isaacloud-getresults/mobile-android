@@ -53,12 +53,6 @@
             android:name=".activities.RegisterActivity"
             android:label="@string/title_activity_register"/>
 
-        <activity
-            android:name=".activities.PebbleActivity"
-            android:exported="true"
-            android:label="PebbleCommunication"
-            android:screenOrientation="portrait"/>
-
         <!-- SERVICES -->
 
         <service

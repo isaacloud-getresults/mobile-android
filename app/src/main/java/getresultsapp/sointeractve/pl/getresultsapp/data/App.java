@@ -6,11 +6,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
@@ -18,7 +15,6 @@ import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
 import getresultsapp.sointeractve.pl.getresultsapp.utils.PebbleConnector;
 import pl.sointeractive.isaacloud.Isaacloud;
-import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 
 public class App extends Application {
     private static final String TAG = App.class.getSimpleName();
@@ -33,7 +29,6 @@ public class App extends Application {
     @SuppressWarnings("WeakerAccess")
     public App() {
         initPebbleConnector();
-        initIsaacloudConnector();
     }
 
     public static PebbleConnector getPebbleConnector() {
@@ -81,6 +76,10 @@ public class App extends Application {
         return isaacloudConnector;
     }
 
+    public static void setIsaacloudConnector(final Isaacloud isaacloudConnector) {
+        App.isaacloudConnector = isaacloudConnector;
+    }
+
     public static boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) obj.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -97,25 +96,6 @@ public class App extends Application {
 
     public static List<Person> getPeopleAtLocation(Location l) {
         return dataManager.getPeopleAtLocation(l);
-    }
-
-    private static void initIsaacloudConnector() {
-        Log.i(TAG, "Action: Initialize IsaaCloud isaacloudConnector");
-
-        try {
-            isaacloudConnector = new Isaacloud(getIsaacloudConfig());
-        } catch (final InvalidConfigException e) {
-            Log.e(TAG, "Error: Invalid IsaaCloud config");
-        }
-    }
-
-    private static Map<String, String> getIsaacloudConfig() {
-        final Map<String, String> config = new HashMap<String, String>();
-
-        config.put("instanceId", IsaaCloudSettings.INSTANCE_ID);
-        config.put("appSecret", IsaaCloudSettings.APP_SECRET);
-
-        return config;
     }
 
     private void initPebbleConnector() {
