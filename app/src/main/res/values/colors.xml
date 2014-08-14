@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Card Color -->
-    <color name="card_background">#282828</color>
+    <color name="card_background">@color/color_theme_gray_light</color>
     <color name="card_background_header">#282828</color>
     <color name="card_backgroundExpand">#282828</color>
 
@@ -24,5 +24,14 @@
     <!-- Used by sectioned list -->
     <color name="card_section_container_color">@android:color/transparent</color>
     <color name="card_section_title_color">@android:color/black</color>
+
+    <!-- APP THEME COLORS -->
+    <color name="color_theme_background">@android:color/white</color>
+    <color name="color_theme_gray">#ffa8a8a8</color>
+    <color name="color_theme_gray_light">#EBEBEB</color>
+    <color name="color_theme_primary">#72CFA9</color>
+    <color name="color_theme_secondary">#E06760</color>
+    <color name="color_theme_text_dark">#ff5d5d5d</color>
+    <color name="color_theme_text_light">@android:color/white</color>
 
 </resources>

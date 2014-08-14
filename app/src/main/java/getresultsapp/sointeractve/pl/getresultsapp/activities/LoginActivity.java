@@ -101,6 +101,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private Button btnRevokeAccess;
     static boolean internetConnection = true;
     Thread thread;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -472,6 +473,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 success = true;
                 DataManager dm = App.getDataManager();
                 dm.setLocations(locations);
+                dm.setPeople(entries);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -555,7 +557,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
-                Log.d(TAG, "NOT SUCCES");
+                Log.d(TAG, "SUCCES");
                 runMainActivity();
 
 

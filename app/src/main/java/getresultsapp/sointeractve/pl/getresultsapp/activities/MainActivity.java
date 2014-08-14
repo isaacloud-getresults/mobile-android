@@ -4,21 +4,21 @@ import android.app.ActionBar;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 
 import android.support.v4.app.FragmentActivity;
 
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.widget.Toast;
+
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.adapters.PagerAdapter;
-import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
 import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
@@ -31,7 +31,6 @@ public class MainActivity extends FragmentActivity implements
     private ViewPager viewPager;
     private PagerAdapter mAdapter;
     private ActionBar actionBar;
-    private String[] tabs = { "Status", "Locations", "Profile" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,21 +45,26 @@ public class MainActivity extends FragmentActivity implements
         }
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setBackgroundDrawable(null);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.addTab(actionBar.newTab().setIcon(new IconDrawable(this, Iconify.IconValue.fa_user)
+                .colorRes(R.color.color_theme_text_dark)
+                .actionBarSize()).setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setIcon(new IconDrawable(this, Iconify.IconValue.fa_bars)
+                .colorRes(R.color.color_theme_text_dark)
+                .actionBarSize()).setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setIcon(new IconDrawable(this, Iconify.IconValue.fa_trophy)
+                .colorRes(R.color.color_theme_text_dark)
+                .actionBarSize()).setTabListener(this));
+
 
         mAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
-        // add Broadcast manager
-
-        // Adding Tabs
-        for (String tab_name : tabs) {
-            actionBar.addTab(actionBar.newTab().setText(tab_name)
-                    .setTabListener(this));
-        }
         // set page swipe listener
         viewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {

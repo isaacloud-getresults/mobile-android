@@ -4,9 +4,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.fragments.AchievementsFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.LocationsFragment;
 import getresultsapp.sointeractve.pl.getresultsapp.fragments.ProfileFragment;
-import getresultsapp.sointeractve.pl.getresultsapp.fragments.StatusFragment;
 
 public class PagerAdapter extends FragmentPagerAdapter {
 
@@ -18,9 +19,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int pos) {
         switch(pos) {
 
-            case 0: return StatusFragment.newInstance();
+            case 0: return ProfileFragment.newInstance();
             case 1: return LocationsFragment.newInstance();
-            case 2: return ProfileFragment.newInstance();
+            case 2: return AchievementsFragment.newInstance();
             default: return null;
         }
     }

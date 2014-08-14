@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.IconTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,7 +79,6 @@ public class LocationsFragment extends Fragment {
             Log.d(TAG,"Loading: " + l.getLabel());
         }
         statusCard = new StatusCard(context, R.layout.status_card_content);
-        statusCard.initLocation(App.loadUserData().getUserLocation());
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.broadcastIntent));
@@ -91,6 +92,7 @@ public class LocationsFragment extends Fragment {
         cardView = (CardView) view.findViewById(R.id.cardStatus);
         cardView.setCard(this.statusCard);
         expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
+        expandableListView.setGroupIndicator(null);
         expandableListView.setAdapter(listAdapter);
         return view;
     }
@@ -191,18 +193,22 @@ public class LocationsFragment extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
-            //String headerStats = "People here: " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
+            String headerStats = "People here: " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_group, null);
             }
+            IconTextView indicator = (IconTextView) convertView.findViewById(R.id.indicator);
             TextView lblListHeader = (TextView) convertView
                     .findViewById(R.id.lblListHeader);
             TextView lblListHeaderVisits = (TextView) convertView
                     .findViewById(R.id.lblListHeaderVisits);
+            String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
+            indicator.setText(state);
             lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
+            lblListHeaderVisits.setText(headerStats);
 
             //lblListHeaderVisits.setText(headerStats);
             return convertView;
