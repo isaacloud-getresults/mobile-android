@@ -2,9 +2,12 @@ package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
@@ -54,6 +57,8 @@ public class LocationsFragment extends Fragment {
             if ( listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
+            Log.d(TAG, "Problem " + App.loadLoginData().getPassword());
+//            Log.d(TAG, "Problem " + App.loadUserData().getUserLocation().getLabel());
             statusCard.initLocation(App.loadUserData().getUserLocation());
             statusCard.setOnClickListener(null);
             statusCard.setClickable(false);
@@ -82,6 +87,7 @@ public class LocationsFragment extends Fragment {
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.broadcastIntent));
+
     }
 
     @Override
@@ -115,6 +121,11 @@ public class LocationsFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiverLocations);
+    }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++
     // ======== EXPANDABLE LIST ADAPTER CLASS =========
@@ -163,6 +174,21 @@ public class LocationsFragment extends Fragment {
                 public void onClick(View v) {
                     Person person = getChild(groupPosition, childPosition);
                     Toast.makeText(context, person.getFullName() + "\n" + person.getActualLocation(), Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder ad = new AlertDialog.Builder(getActivity());
+                    ad.setIcon(R.drawable.ic_launcher);
+                    ad.setTitle(person.getFullName());
+                    ad.setMessage(person.getFullName());
+                    ad.setPositiveButton(person.getFirstName(), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            dialog.cancel();
+                        }
+                    });
+                    ad.setNegativeButton(person.getLastName(), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            dialog.dismiss();
+                        }
+                    });
+                    ad.show();
                 }
             });
             return convertView;

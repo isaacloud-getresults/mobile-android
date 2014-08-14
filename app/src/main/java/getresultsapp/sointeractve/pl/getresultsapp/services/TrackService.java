@@ -58,6 +58,8 @@ public class TrackService extends Service {
     Context context = App.getInstance().getApplicationContext();
     static boolean internetConnection;
     static boolean previousFlag = false;
+    Thread thread;
+    static Context serviceContext;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,9 +69,9 @@ public class TrackService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        Thread thread = new Thread(new InternetRunnable());
+        thread = new Thread(new InternetRunnable());
         thread.start();
-
+        serviceContext = this;
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
@@ -106,7 +108,9 @@ public class TrackService extends Service {
     public void onDestroy() {
         super.onDestroy();
         beaconManager.disconnect();
-        Toast.makeText(this, "Services stopped", Toast.LENGTH_LONG).show();
+        serviceContext = null;
+        majors = new ArrayList<String>();
+        Toast.makeText(this, "TrackService stopped", Toast.LENGTH_LONG).show();
         if(lastBeacon != null && internetConnection) App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()) , Integer.toString(lastBeacon.getMinor()));
     }
 
@@ -146,6 +150,7 @@ public class TrackService extends Service {
     */
 
     public void trackBeacons(List<Beacon> beacons) {
+
         ArrayList<String> helper = new ArrayList<String>();
         Vibrator v = (Vibrator)context.getSystemService((Context.VIBRATOR_SERVICE));
         for(Beacon b : beacons) {
@@ -158,24 +163,24 @@ public class TrackService extends Service {
                     if (internetConnection)
                         App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
                     lastBeacon = b;
-                    v.vibrate(500);
+//                    v.vibrate(0);
                 }
-            }
-
+            } else previousFlag = false;
+            if(internetConnection == false) Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
         }
 
         temp = new ArrayList<String>(majors);
         for(String i : temp) {
             Beacon tempBeacon = beaconMap.get(i);
             if(!(helper.contains(i))) {
-                if(readyToSend(tempBeacon, false)) {
+                if(readyToSend(tempBeacon, true)) {
                     majors.remove(i);
                     Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()), Integer.toString(tempBeacon.getMinor()));
-                    v.vibrate(500);
+//                    v.vibrate(0);
                 }
-            }
+            } else previousFlag = false;
         }
     }
 
@@ -202,8 +207,8 @@ public class TrackService extends Service {
 
     public class InternetRunnable implements Runnable {
         public void run() {
-            while(true) {
-                internetConnection = hasActiveInternetConnection();
+            while(serviceContext != null) {
+                internetConnection = isNetworkAvailable();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -227,7 +232,7 @@ public class TrackService extends Service {
 
             }
         } else {
-//            Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
+
         }
         return false;
     }

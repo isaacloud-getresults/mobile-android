@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.activities.LoginActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.LogoutCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.ProfileCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.SettingsCard;
@@ -71,6 +72,17 @@ public class ProfileFragment extends Fragment {
         statsCardView.setCard(this.statsCard);
         logoutCardView.setCard(new LogoutCard(context));
 
+        logoutCardView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent i = new Intent(context, LoginActivity.class);
+                i.putExtra("logout", true);
+                startActivity(i);
+
+                getActivity().finish();
+            }
+        });
+
         return view;
     }
 
@@ -81,6 +93,9 @@ public class ProfileFragment extends Fragment {
 
     }
 
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiverProfile);
+    }
 }

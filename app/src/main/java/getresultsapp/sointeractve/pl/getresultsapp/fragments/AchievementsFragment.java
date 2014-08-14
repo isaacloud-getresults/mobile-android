@@ -29,7 +29,7 @@ import it.gmariotti.cardslib.library.view.CardGridView;
 
 
 public class AchievementsFragment extends Fragment {
-
+    static int count;
     Context context;
     CardGridArrayAdapter cardGridAdapter;
     ArrayList<Card> achievementCards = new ArrayList<Card>();
@@ -44,7 +44,7 @@ public class AchievementsFragment extends Fragment {
             Log.d(TAG,"onReceive called");
             Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(250);
+//            v.vibrate(250);
             initAchievementCards();
         }
     };

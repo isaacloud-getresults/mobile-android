@@ -36,7 +36,7 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if(extras != null){
+        if(extras != null) {
             if(extras.containsKey("achPointer")) {
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
@@ -122,6 +122,11 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     protected void onDestroy() {
+        Intent i = new Intent(getApplicationContext(), DataService.class);
+        getApplicationContext().stopService(i);
+        Intent j = new Intent(getApplicationContext(), TrackService.class);
+        getApplicationContext().stopService(j);
         super.onDestroy();
+
     }
 }
