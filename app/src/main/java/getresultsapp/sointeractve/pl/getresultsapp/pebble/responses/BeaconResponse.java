@@ -4,8 +4,6 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 
 import java.util.List;
 
-import getresultsapp.sointeractve.pl.getresultsapp.utils.DictionaryBuilder;
-
 public class BeaconResponse implements ResponseItem {
     private static final int RESPONSE_ID = 2;
 

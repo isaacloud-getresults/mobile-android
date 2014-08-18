@@ -5,7 +5,6 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 import java.util.List;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
-import getresultsapp.sointeractve.pl.getresultsapp.utils.DictionaryBuilder;
 
 public class AchievementResponse implements ResponseItem {
     private static final int RESPONSE_ID = 4;

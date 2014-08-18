@@ -12,8 +12,8 @@ import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.PebbleConnector;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
-import getresultsapp.sointeractve.pl.getresultsapp.utils.PebbleConnector;
 import pl.sointeractive.isaacloud.Isaacloud;
 
 public class App extends Application {
@@ -44,6 +44,28 @@ public class App extends Application {
     }
 
     public static void saveUserData(UserData userData) {
+        UserData previousUser = fileManager.loadUserData(obj);
+
+        String oldEmail = "";
+        if (previousUser != null) {
+            oldEmail = previousUser.getEmail();
+            if (oldEmail == null) {
+                oldEmail = "";
+            }
+        }
+
+        String newEmail = "";
+        if (userData != null) {
+            newEmail = userData.getEmail();
+            if (newEmail == null) {
+                newEmail = "";
+            }
+        }
+
+        if (!oldEmail.equals(newEmail)) {
+            pebbleConnector.closePebbleApp();
+        }
+
         fileManager.saveUserData(userData, obj);
         LoginCache.INSTANCE.reload();
     }

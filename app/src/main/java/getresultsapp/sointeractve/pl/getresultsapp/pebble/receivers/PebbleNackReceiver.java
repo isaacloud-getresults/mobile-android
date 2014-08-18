@@ -7,7 +7,7 @@ import com.sointeractive.android.kit.PebbleKit;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.utils.PebbleConnector;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.PebbleConnector;
 
 public class PebbleNackReceiver extends PebbleKit.PebbleNackReceiver {
     private static final String TAG = PebbleNackReceiver.class.getSimpleName();

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Queue;
 
 import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
-import getresultsapp.sointeractve.pl.getresultsapp.utils.DictionaryBuilder;
 
 public class AchievementDescriptionResponse implements ResponseItem {
     private static final int RESPONSE_ID = 5;

@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.utils;
+package getresultsapp.sointeractve.pl.getresultsapp.pebble;
 
 import android.content.Context;
 import android.util.Log;
@@ -95,5 +95,9 @@ public class PebbleConnector extends Observable {
         }
 
         return appMessagesSupported;
+    }
+
+    public void closePebbleApp() {
+        PebbleKit.closeAppOnPebble(context, PebbleSettings.PEBBLE_APP_UUID);
     }
 }
