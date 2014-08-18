@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -69,7 +70,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private static final String TAG = "LoginActivity";
     private static boolean internetConnection = true;
     private static Context context;
-    private Thread thread;
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     /**
@@ -89,6 +89,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private CheckBox checkbox;
     private ActionBar actionBar;
     private boolean Glogin = true;
+    private boolean isInternetCheckerActive = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +97,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         setContentView(R.layout.activity_login);
 
         context = this;
-        thread = new Thread(new InternetRunnable());
+        Thread thread = new Thread(new InternetRunnable());
         thread.start();
         configureApplication();
         loginData = App.loadLoginData();
@@ -283,7 +284,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 if (contents.contains("/?*#$!%@/")) {
                     // String for QR code: 179/?*#$!%@/3f14569b750b69a8bc352cb34ad3e
                     StringTokenizer tokenizer = new StringTokenizer((contents), "/?*#$!%@/");
-                    String conf = (String) (tokenizer.nextElement() + "/" + tokenizer.nextElement());
+                    String conf = tokenizer.nextElement() + "/" + tokenizer.nextElement();
                     App.saveConfigData(conf);
 
                     Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
@@ -291,7 +292,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     Toast.makeText(getApplicationContext(), "Inappropriate QR code", Toast.LENGTH_SHORT).show();
             }
             if (resultCode == RESULT_CANCELED) {
-                //handle cancel
+                // TODO: Handle cancel
             }
             configureApplication();
             initializeConnector();
@@ -538,7 +539,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         entries.put(loc.getId(), new LinkedList<Person>());
                         locations.add(loc);
                     }
-                    if (loc.getId() == Integer.parseInt(Settings.nullRoomCounter)) {
+                    if (loc.getId() == Integer.parseInt(Settings.NULL_ROOM_COUNTER)) {
                         UserData userData = App.loadUserData();
                         userData.setUserLocation(loc);
                         App.saveUserData(userData);
@@ -565,7 +566,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (success) {
                 new EventGetAchievements().execute();
             } else {
-                Log.d(TAG, "NOT SUCCES");
+                Log.d(TAG, "NOT SUCCESS");
             }
         }
 
@@ -589,7 +590,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             try {
 
                 // ACHIEVEMENTS REQUEST
-                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                SparseIntArray idMap = new SparseIntArray();
 //                Log.d(TAG, "ACTUAL USER ID IS from object: " + userData.getUserId());
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
@@ -607,7 +608,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 Log.d("TEST", arrayGeneral.toString(3));
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.containsKey(json.getInt("id"))) {
+                    if (idMap.get(json.getInt("id"), -1) != -1) {
                         achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
@@ -631,11 +632,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
-                Log.d(TAG, "SUCCES");
+                Log.d(TAG, "SUCCESS");
+                isInternetCheckerActive = false;
                 LoginCache.INSTANCE.logIn();
                 runMainActivity();
             } else {
-                Log.d(TAG, "NOT SUCCES");
+                Log.d(TAG, "NOT SUCCESS");
             }
         }
 
@@ -643,12 +645,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     private class InternetRunnable implements Runnable {
         public void run() {
-            while (true) {
+            while (isInternetCheckerActive) {
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-
+                    return;
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
             }

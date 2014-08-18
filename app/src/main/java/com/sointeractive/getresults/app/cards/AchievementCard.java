@@ -6,12 +6,9 @@ import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 
 import it.gmariotti.cardslib.library.internal.Card;
 
-/**
- * Created by mac on 06.08.2014.
- */
 public class AchievementCard extends Card {
 
-    private Achievement achievementData;
+    private final Achievement achievementData;
 
     public AchievementCard(Context context, Achievement a) {
         super(context);

@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import com.sointeractive.getresults.app.R;
 import com.sointeractive.getresults.app.activities.MainActivity;
@@ -27,7 +28,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class EventManager {
     private static int notificationId = 0;
 
     public EventManager() {
-        this.context = App.getInstance().getApplicationContext();
+        context = App.getInstance().getApplicationContext();
     }
 
     private static void generateNotification(String ticker, String title, String message) {
@@ -100,9 +100,9 @@ public class EventManager {
 
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
+        final UserData userData = App.loadUserData();
         HttpResponse response;
         boolean isError = false;
-        UserData userData = App.loadUserData();
 
         @Override
         protected Object doInBackground(Object... params) {
@@ -140,10 +140,10 @@ public class EventManager {
 
     private class EventPostNewBeacon extends AsyncTask<String, Object, Object> {
 
-        String TAG = "EventPostNewBeacon";
+        final String TAG = "EventPostNewBeacon";
+        final UserData userData = App.loadUserData();
         HttpResponse response;
         boolean isError = false;
-        UserData userData = App.loadUserData();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -186,12 +186,11 @@ public class EventManager {
     private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
 
 
-        String TAG = "EventGetNewLocation";
-        Intent message = new Intent(Settings.broadcastIntentUpdateData);
+        final String TAG = "EventGetNewLocation";
+        final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
+        final UserData userData = App.loadUserData();
         HttpResponse response;
         boolean isError = false;
-        UserData userData = App.loadUserData();
-
 
         @Override
         protected Object doInBackground(Object... beaconId) {
@@ -204,7 +203,7 @@ public class EventManager {
                 JSONArray gainedAchievements = json.getJSONArray("gainedAchievements");
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject o = (JSONObject) array.get(i);
-                    if (o.getString("counter").equals(Settings.locationCounter)) {
+                    if (o.getString("counter").equals(Settings.LOCATION_COUNTER)) {
                         userData.setUserLocation(Integer.parseInt(o.getString("value")));
                     }
                 }
@@ -247,10 +246,10 @@ public class EventManager {
 
     private class EventPostLeftBeacon extends AsyncTask<String, Object, Object> {
 
-        String TAG = "EventPostLeftBeacon";
+        final String TAG = "EventPostLeftBeacon";
+        final UserData userData = App.loadUserData();
         HttpResponse response;
         boolean isError = false;
-        UserData userData = App.loadUserData();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -288,9 +287,9 @@ public class EventManager {
 
     private class EventUpdateData extends AsyncTask<String, Object, Object> {
 
-        String TAG = "EventUpdateData";
+        final String TAG = "EventUpdateData";
+        final boolean isError = false;
         HttpResponse response;
-        boolean isError = false;
 
         @Override
         protected Object doInBackground(String... data) {
@@ -330,7 +329,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             Log.d(TAG, "onPostExecute()");
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.broadcastIntentUpdateData));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA));
             if (isError) {
                 Log.d(TAG, "onPostExecute() - error detected");
             }
@@ -342,8 +341,8 @@ public class EventManager {
 
     private class EventCheckAchievements extends AsyncTask<Object, Object, Object> {
 
+        final List<Achievement> newAchievements = new ArrayList<Achievement>();
         UserData userData;
-        List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(Object... params) {
@@ -351,7 +350,7 @@ public class EventManager {
             Log.d(TAG, "!!!!!!!!!!!!userData!!!!!!!!!!!!!! " + userData.getName() + userData.getUserId());
             try {
                 // ACHIEVEMENTS REQUEST
-                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                SparseIntArray idMap = new SparseIntArray();
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
@@ -366,7 +365,7 @@ public class EventManager {
                 JSONArray arrayGeneral = responseGeneral.getJSONArray();
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.containsKey(json.getInt("id"))) {
+                    if (idMap.get(json.getInt("id"), -1) != -1) {
                         newAchievements.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
@@ -383,7 +382,7 @@ public class EventManager {
         protected void onPostExecute(Object result) {
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
             for (Achievement a : actualAchievements) {
-                Log.d(TAG, "actualAvhievements: " + a.getLabel());
+                Log.d(TAG, "actualAchievements: " + a.getLabel());
             }
             for (Achievement a : newAchievements) {
                 Log.d(TAG, "new Achievements: " + a.getLabel());
@@ -400,7 +399,7 @@ public class EventManager {
                     i++;
                 }
                 if (recentAchievement != null) {
-                    Intent intent = new Intent(Settings.broadcastIntentNewAchievement);
+                    Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", recentAchievement.getLabel());
                     App.getDataManager().setAchievements(newAchievements);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

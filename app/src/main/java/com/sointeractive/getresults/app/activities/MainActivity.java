@@ -68,7 +68,6 @@ public class MainActivity extends FragmentActivity implements
                 }
         );
 
-
         // SEND LOGIN EVENT
         App.getEventManager().postEventLogin();
 

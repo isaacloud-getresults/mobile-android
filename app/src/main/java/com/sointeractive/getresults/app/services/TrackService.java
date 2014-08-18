@@ -32,20 +32,19 @@ public class TrackService extends Service {
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     //
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, 6000, null);
+    private static final SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
+    private static final HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
+    private static final HashMap<String, Integer> counterMap = new HashMap<String, Integer>();
     static HashMap<String, String> x = new HashMap<String, String>();
-    private static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     private static ArrayList<String> majors = new ArrayList<String>();
     private static ArrayList<String> temp;
-    private static HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
-    private static HashMap<String, Integer> counterMap = new HashMap<String, Integer>();
     private static boolean internetConnection;
     private static boolean previousFlag = false;
     private static Context serviceContext;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
+    private final Context context = App.getInstance().getApplicationContext();
+    private final BeaconManager beaconManager = new BeaconManager(this);
     private Beacon lastBeacon;
-    private Context context = App.getInstance().getApplicationContext();
-    private Thread thread;
-    private BeaconManager beaconManager = new BeaconManager(this);
 
     public TrackService() {
     }
@@ -58,7 +57,7 @@ public class TrackService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        thread = new Thread(new InternetRunnable());
+        final Thread thread = new Thread(new InternetRunnable());
         thread.start();
         serviceContext = this;
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
@@ -144,11 +143,11 @@ public class TrackService extends Service {
         ArrayList<String> helper = new ArrayList<String>();
         Vibrator v = (Vibrator) context.getSystemService((Context.VIBRATOR_SERVICE));
         for (Beacon b : beacons) {
-            helper.add(new String(b.getMacAddress()));
+            helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
-            if (!(majors.contains(new String(b.getMacAddress())))) {
+            if (!(majors.contains(b.getMacAddress()))) {
                 if (readyToSend(b, true)) {
-                    majors.add(new String(b.getMacAddress()));
+                    majors.add(b.getMacAddress());
                     Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
@@ -206,10 +205,8 @@ public class TrackService extends Service {
                 urlc.connect();
                 return (urlc.getResponseCode() == 200);
             } catch (IOException e) {
-
+                return false;
             }
-        } else {
-
         }
         return false;
     }
@@ -228,7 +225,7 @@ public class TrackService extends Service {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-
+                    return;
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
             }

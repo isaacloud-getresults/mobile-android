@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/card_settings_height"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/card_settings_height"
+              android:gravity="center"
 
-    android:gravity="center">
+              android:orientation="vertical">
+
     <IconTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_margin="10dp"
+        android:gravity="center"
         android:text="{fa-gear}"
-        android:textSize="40dp"
-        android:textColor="@color/color_theme_gray" />
+        android:textColor="@color/color_theme_gray"
+        android:textSize="40sp"/>
 
 </LinearLayout>

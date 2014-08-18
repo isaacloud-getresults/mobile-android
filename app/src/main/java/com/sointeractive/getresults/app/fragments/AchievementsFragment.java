@@ -31,7 +31,7 @@ import it.gmariotti.cardslib.library.view.CardGridView;
 public class AchievementsFragment extends Fragment {
 
     private static final String TAG = "AchievementsFragment";
-    private BroadcastReceiver receiverAchievements = new BroadcastReceiver() {
+    private final BroadcastReceiver receiverAchievements = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -43,12 +43,12 @@ public class AchievementsFragment extends Fragment {
             initAchievementCards();
         }
     };
+    private final ArrayList<Card> achievementCards = new ArrayList<Card>();
     private Context context;
     private CardGridArrayAdapter cardGridAdapter;
-    private ArrayList<Card> achievementCards = new ArrayList<Card>();
     private OnFragmentInteractionListener mListener;
 
-    public AchievementsFragment() {
+    private AchievementsFragment() {
         // Required empty public constructor
     }
 
@@ -64,7 +64,7 @@ public class AchievementsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverAchievements,
-                new IntentFilter(Settings.broadcastIntentNewAchievement));
+                new IntentFilter(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT));
         context = this.getActivity();
         initAchievementCards();
         cardGridAdapter = new CardGridArrayAdapter(context, achievementCards);

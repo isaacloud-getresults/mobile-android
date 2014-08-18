@@ -28,7 +28,7 @@ import it.gmariotti.cardslib.library.view.CardView;
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
-    private BroadcastReceiver receiverProfile = new BroadcastReceiver() {
+    private final BroadcastReceiver receiverProfile = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -55,7 +55,7 @@ public class ProfileFragment extends Fragment {
         settingsCard = new SettingsCard(context);
         statsCard = new StatsCard(context);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
-                new IntentFilter(Settings.broadcastIntentUpdateData));
+                new IntentFilter(Settings.BROADCAST_INTENT_UPDATE_DATA));
 
     }
 

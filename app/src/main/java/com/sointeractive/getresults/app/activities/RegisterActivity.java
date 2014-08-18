@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,7 +30,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -177,7 +177,7 @@ public class RegisterActivity extends Activity {
             if (success) {
                 new EventGetLocations().execute();
             } else {
-                // error login activity here;
+                // TODO: error login activity here;
             }
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();
@@ -233,7 +233,7 @@ public class RegisterActivity extends Activity {
                 }
 
                 // ACHIEVEMENTS REQUEST
-                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                SparseIntArray idMap = new SparseIntArray();
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
@@ -250,7 +250,7 @@ public class RegisterActivity extends Activity {
                 Log.d("TEST", arrayGeneral.toString(3));
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.containsKey(json.getInt("id"))) {
+                    if (idMap.get(json.getInt("id"), -1) != -1) {
                         achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
@@ -279,7 +279,7 @@ public class RegisterActivity extends Activity {
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
             } else {
-                Log.d(TAG, "NOT SUCCES");
+                Log.d(TAG, "NOT SUCCESS");
             }
         }
 

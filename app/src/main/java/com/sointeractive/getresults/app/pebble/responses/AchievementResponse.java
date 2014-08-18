@@ -20,9 +20,6 @@ public class AchievementResponse implements ResponseItem {
 
     @Override
     public List<PebbleDictionary> getData() {
-        int descriptionMaxLength = Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
-        descriptionMaxLength -= name.length();
-
         return new DictionaryBuilder(RESPONSE_ID)
                 .addInt(id)
                 .addString(name)

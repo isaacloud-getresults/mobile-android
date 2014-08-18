@@ -2,7 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <item name="android:windowBackground">@color/color_theme_background </item>
+        <item name="android:windowBackground">@color/color_theme_background</item>
     </style>
 
     <style name="labelStyle" parent="android:Theme.Holo.Light">
@@ -106,7 +106,6 @@
         <item name="android:paddingRight">@dimen/card_expand_simple_title_paddingRight</item>
         <item name="android:textColor">@color/card_expand_title_color</item>
     </style>
-
 
 
 </resources>

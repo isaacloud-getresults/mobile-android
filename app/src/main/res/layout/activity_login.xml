@@ -37,8 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_items_height"
                 android:layout_marginTop="5dp"
-                android:inputType="textEmailAddress"
-                android:password="true"
+                android:inputType="textPassword"
                 android:text="Google@1998"/>
 
             <CheckBox

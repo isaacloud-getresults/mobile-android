@@ -28,7 +28,7 @@ public class DataService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "startService");
         timer = new Timer();
-        timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.dataDownloadInterval);
+        timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.DATA_DOWNLOAD_INTERVAL);
 //        SocketIONotifier.INSTANCE.connect(userId);
         return Service.START_NOT_STICKY;
     }

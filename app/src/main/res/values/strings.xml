@@ -32,7 +32,7 @@
     <string name="error_password">Password needs to be at least 6 characters long, requires at least one upper and one lower case letter, one number, and one special character ( @#$%\\. )</string>
     <string name="error_login">Unable to log in using current data. Please check if the user email and password are correct or use different data.</string>
     <string name="error_register">Unable to register using current data. Please try using different email.</string>
-    <string name="error_not_online">No internet connection detected. Please connect before loggin in.</string>
+    <string name="error_not_online">No internet connection detected. Please connect before logging in.</string>
 
 
     <!-- NotificationsFragment -->
