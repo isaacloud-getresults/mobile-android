@@ -33,10 +33,25 @@
     <string name="error_login">Unable to log in using current data. Please check if the user email and password are correct or use different data.</string>
     <string name="error_register">Unable to register using current data. Please try using different email.</string>
     <string name="error_not_online">No internet connection detected. Please connect before loggin in.</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
     <!-- NotificationsFragment -->
     <string name="fragment_notifications_fragment_name">Notifications Fragment</string>
     <string name="fragment_notifications_empty">No notifications</string>
 
+    <!-- PebbleActivity -->
+    <!-- Layout-->
+    <string name="notification_send_button_label">Send notification</string>
+    <string name="notification_body_text_field_hint">Notification body</string>
+    <string name="notification_title_text_field_hint">Notification title</string>
+
+    <!-- Pebble messages form -->
+    <string name="ok_connection_to_pebble">Connection to Pebble OK</string>
+    <string name="app_messages_not_supported">Sorry, AppMessages are not supported</string>
+    <string name="pebble_not_connected">Pebble not connected</string>
+
+    <!-- Login form -->
+    <string name="login_button_label">Log in</string>
+    <string name="login_email_hint">e-mail</string>
+    <string name="cache_clear_button_label">Clear cache</string>
 </resources>

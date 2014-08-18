@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.AchievementCard;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
-import getresultsapp.sointeractve.pl.getresultsapp.data.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardGridArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardGridView;
 
 
 public class AchievementsFragment extends Fragment {
-    static int count;
+
     Context context;
     CardGridArrayAdapter cardGridAdapter;
     ArrayList<Card> achievementCards = new ArrayList<Card>();

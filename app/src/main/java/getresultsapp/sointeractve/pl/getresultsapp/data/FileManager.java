@@ -1,5 +1,8 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,24 +11,22 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
-import java.util.StringTokenizer;
 
-import android.content.Context;
-
-import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
 
 /**
  * This is a helper class for saving and loading files from the application
  * folder.
  *
  * @author Mateusz Renes
- *
  */
 public class FileManager {
 
     private static final String userDataFileName = "user_data.dat";
     private static final String loginDataFileName = "login_data.dat";
     private static final String configDataFileName = "config_data.dat";
+    private static final String TAG = FileManager.class.getSimpleName();
 
     public UserData loadUserData(App app) {
         UserData data = null;
@@ -42,7 +43,7 @@ public class FileManager {
             ois.close();
             fis.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "File not found");
         } catch (StreamCorruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
