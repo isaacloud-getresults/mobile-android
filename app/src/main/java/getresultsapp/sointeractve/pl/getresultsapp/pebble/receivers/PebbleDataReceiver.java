@@ -9,7 +9,7 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 
 import java.util.Collection;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.communication.Request;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.communication.Responder;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
@@ -20,7 +20,7 @@ public class PebbleDataReceiver extends PebbleKit.PebbleDataReceiver {
     private final Handler handler = new Handler();
 
     public PebbleDataReceiver() {
-        super(PebbleSettings.PEBBLE_APP_UUID);
+        super(Settings.PEBBLE_APP_UUID);
     }
 
     @Override

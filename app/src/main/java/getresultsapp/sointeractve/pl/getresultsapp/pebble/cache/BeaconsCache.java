@@ -3,10 +3,9 @@ package getresultsapp.sointeractve.pl.getresultsapp.pebble.cache;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.BeaconsInfoChangeChecker;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.checker.BeaconsInfoChangeChecker;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.BeaconResponse;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
@@ -51,7 +50,7 @@ public class BeaconsCache {
             }
         }
 
-        return IsaaCloudSettings.ROOM_NOT_FOUND_NAME;
+        return "";
     }
 
     public void clear() {

@@ -12,8 +12,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.UserData;
 
 /**
  * This is a helper class for saving and loading files from the application
@@ -21,7 +21,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
  *
  * @author Mateusz Renes
  */
-public class FileManager {
+class FileManager {
 
     private static final String userDataFileName = "user_data.dat";
     private static final String loginDataFileName = "login_data.dat";

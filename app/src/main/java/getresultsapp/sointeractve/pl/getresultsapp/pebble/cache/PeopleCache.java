@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.NewPeopleChecker;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.checker.NewPeopleChecker;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 
 public class PeopleCache {

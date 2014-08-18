@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
+package getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -7,9 +7,9 @@ import org.json.JSONObject;
  * Data store class for notifications.
  */
 
-public class Notification {
+class Notification {
 
-    JSONObject data;
+    private JSONObject data;
     private String title, message;
 
     public Notification(JSONObject data, String title, String message) {

@@ -8,10 +8,10 @@ import android.util.Log;
 
 import java.util.List;
 
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.PebbleConnector;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
 import pl.sointeractive.isaacloud.Isaacloud;
@@ -106,10 +106,7 @@ public class App extends Application {
         ConnectivityManager cm =
                 (ConnectivityManager) obj.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-        return false;
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public static List<Location> getLocations() {

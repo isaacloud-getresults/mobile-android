@@ -33,19 +33,19 @@ public class TrackService extends Service {
     private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     //
     private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, 6000, null);
-    static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
-    static ArrayList<String> majors = new ArrayList<String>();
-    static ArrayList<String> temp;
     static HashMap<String, String> x = new HashMap<String, String>();
-    static HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
-    static HashMap<String, Integer> counterMap = new HashMap<String, Integer>();
-    static boolean internetConnection;
-    static boolean previousFlag = false;
-    static Context serviceContext;
-    Handler handler = new Handler();
-    Beacon lastBeacon;
-    Context context = App.getInstance().getApplicationContext();
-    Thread thread;
+    private static SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
+    private static ArrayList<String> majors = new ArrayList<String>();
+    private static ArrayList<String> temp;
+    private static HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
+    private static HashMap<String, Integer> counterMap = new HashMap<String, Integer>();
+    private static boolean internetConnection;
+    private static boolean previousFlag = false;
+    private static Context serviceContext;
+    private Handler handler = new Handler();
+    private Beacon lastBeacon;
+    private Context context = App.getInstance().getApplicationContext();
+    private Thread thread;
     private BeaconManager beaconManager = new BeaconManager(this);
 
     public TrackService() {
@@ -106,11 +106,11 @@ public class TrackService extends Service {
             App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()), Integer.toString(lastBeacon.getMinor()));
     }
 
-    public void runOnUiThread(Runnable runnable) {
+    void runOnUiThread(Runnable runnable) {
         handler.post(runnable);
     }
 
-    public void writeDistance(Beacon beacon) {
+    void writeDistance(Beacon beacon) {
         ArrayList<Double> help;
 
         if ((beaconDistances.size() == 0) || (beaconDistances.get(beacon.getMajor()) == null)) {
@@ -119,7 +119,7 @@ public class TrackService extends Service {
             help = beaconDistances.get(beacon.getMajor());
 
         }
-        help.add(new Double(Utils.computeAccuracy(beacon)));
+        help.add(Utils.computeAccuracy(beacon));
         beaconDistances.put(beacon.getMajor(), help);
 
 
@@ -140,7 +140,7 @@ public class TrackService extends Service {
     }
     */
 
-    public void trackBeacons(List<Beacon> beacons) {
+    void trackBeacons(List<Beacon> beacons) {
 
         ArrayList<String> helper = new ArrayList<String>();
         Vibrator v = (Vibrator) context.getSystemService((Context.VIBRATOR_SERVICE));
@@ -157,7 +157,7 @@ public class TrackService extends Service {
 //                    v.vibrate(0);
                 }
             } else previousFlag = false;
-            if (internetConnection == false)
+            if (!internetConnection)
                 Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
         }
 
@@ -181,7 +181,7 @@ public class TrackService extends Service {
         Integer i;
 
         if (!counterMap.containsKey(mac) || flag != previousFlag) {
-            counterMap.put(mac, new Integer(0));
+            counterMap.put(mac, 0);
         } else {
             i = counterMap.get(mac);
             i++;
@@ -222,7 +222,7 @@ public class TrackService extends Service {
         return activeNetworkInfo != null;
     }
 
-    public class InternetRunnable implements Runnable {
+    private class InternetRunnable implements Runnable {
         public void run() {
             while (serviceContext != null) {
                 internetConnection = isNetworkAvailable();

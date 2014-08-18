@@ -10,9 +10,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
-import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
-import getresultsapp.sointeractve.pl.getresultsapp.config.WebsocketSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
@@ -21,9 +19,9 @@ public class SocketIONotifier extends SocketIOClient {
     private int userId;
 
     private SocketIONotifier() {
-        super(WebsocketSettings.SERVER_ADDRESS);
+        super(Settings.SERVER_ADDRESS);
 
-        getSocket().on(WebsocketSettings.LISTEN_EVENT, new Emitter.Listener() {
+        getSocket().on(Settings.LISTEN_EVENT, new Emitter.Listener() {
             @Override
             public void call(final Object... args) {
                 onCustomEvent(getSafeString(args));
@@ -63,15 +61,15 @@ public class SocketIONotifier extends SocketIOClient {
     }
 
     private String getUrl() {
-        return String.format(WebsocketSettings.URL_TO_LISTEN, IsaaCloudSettings.PEBBLE_NOTIFICATION_ID, userId);
+        return String.format(Settings.URL_TO_LISTEN, Settings.PEBBLE_NOTIFICATION_ID, userId);
     }
 
     private void onCustomEvent(final String response) {
-        Log.i(TAG, "Event: received " + WebsocketSettings.LISTEN_EVENT + ": " + response);
+        Log.i(TAG, "Event: received " + Settings.LISTEN_EVENT + ": " + response);
         try {
             final JSONObject notification = new JSONObject(response);
             final String message = notification.getJSONObject("data").getJSONObject("body").getString("message");
-            App.getPebbleConnector().sendNotification(PebbleSettings.IC_NOTIFICATION_HEADER, message);
+            App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
         } catch (final JSONException e) {
             Log.e(TAG, "Error: Not valid notification response");
         }
@@ -80,7 +78,7 @@ public class SocketIONotifier extends SocketIOClient {
 
     private void emit(final String message) {
         Log.d(TAG, "Action: Emit message: " + message);
-        getSocket().emit(WebsocketSettings.EMIT_EVENT, message, new Ack() {
+        getSocket().emit(Settings.EMIT_EVENT, message, new Ack() {
             @Override
             public void call(final Object... args) {
                 Log.d(TAG, "Event: Ack, message: " + getSafeString(args));

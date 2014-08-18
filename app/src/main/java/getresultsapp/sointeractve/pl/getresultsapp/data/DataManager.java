@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.AchievementsCache;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.BeaconsCache;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;

@@ -24,15 +24,14 @@ public class MainActivity extends FragmentActivity implements
 
     private static final String TAG = "UserActivity";
     private ViewPager viewPager;
-    private PagerAdapter mAdapter;
     private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            if(extras.containsKey("achPointer")) {
+        if (extras != null) {
+            if (extras.containsKey("achPointer")) {
                 Intent intent = new Intent(this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -58,7 +57,7 @@ public class MainActivity extends FragmentActivity implements
                 .actionBarSize()).setTabListener(this));
 
 
-        mAdapter = new PagerAdapter(getSupportFragmentManager());
+        final PagerAdapter mAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
         // set page swipe listener
         viewPager.setOnPageChangeListener(

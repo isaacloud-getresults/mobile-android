@@ -23,18 +23,18 @@ import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.StatusCard;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
 import it.gmariotti.cardslib.library.view.CardView;
 
 
 public class LocationsFragment extends Fragment {
 
     private static final String TAG = "LocationsFragment";
-    ExpandableListAdapter listAdapter;
-    ExpandableListView expandableListView;
-    List<Location> locationsArray;
-    StatusCard statusCard;
+    private ExpandableListAdapter listAdapter;
+    private ExpandableListView expandableListView;
+    private List<Location> locationsArray;
+    private StatusCard statusCard;
     private BroadcastReceiver receiverLocations = new BroadcastReceiver() {
 
         @Override
@@ -51,8 +51,8 @@ public class LocationsFragment extends Fragment {
             cardView.refreshCard(statusCard);
         }
     };
-    CardView cardView;
-    Context context;
+    private CardView cardView;
+    private Context context;
 
     public static LocationsFragment newInstance() {
         Log.d(TAG, "newInstance");
@@ -94,11 +94,6 @@ public class LocationsFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         context = activity.getApplicationContext();
@@ -134,8 +129,7 @@ public class LocationsFragment extends Fragment {
         @Override
         public Person getChild(int groupPosition, int childPosition) {
             List<Person> list = App.getPeopleAtLocation(locationsList.get(groupPosition));
-            Person child = list.get(childPosition);
-            return child;
+            return list.get(childPosition);
         }
 
         @Override
@@ -144,7 +138,7 @@ public class LocationsFragment extends Fragment {
         }
 
         @Override
-        public View getChildView( int groupPosition, int childPosition,
+        public View getChildView(int groupPosition, int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
 
             final String childText = getChild(groupPosition, childPosition).getFullName();

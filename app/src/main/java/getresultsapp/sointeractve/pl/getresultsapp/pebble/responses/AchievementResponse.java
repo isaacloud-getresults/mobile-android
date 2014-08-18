@@ -4,7 +4,7 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 
 import java.util.List;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 
 public class AchievementResponse implements ResponseItem {
     private static final int RESPONSE_ID = 4;
@@ -21,7 +21,7 @@ public class AchievementResponse implements ResponseItem {
 
     @Override
     public List<PebbleDictionary> getData() {
-        int descriptionMaxLength = PebbleSettings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
+        int descriptionMaxLength = Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
         descriptionMaxLength -= name.length();
 
         return new DictionaryBuilder(RESPONSE_ID)
@@ -33,7 +33,7 @@ public class AchievementResponse implements ResponseItem {
 
     private int getDescriptionPartsNumber() {
         final double stringLength = description.length();
-        final double partSize = PebbleSettings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
+        final double partSize = Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
         return (int) Math.ceil(stringLength / partSize);
     }
 }

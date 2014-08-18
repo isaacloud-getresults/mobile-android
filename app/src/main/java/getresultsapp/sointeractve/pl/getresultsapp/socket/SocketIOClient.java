@@ -2,8 +2,8 @@ package getresultsapp.sointeractve.pl.getresultsapp.socket;
 
 import android.util.Log;
 
-public class SocketIOClient extends SocketIO {
-    public SocketIOClient(final String address) {
+class SocketIOClient extends SocketIO {
+    SocketIOClient(final String address) {
         super(address);
     }
 

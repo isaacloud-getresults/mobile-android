@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
+package getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,19 +45,19 @@ public class Person {
         return this.getFirstName() + " " + this.getLastName() + " " + "currently: " + this.getLocation();
     }
 
-    public String getFirstName() {
+    String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public String getLastName() {
+    String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
@@ -69,7 +69,7 @@ public class Person {
         return location;
     }
 
-    public void setLocation(int location) {
+    void setLocation(int location) {
         this.location = location;
     }
 
@@ -77,7 +77,7 @@ public class Person {
         return id;
     }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 

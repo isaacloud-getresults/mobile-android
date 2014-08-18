@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.UserChangeChecker;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.checker.UserChangeChecker;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.EmptyResponse;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
 

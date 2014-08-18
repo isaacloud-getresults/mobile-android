@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
+package getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +35,7 @@ public class Achievement {
         return label;
     }
 
-    public void setLabel(String label) {
+    void setLabel(String label) {
         this.label = label;
     }
 
@@ -43,7 +43,7 @@ public class Achievement {
         return description;
     }
 
-    public void setDesc(String desc) {
+    void setDesc(String desc) {
         this.description = desc;
     }
 
@@ -59,7 +59,7 @@ public class Achievement {
         return isGained;
     }
 
-    public void setGained(boolean isGained) {
+    void setGained(boolean isGained) {
         this.isGained = isGained;
     }
 
@@ -71,7 +71,7 @@ public class Achievement {
         return counter;
     }
 
-    public void setCounter(int counter) {
+    void setCounter(int counter) {
         this.counter = counter;
     }
 
@@ -89,7 +89,7 @@ public class Achievement {
         return id;
     }
 
-    public void setId(final int id) {
+    void setId(final int id) {
         this.id = id;
     }
 }

@@ -1,89 +1,88 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".LoginActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/login_container_margin"
         android:layout_marginRight="@dimen/login_container_margin"
         android:layout_marginTop="@dimen/login_container_margin_top"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:background="@drawable/login_background">
+            android:background="@drawable/login_background"
+            android:orientation="vertical">
 
 
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/login_items_height"
-                style="@style/editStyle"
-                android:layout_marginTop="30dp"
-                android:inputType="textPersonName"
                 android:id="@+id/editEmail"
-                android:text="getresults@gmail.com" />
+                style="@style/editStyle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_items_height"
+                android:layout_marginTop="30dp"
+                android:inputType="textEmailAddress"
+                android:text="getresults@gmail.com"/>
 
 
             <EditText
+                android:id="@+id/editPassword"
+                style="@style/editStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_items_height"
-                style="@style/editStyle"
                 android:layout_marginTop="5dp"
                 android:inputType="textEmailAddress"
-                android:id="@+id/editPassword"
-                android:text="Google@1998"
-                android:password="true" />
+                android:password="true"
+                android:text="Google@1998"/>
 
             <CheckBox
+                android:id="@+id/rememberCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Remember"
-                android:id="@+id/rememberCheckBox"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"
+                android:text="Remember"/>
 
         </LinearLayout>
 
-         <LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <Button
+                android:id="@+id/buttonLogIn"
+                style="@style/buttonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_button_height"
-                style="@style/buttonStyle"
-                android:text="@string/buttonLogIn"
-                android:id="@+id/buttonLogIn"/>
+                android:text="@string/buttonLogIn"/>
 
             <Button
+                android:id="@+id/buttonNewUser"
+                style="@style/buttonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_button_height"
-                style="@style/buttonStyle"
-                android:text="@string/buttonNewUser"
-                android:id="@+id/buttonNewUser"/>
+                android:text="@string/buttonNewUser"/>
 
             <Button
+                android:id="@+id/buttonScan"
+                style="@style/buttonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_button_height"
-                style="@style/buttonStyle"
-                android:text="@string/buttonScan"
-                android:id="@+id/buttonScan"/>
+                android:text="@string/buttonScan"/>
 
-             <com.google.android.gms.common.SignInButton
-                 android:layout_width="match_parent"
-                 android:layout_height="@dimen/login_button_height"
-                 android:id="@+id/buttonGoogle"/>
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/buttonGoogle"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_button_height"/>
 
 
-
-         </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

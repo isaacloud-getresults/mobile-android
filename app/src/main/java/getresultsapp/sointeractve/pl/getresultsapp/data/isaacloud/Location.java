@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
+package getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +33,7 @@ public class Location implements Serializable {
         return id;
     }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public class Location implements Serializable {
         return label;
     }
 
-    public void setLabel(String label) {
+    void setLabel(String label) {
         this.label = label;
     }
 

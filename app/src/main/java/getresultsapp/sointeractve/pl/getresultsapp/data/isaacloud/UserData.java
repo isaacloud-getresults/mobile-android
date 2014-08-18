@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data;
+package getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud;
 
 import android.util.Log;
 
@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.LoginResponse;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;
@@ -51,10 +51,6 @@ public class UserData implements Serializable {
         return this.userLocation;
     }
 
-    public void setUserLocation(Location newLocation) {
-        this.userLocation = newLocation;
-    }
-
     public void setUserLocation(int id) {
         for (Location l : App.getLocations()) {
             if (l.getId() == id) {
@@ -62,6 +58,10 @@ public class UserData implements Serializable {
                 break;
             }
         }
+    }
+
+    public void setUserLocation(Location newLocation) {
+        this.userLocation = newLocation;
     }
 
     public int getUserLocationId() {
@@ -121,12 +121,12 @@ public class UserData implements Serializable {
         for (int i = 0; i < jsonArray.length(); i++) {
             if (!jsonArray.isNull(i)) {
                 final JSONObject leaderboard = jsonArray.getJSONObject(i);
-                if (leaderboard.getInt("id") == IsaaCloudSettings.LEADERBOARD_ID) {
+                if (leaderboard.getInt("id") == Settings.LEADERBOARD_ID) {
                     return leaderboard;
                 }
             }
         }
-        Log.e(TAG, "Error: No leaderboard with id: " + IsaaCloudSettings.LEADERBOARD_ID);
+        Log.e(TAG, "Error: No leaderboard with id: " + Settings.LEADERBOARD_ID);
         return null;
     }
 

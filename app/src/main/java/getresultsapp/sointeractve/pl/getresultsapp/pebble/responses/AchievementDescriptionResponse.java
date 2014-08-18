@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 
 public class AchievementDescriptionResponse implements ResponseItem {
     private static final int RESPONSE_ID = 5;
@@ -22,7 +22,7 @@ public class AchievementDescriptionResponse implements ResponseItem {
     @Override
     public List<PebbleDictionary> getData() {
         final List<PebbleDictionary> data = new LinkedList<PebbleDictionary>();
-        final Queue<String> descriptionParts = partitionDescription(description, PebbleSettings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN);
+        final Queue<String> descriptionParts = partitionDescription(description, Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN);
 
         int descriptionPartId = 0;
         while (!descriptionParts.isEmpty()) {

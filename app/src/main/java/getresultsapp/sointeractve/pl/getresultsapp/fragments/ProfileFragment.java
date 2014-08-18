@@ -36,22 +36,21 @@ public class ProfileFragment extends Fragment {
 
         }
     };
-    Context context;
-    ProfileCard profileCard;
-    SettingsCard settingsCard;
-    StatsCard statsCard;
-    CardView profileCardView;
+    private Context context;
+    private ProfileCard profileCard;
+    private SettingsCard settingsCard;
+    private StatsCard statsCard;
+    private CardView profileCardView;
 
     public static ProfileFragment newInstance() {
-        ProfileFragment f = new ProfileFragment();
-        return f;
+        return new ProfileFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this.getActivity();
-        profileCard = new ProfileCard(context,R.layout.profile_card_content);
+        profileCard = new ProfileCard(context, R.layout.profile_card_content);
         settingsCard = new SettingsCard(context);
         statsCard = new StatsCard(context);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
@@ -89,13 +88,7 @@ public class ProfileFragment extends Fragment {
     }
 
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
-    public void refreshData () {
+    void refreshData() {
         TextView counterLevel = (TextView) profileCardView.findViewById(R.id.counterLevel);
         TextView counterScore = (TextView) profileCardView.findViewById(R.id.counterScore);
         TextView counterAchievements = (TextView) profileCardView.findViewById(R.id.counterAchievements);

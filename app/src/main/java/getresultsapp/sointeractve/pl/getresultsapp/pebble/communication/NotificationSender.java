@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 
 public class NotificationSender {
     private static final String TAG = NotificationSender.class.getSimpleName();
@@ -53,7 +53,7 @@ public class NotificationSender {
     private Intent getIntent(final String data) {
         final Intent i = new Intent("com.getpebble.action.SEND_NOTIFICATION");
         i.putExtra("messageType", "PEBBLE_ALERT");
-        i.putExtra("sender", PebbleSettings.APP_NAME);
+        i.putExtra("sender", Settings.APP_NAME);
         i.putExtra("notificationData", data);
 
         return i;

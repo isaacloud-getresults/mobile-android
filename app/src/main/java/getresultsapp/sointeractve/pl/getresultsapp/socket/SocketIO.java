@@ -8,12 +8,12 @@ import com.github.nkzawa.socketio.client.Socket;
 
 import java.net.URISyntaxException;
 
-public abstract class SocketIO {
+abstract class SocketIO {
     static final String TAG = SocketIO.class.getSimpleName();
 
     private Socket socket;
 
-    public SocketIO(final String address) {
+    SocketIO(final String address) {
         try {
             final IO.Options opts = getOptions();
             socket = IO.socket(address, opts);
@@ -30,7 +30,7 @@ public abstract class SocketIO {
         return opts;
     }
 
-    public void connect() {
+    void connect() {
         socket.connect();
     }
 

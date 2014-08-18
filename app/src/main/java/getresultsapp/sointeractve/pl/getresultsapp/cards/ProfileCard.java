@@ -14,7 +14,7 @@ import it.gmariotti.cardslib.library.internal.Card;
  */
 public class ProfileCard extends Card {
 
-    TextView name;
+    private TextView name;
 
     public ProfileCard(Context context, int layout) {
         super(context, layout);

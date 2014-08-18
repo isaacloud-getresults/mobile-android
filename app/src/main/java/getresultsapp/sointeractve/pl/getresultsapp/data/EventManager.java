@@ -24,12 +24,12 @@ import java.util.List;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker.NewAchievementsNotifier;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
+import getresultsapp.sointeractve.pl.getresultsapp.pebble.checker.NewAchievementsNotifier;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
@@ -39,10 +39,10 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 //
 public class EventManager {
 
-    public static final String TAG = "EventManager";
-    static Context context;
-    static int notificationId = 0;
+    private static final String TAG = "EventManager";
     static boolean internetConnection;
+    private static Context context;
+    private static int notificationId = 0;
 
     public EventManager() {
         this.context = App.getInstance().getApplicationContext();
@@ -89,7 +89,7 @@ public class EventManager {
     // ================  LOGIN EVENT ===============
     ////////////////////////////////////////////////
 
-    public void postEventCheckAchievements () {
+    public void postEventCheckAchievements() {
         new EventCheckAchievements().execute();
     }
 

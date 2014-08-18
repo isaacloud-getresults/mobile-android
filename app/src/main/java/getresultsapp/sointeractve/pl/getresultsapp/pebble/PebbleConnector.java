@@ -11,7 +11,7 @@ import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import getresultsapp.sointeractve.pl.getresultsapp.config.PebbleSettings;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.communication.NotificationSender;
 
 public class PebbleConnector extends Observable {
@@ -59,7 +59,7 @@ public class PebbleConnector extends Observable {
             } else {
                 final PebbleDictionary data = sendingQueue.peek();
                 Log.d(TAG, "Action: Sending response: " + data.toJsonString());
-                PebbleKit.sendDataToPebble(context, PebbleSettings.PEBBLE_APP_UUID, data);
+                PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
             }
         }
     }
@@ -98,6 +98,6 @@ public class PebbleConnector extends Observable {
     }
 
     public void closePebbleApp() {
-        PebbleKit.closeAppOnPebble(context, PebbleSettings.PEBBLE_APP_UUID);
+        PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
     }
 }

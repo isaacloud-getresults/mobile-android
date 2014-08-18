@@ -1,9 +1,9 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker;
+package getresultsapp.sointeractve.pl.getresultsapp.pebble.checker;
 
 import java.util.Collection;
 
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Achievement;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.AchievementsCache;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.communication.Responder;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.responses.ResponseItem;

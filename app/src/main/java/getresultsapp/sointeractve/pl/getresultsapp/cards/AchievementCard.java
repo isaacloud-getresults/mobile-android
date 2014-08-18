@@ -2,7 +2,7 @@ package getresultsapp.sointeractve.pl.getresultsapp.cards;
 
 import android.content.Context;
 
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Achievement;
 import it.gmariotti.cardslib.library.internal.Card;
 
 /**
@@ -10,7 +10,7 @@ import it.gmariotti.cardslib.library.internal.Card;
  */
 public class AchievementCard extends Card {
 
-    Achievement achievementData;
+    private Achievement achievementData;
 
     public AchievementCard(Context context, Achievement a) {
         super(context);

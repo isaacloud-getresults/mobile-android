@@ -28,10 +28,10 @@ import java.util.List;
 import getresultsapp.sointeractve.pl.getresultsapp.R;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.UserData;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 

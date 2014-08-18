@@ -1,4 +1,4 @@
-package getresultsapp.sointeractve.pl.getresultsapp.isaacloud.checker;
+package getresultsapp.sointeractve.pl.getresultsapp.pebble.checker;
 
 import android.util.Log;
 

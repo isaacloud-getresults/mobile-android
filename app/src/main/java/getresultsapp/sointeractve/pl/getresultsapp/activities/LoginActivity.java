@@ -45,15 +45,14 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.config.IsaaCloudSettings;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Achievement;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Location;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.Person;
-import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.UserData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Achievement;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Location;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.Person;
+import getresultsapp.sointeractve.pl.getresultsapp.data.isaacloud.UserData;
 import getresultsapp.sointeractve.pl.getresultsapp.pebble.cache.LoginCache;
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
@@ -68,9 +67,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     // Profile pic image size in pixels
     private static final int PROFILE_PIC_SIZE = 400;
     private static final String TAG = "LoginActivity";
-    static boolean internetConnection = true;
+    private static boolean internetConnection = true;
     private static Context context;
-    Thread thread;
+    private Thread thread;
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     /**
@@ -86,10 +85,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private TextView editEmail, editPassword;
     private UserData userData;
     private ProgressDialog dialog;
-    private Button buttonLogIn;
-    private Button buttonNewUser;
-    private SignInButton buttonSignIn;
-    private Button buttonScan;
     private Button btnRevokeAccess;
     private CheckBox checkbox;
     private ActionBar actionBar;
@@ -117,11 +112,11 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         initializeConnector();
 
         // find relevant views and add listeners
-        buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
+        final SignInButton buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
 //        btnRevokeAccess = (Button) findViewById(R.id.buttonRevokeAccess);
-        buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
-        buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
-        buttonScan = (Button) findViewById(R.id.buttonScan);
+        final Button buttonLogIn = (Button) findViewById(R.id.buttonLogIn);
+        final Button buttonNewUser = (Button) findViewById(R.id.buttonNewUser);
+        final Button buttonScan = (Button) findViewById(R.id.buttonScan);
         editEmail = (TextView) findViewById(R.id.editEmail);
         editPassword = (TextView) findViewById(R.id.editPassword);
         checkbox = (CheckBox) findViewById(R.id.rememberCheckBox);
@@ -300,7 +295,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
             configureApplication();
             initializeConnector();
-            Log.d(TAG, "After configureApplication() " + IsaaCloudSettings.INSTANCE_ID + " / " + IsaaCloudSettings.APP_SECRET);
+            Log.d(TAG, "After configureApplication() " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
         if (requestCode == RC_SIGN_IN) {
@@ -355,10 +350,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
-    public void initializeConnector() {
+    void initializeConnector() {
         Map<String, String> config = new HashMap<String, String>();
-        config.put("instanceId", IsaaCloudSettings.INSTANCE_ID);
-        config.put("appSecret", IsaaCloudSettings.APP_SECRET);
+        config.put("instanceId", Settings.INSTANCE_ID);
+        config.put("appSecret", Settings.APP_SECRET);
         try {
             App.setIsaacloudConnector(new Isaacloud(config));
         } catch (InvalidConfigException e) {
@@ -366,23 +361,23 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
     }
 
-    public void configureApplication() {
+    void configureApplication() {
         String s = App.loadConfigData();
         StringTokenizer tok = new StringTokenizer((s), "/");
         while (tok.hasMoreElements()) {
-            IsaaCloudSettings.INSTANCE_ID = (String) tok.nextElement();
-            IsaaCloudSettings.APP_SECRET = (String) tok.nextElement();
+            Settings.INSTANCE_ID = (String) tok.nextElement();
+            Settings.APP_SECRET = (String) tok.nextElement();
         }
     }
 
-    public void runMainActivity() {
+    void runMainActivity() {
         // RUN MAIN ACTIVITY
         Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
         finish();
     }
 
-    public boolean hasActiveInternetConnection() {
+    boolean hasActiveInternetConnection() {
         if (isNetworkAvailable()) {
             try {
                 HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
@@ -646,7 +641,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
-    public class InternetRunnable implements Runnable {
+    private class InternetRunnable implements Runnable {
         public void run() {
             while (true) {
                 internetConnection = hasActiveInternetConnection();
