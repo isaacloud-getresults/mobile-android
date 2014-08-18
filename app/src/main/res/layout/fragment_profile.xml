@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="getresultsapp.sointeractve.pl.getresultsapp.fragments.AchievementsFragment">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="getresultsapp.sointeractve.pl.getresultsapp.fragments.AchievementsFragment">
 
     <it.gmariotti.cardslib.library.view.CardView
         android:id="@+id/cardProfile"
@@ -33,6 +33,14 @@
         android:layout_marginTop="4dp"
         />
 
+    <it.gmariotti.cardslib.library.view.CardView
+        android:id="@+id/cardLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="4dp"
+        />
 
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package getresultsapp.sointeractve.pl.getresultsapp.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +26,7 @@ public class FileManager {
     private static final String userDataFileName = "user_data.dat";
     private static final String loginDataFileName = "login_data.dat";
     private static final String configDataFileName = "config_data.dat";
+    private static final String TAG = FileManager.class.getSimpleName();
 
     public UserData loadUserData(App app) {
         UserData data = null;
@@ -41,7 +43,7 @@ public class FileManager {
             ois.close();
             fis.close();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "File not found");
         } catch (StreamCorruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {

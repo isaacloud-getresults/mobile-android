@@ -18,14 +18,41 @@ public class UserData implements Serializable {
     private static final String TAG = UserData.class.getSimpleName();
 
     private String name, email, firstName;
-    private int userId, locationVisits;
+    private int userId;
     private Location userLocation;
 
-    private int points = 0;
+    private int score = 0;
     private int rank = 0;
+
+    private String level;
+    private String gainedAchievements;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getScore() {
+        return String.valueOf(score);
+    }
+
+    public String getGainedAchievements() {
+        return gainedAchievements;
+    }
+
+    public void setGainedAchievements(String gainedAchievements) {
+        this.gainedAchievements = gainedAchievements;
+    }
 
     public Location getUserLocation() {
         return this.userLocation;
+    }
+
+    public void setUserLocation(Location newLocation) {
+        this.userLocation = newLocation;
     }
 
     public void setUserLocation(int id) {
@@ -37,24 +64,12 @@ public class UserData implements Serializable {
         }
     }
 
-    public void setUserLocation(Location newLocation) {
-        this.userLocation = newLocation;
-    }
-
     public int getUserLocationId() {
         if (userLocation == null) {
             return -1;
         } else {
             return this.userLocation.getId();
         }
-    }
-
-    public int getLocationVisits() {
-        return locationVisits;
-    }
-
-    public void setLocationVisits(int locationVisits) {
-        this.locationVisits = locationVisits;
     }
 
     public String getName() {
@@ -94,7 +109,7 @@ public class UserData implements Serializable {
         try {
             final JSONObject leaderboard = getLeaderboard(json.getJSONArray("leaderboards"));
             if (leaderboard != null) {
-                points = leaderboard.getInt("score");
+                score = leaderboard.getInt("score");
                 rank = leaderboard.getInt("position");
             }
         } catch (final JSONException e) {
@@ -116,6 +131,6 @@ public class UserData implements Serializable {
     }
 
     public ResponseItem toLoginResponse(final String roomName, final int roomsNumber, final int achievementsNumber) {
-        return new LoginResponse(getName(), points, rank, roomName, roomsNumber, achievementsNumber);
+        return new LoginResponse(getName(), score, rank, roomName, roomsNumber, achievementsNumber);
     }
 }
