@@ -4,17 +4,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:layout_marginRight="20dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="20dp"
+    android:padding="5dp"
     android:background="@drawable/list_group_background">
 
     <ImageView
         android:id="@+id/locationImage"
         android:background="@drawable/avatar_location"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
+        android:layout_marginLeft="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="fill_parent"/>
 
     <LinearLayout
             android:layout_toRightOf="@+id/locationImage"
@@ -28,15 +27,14 @@
                 android:id="@+id/lblListHeader"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textColor="@color/color_theme_text_light" />
 
         <IconTextView
             android:id="@+id/locationStatsCounter"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textSize="16dp"
+            android:textSize="18dp"
             android:textColor="@color/color_theme_text_light"/>
 
     </LinearLayout>
@@ -45,8 +43,9 @@
         android:id="@+id/indicator"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_toRightOf="@+id/locationText"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
         android:text="{fa-chevron-down}"
         android:textSize="20dp"
         android:textColor="@color/color_theme_gray_light" />

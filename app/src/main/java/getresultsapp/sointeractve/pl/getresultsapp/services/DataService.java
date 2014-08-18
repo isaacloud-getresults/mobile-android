@@ -3,6 +3,7 @@ package getresultsapp.sointeractve.pl.getresultsapp.services;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,10 +26,10 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.App;
  */
 public class DataService extends Service {
 
-    private static final String TAG = "DataService";
-    private static Timer timer = new Timer();
+    private static Timer timer;
     private Context context;
     private WebSocketClient mWebSocketClient;
+    private static final String TAG = "DataService";
 
 
     public DataService() {
@@ -44,19 +45,39 @@ public class DataService extends Service {
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "startService");
-        timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.dataDownloadInterval);
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.dataDownloadInterval );
         //connectWebSocket();
         return Service.START_NOT_STICKY;
     }
 
-    public void onDestroy() {
+    private class dataUpdate extends TimerTask
+    {
+        @Override
+        public void run() {
+            Log.d(TAG, "postEventUpdateData");
+            App.getEventManager().postEventUpdateData();
+        }
+    }
+
+    public void onDestroy()
+    {
         super.onDestroy();
+        timer.cancel();
+        Toast.makeText(this, "DataService stopped", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
+
+
+
+    ////////////////////////////////
+    /// WEB SOCKET CLIENT
+    ////////////////////////////////
+
 
     private void connectWebSocket() {
 
@@ -80,7 +101,8 @@ public class DataService extends Service {
                     json.put("token", Settings.webSocketToken);
                     json.put("url", "/queues/notifications");
                     mWebSocketClient.send(json.toString());
-                } catch (JSONException e) {
+                }
+                catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -88,12 +110,12 @@ public class DataService extends Service {
             @Override
             public void onMessage(String s) {
                 final String message = s;
-                Toast.makeText(context, "RECEIVED NOTIFICATION: " + s, Toast.LENGTH_LONG);
+                Toast.makeText(context, "RECEIVED NOTIFICATION: "+ s, Toast.LENGTH_LONG );
             }
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s + i);
+                Log.i("Websocket", "Closed " + s + i );
             }
 
             @Override
@@ -102,19 +124,6 @@ public class DataService extends Service {
             }
         };
         mWebSocketClient.connect();
-    }
-
-
-    ////////////////////////////////
-    /// WEB SOCKET CLIENT
-    ////////////////////////////////
-
-    private class dataUpdate extends TimerTask {
-        @Override
-        public void run() {
-            Log.d(TAG, "postEventUpdateData");
-            App.getEventManager().postEventUpdateData();
-        }
     }
 
 

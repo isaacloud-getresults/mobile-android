@@ -13,27 +13,55 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.net.Uri;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
+import getresultsapp.sointeractve.pl.getresultsapp.data.DataManager;
+import getresultsapp.sointeractve.pl.getresultsapp.isaacloud.data.LoginData;
+import getresultsapp.sointeractve.pl.getresultsapp.services.DataService;
+import getresultsapp.sointeractve.pl.getresultsapp.services.TrackService;
+import pl.sointeractive.isaacloud.Isaacloud;
+import pl.sointeractive.isaacloud.connection.HttpResponse;
+import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
+import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
+
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
+import android.accounts.AccountManager;
+import android.accounts.Account;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -63,9 +91,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     // Profile pic image size in pixels
     private static final int PROFILE_PIC_SIZE = 400;
-    private static final String TAG = "LoginActivity";
-    static boolean internetConnection = true;
-    Thread thread;
+
     // Google client to interact with Google API
     private GoogleApiClient mGoogleApiClient;
     /**
@@ -75,9 +101,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private boolean mIntentInProgress;
     private boolean googleLogin = false;
     private boolean mSignInClicked;
+    private LoginData loginData;
     private ConnectionResult mConnectionResult;
     private LinearLayout llProfileLayout;
-    private Context context;
+    private static final String TAG = "LoginActivity";
+
+    private static Context context;
     private TextView editEmail, editPassword;
     private UserData userData;
     private ProgressDialog dialog;
@@ -86,16 +115,30 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private SignInButton buttonSignIn;
     private Button buttonScan;
     private Button btnRevokeAccess;
+    private CheckBox checkbox;
+    static boolean internetConnection = true;
+    Thread thread;
     private ActionBar actionBar;
+    private boolean Glogin = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         context = this;
         thread = new Thread(new InternetRunnable());
         thread.start();
         configureApplication();
+        loginData = App.loadLoginData();
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            if(extras.containsKey("logout"))
+            {
+                Glogin = false;
+                loginData.setRemembered(false);
+            }
+        }
 
         // create new wrapper instance for API connection
         initializeConnector();
@@ -108,17 +151,39 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         buttonScan = (Button) findViewById(R.id.buttonScan);
         editEmail = (TextView) findViewById(R.id.editEmail);
         editPassword = (TextView) findViewById(R.id.editPassword);
+        checkbox = (CheckBox) findViewById(R.id.rememberCheckBox);
+
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this).addApi(Plus.API)
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
+
+
+
+        if (loginData.isRemembered()) {
+            checkbox.setChecked(true);
+            editEmail.setText(loginData.getEmail());
+            editPassword.setText(loginData.getPassword());
+        }
+
         // add listeners
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (internetConnection) {
+                if(internetConnection) {
+                    if(checkbox.isChecked()) {
+                        loginData.setRemembered(true);
+                        loginData.setEmail(editEmail.getEditableText().toString());
+                        loginData.setPassword(editPassword.getEditableText().toString());
+                        App.saveLoginData(loginData);
+                    } else {
+                        loginData.setRemembered(false);
+                        loginData.setEmail("");
+                        loginData.setPassword("");
+                        App.saveLoginData(loginData);
+                    }
                     if (editEmail.getEditableText().toString().equals("")
                             || editPassword.getEditableText().toString().equals("")) {
                         Toast.makeText(context, R.string.error_empty,
@@ -129,30 +194,31 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         new LoginTask().execute();
                     }
                 } else
+                {
                     Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                }
             }
-
         });
 
         buttonNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("ButtonAction", "New user clicked");
-                if (internetConnection) {
+                Log.d("ButtonAction","New user clicked");
+                if(internetConnection) {
                     Intent intent = new Intent(context, RegisterActivity.class);
                     startActivity(intent);
-                } else
-                    Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                } else Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
             }
 
         });
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (internetConnection)
+                if(internetConnection) {
+                    Glogin = true;
                     signInWithGplus();
-                else
-                    Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                }
+                else Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -191,6 +257,13 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        context = null;
+    }
+
+
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
@@ -213,13 +286,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     private void resolveSignInError() {
-        if (mConnectionResult.hasResolution()) {
-            try {
-                mIntentInProgress = true;
-                mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
-            } catch (IntentSender.SendIntentException e) {
-                mIntentInProgress = false;
-                mGoogleApiClient.connect();
+        if (mConnectionResult != null) {
+            if (mConnectionResult.hasResolution()) {
+                try {
+                    mIntentInProgress = true;
+                    mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
+                } catch (IntentSender.SendIntentException e) {
+                    mIntentInProgress = false;
+                    mGoogleApiClient.connect();
+                }
             }
         }
     }
@@ -278,7 +353,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             com.google.android.gms.plus.model.people.Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
             String info = currentPerson.getName().getGivenName() + " " + currentPerson.getName().getFamilyName() + "\n" + Plus.AccountApi.getAccountName(mGoogleApiClient);
             Toast.makeText(this, info, Toast.LENGTH_LONG).show();
-            if (internetConnection) new LoginTask().execute();
+            if(internetConnection) {
+                if(Glogin && googleLogin) new LoginTask().execute();
+                else revokeGplusAccess();
+            }
             else Toast.makeText(this, "No Internet connection", Toast.LENGTH_LONG).show();
         } else
             Toast.makeText(this, "Current person is null", Toast.LENGTH_LONG).show();
@@ -327,39 +405,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
     }
 
-    public void runMainActivity() {
-        // RUN MAIN ACTIVITY
-        Intent intent = new Intent(context, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    public boolean hasActiveInternetConnection() {
-        return isNetworkAvailable();
-        /*if(isNetworkAvailable()) {
-            try {
-                Process p1 = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
-                int returnVal = p1.waitFor();
-                return (returnVal == 0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return false;*/
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null;
-    }
-
     // LOGIN
     private class LoginTask extends AsyncTask<Object, Object, Object> {
 
@@ -375,11 +420,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected Object doInBackground(Object... params) {
+
             Log.d(TAG, "doInBackground()");
 
             String email;
             boolean register = true;
-            if (googleLogin) email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+            if (googleLogin && Glogin) email = Plus.AccountApi.getAccountName(mGoogleApiClient);
             else email = LoginActivity.this.editEmail.getEditableText().toString();
             final Map<String, Object> query = new HashMap<String, Object>();
             query.put("email", email);
@@ -596,9 +642,20 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
+
+
+    public void runMainActivity () {
+        // RUN MAIN ACTIVITY
+        Intent intent = new Intent(context, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
+
     public class InternetRunnable implements Runnable {
         public void run() {
-            while (true) {
+            while(true) {
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);
@@ -609,5 +666,33 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         }
     }
+
+    public boolean hasActiveInternetConnection() {
+        if (isNetworkAvailable()) {
+            try {
+                HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+                urlc.setRequestProperty("User-Agent", "Test");
+                urlc.setRequestProperty("Connection", "close");
+                urlc.setConnectTimeout(1500);
+                urlc.connect();
+                return (urlc.getResponseCode() == 200);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
+    }
+
+    public void onBackPressed() {
+        finish();
+    }
 }
+
 
