@@ -6,7 +6,7 @@
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="com.sointeractve.getresults.com.activities.RegisterActivity">
+                tools:context="com.sointeractive.getresults.com.activities.RegisterActivity">
 
     <EditText
         android:id="@+id/editRegisterFirstName"
