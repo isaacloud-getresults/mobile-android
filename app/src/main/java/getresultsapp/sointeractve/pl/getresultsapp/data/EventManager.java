@@ -5,30 +5,23 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.activities.LoginActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.activities.MainActivity;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
@@ -164,7 +157,7 @@ public class EventManager {
 
 
         String TAG = "EventGetNewLocation";
-        Intent message = new Intent(Settings.broadcastIntent);
+        Intent message = new Intent(Settings.broadcastIntentUpdateData);
         HttpResponse response;
         boolean isError = false;
         UserData userData = App.loadUserData();
@@ -178,17 +171,17 @@ public class EventManager {
                 Log.d(TAG, response.toString());
                 JSONObject json = response.getJSONObject();
                 JSONArray array = json.getJSONArray("counterValues");
-
+                JSONArray gainedAchievements = json.getJSONArray("gainedAchievements");
                 for (int i = 0; i < array.length(); i++) {
                     JSONObject o = (JSONObject) array.get(i);
                     if (o.getString("counter").equals(Settings.locationCounter)) {
                         userData.setUserLocation(Integer.parseInt(o.getString("value")));
                     }
-                    if (o.getString("counter").equals(Settings.kitchenVisitedCounter)) {
-                        userData.setLocationVisits(Integer.parseInt(o.getString("value")));
-                    }
-
                 }
+                // set user profile counter values
+                String counterLevel = json.getString("level");
+                userData.setLevel(counterLevel);
+                userData.setGainedAchievements("" + gainedAchievements.length());
                 App.saveUserData(userData);
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
@@ -309,7 +302,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             Log.d(TAG, "onPostExecute()");
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent (Settings.broadcastIntent));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent (Settings.broadcastIntentUpdateData));
             if (isError) {
                 Log.d(TAG, "onPostExecute() - error detected");
             }

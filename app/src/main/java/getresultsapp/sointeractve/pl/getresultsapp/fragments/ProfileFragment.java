@@ -12,13 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
-import getresultsapp.sointeractve.pl.getresultsapp.cards.LogoutCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.ProfileCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.SettingsCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.StatsCard;
 import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
+import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import it.gmariotti.cardslib.library.view.CardView;
 
 public class ProfileFragment extends Fragment {
@@ -35,6 +36,7 @@ public class ProfileFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG,"onReceive called");
+            refreshData();
 
         }
     };
@@ -52,7 +54,7 @@ public class ProfileFragment extends Fragment {
         settingsCard = new SettingsCard(context);
         statsCard = new StatsCard(context);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
-                new IntentFilter(Settings.broadcastIntent));
+                new IntentFilter(Settings.broadcastIntentUpdateData));
 
     }
 
@@ -79,6 +81,15 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    public void refreshData () {
+        TextView counterLevel = (TextView) profileCardView.findViewById(R.id.counterLevel);
+        TextView counterScore = (TextView) profileCardView.findViewById(R.id.counterScore);
+        TextView counterAchievements = (TextView) profileCardView.findViewById(R.id.counterAchievements);
+        counterLevel.setText(App.loadUserData().getLevel());
+        counterScore.setText(App.loadUserData().getScore());
+        counterAchievements.setText(App.loadUserData().getGainedAchievements());
+
+    }
 
 
 }

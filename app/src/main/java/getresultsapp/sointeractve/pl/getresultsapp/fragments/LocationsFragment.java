@@ -7,7 +7,6 @@ import android.content.Context;
 
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Typeface;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,9 +18,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.IconTextView;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -31,8 +28,6 @@ import getresultsapp.sointeractve.pl.getresultsapp.config.Settings;
 import getresultsapp.sointeractve.pl.getresultsapp.data.App;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Location;
 import getresultsapp.sointeractve.pl.getresultsapp.data.Person;
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardExpand;
 import it.gmariotti.cardslib.library.view.CardView;
 
 
@@ -82,7 +77,7 @@ public class LocationsFragment extends Fragment {
         statusCard.setBackgroundResourceId(R.drawable.status_card_background);
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
-                new IntentFilter(Settings.broadcastIntent));
+                new IntentFilter(Settings.broadcastIntentUpdateData));
     }
 
     @Override

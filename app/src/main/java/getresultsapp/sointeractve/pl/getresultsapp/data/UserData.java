@@ -8,9 +8,36 @@ import java.util.List;
 public class UserData implements Serializable {
 
 
-    private String name, email, firstName;
-    private int userId, locationVisits;
+    private int userId;
     private Location userLocation;
+    private String name, email, firstName;
+    private String level;
+    private String score;
+    private String gainedAchievements;
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getScore() {
+        return score;
+    }
+
+    public void setScore(String score) {
+        this.score = score;
+    }
+
+    public String getGainedAchievements() {
+        return gainedAchievements;
+    }
+
+    public void setGainedAchievements(String gainedAchievements) {
+        this.gainedAchievements = gainedAchievements;
+    }
 
     public Location getUserLocation() {
         return this.userLocation;
@@ -32,13 +59,6 @@ public class UserData implements Serializable {
         this.userLocation = newLocation;
     }
 
-    public int getLocationVisits() {
-        return locationVisits;
-    }
-
-    public void setLocationVisits(int locationVisits) {
-        this.locationVisits = locationVisits;
-    }
 
     public String getName() {
         return name;

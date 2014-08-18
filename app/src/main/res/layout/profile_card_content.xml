@@ -61,7 +61,10 @@
                 android:layout_marginRight="5dp"
                 android:background="@drawable/count_background"
                 android:id="@+id/counterLevel"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:textSize="18dp"
+                android:textColor="@color/color_theme_text_light"
+                android:gravity="center"/>
 
         </RelativeLayout>
         <View
@@ -92,7 +95,10 @@
                 android:layout_marginRight="5dp"
                 android:background="@drawable/count_background"
                 android:id="@+id/counterScore"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:textSize="18dp"
+                android:textColor="@color/color_theme_text_light"
+                android:gravity="center"/>
 
         </RelativeLayout>
         <View
@@ -113,7 +119,7 @@
                 android:id="@+id/profile_card_text_achievements"
                 android:textSize="18dp"
                 android:textColor="@color/color_theme_text_dark"
-                android:text="{fa-trophy}  Achievements gained:"
+                android:text="{fa-trophy}  Achievements unlocked:"
                 android:layout_alignParentLeft="true"/>
 
             <TextView
@@ -122,7 +128,10 @@
                 android:layout_marginRight="5dp"
                 android:background="@drawable/count_background"
                 android:id="@+id/counterAchievements"
-                android:layout_alignParentRight="true"/>
+                android:layout_alignParentRight="true"
+                android:textSize="18dp"
+                android:textColor="@color/color_theme_text_light"
+                android:gravity="center"/>
 
         </RelativeLayout>
 
