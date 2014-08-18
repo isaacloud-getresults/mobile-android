@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import getresultsapp.sointeractve.pl.getresultsapp.R;
+import getresultsapp.sointeractve.pl.getresultsapp.activities.LoginActivity;
+import getresultsapp.sointeractve.pl.getresultsapp.cards.LogoutCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.ProfileCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.SettingsCard;
 import getresultsapp.sointeractve.pl.getresultsapp.cards.StatsCard;
@@ -67,9 +69,22 @@ public class ProfileFragment extends Fragment {
         profileCardView = (CardView) view.findViewById(R.id.cardProfile);
         CardView settingsCardView = (CardView) view.findViewById(R.id.cardSettings);
         CardView statsCardView = (CardView) view.findViewById(R.id.cardStats);
+        CardView logoutCardView = (CardView) view.findViewById(R.id.cardLogout);
         profileCardView.setCard(this.profileCard);
         settingsCardView.setCard(this.settingsCard);
         statsCardView.setCard(this.statsCard);
+        logoutCardView.setCard(new LogoutCard(context));
+
+        logoutCardView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                Intent i = new Intent(context, LoginActivity.class);
+                i.putExtra("logout", true);
+                startActivity(i);
+
+                getActivity().finish();
+            }
+        });
 
         return view;
     }
@@ -92,4 +107,9 @@ public class ProfileFragment extends Fragment {
     }
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiverProfile);
+    }
 }

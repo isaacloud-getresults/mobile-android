@@ -41,7 +41,14 @@
                 android:text="Google@1998"
                 android:password="true" />
 
-         </LinearLayout>
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remember"
+                android:id="@+id/rememberCheckBox"
+                android:layout_gravity="center_horizontal" />
+
+        </LinearLayout>
 
          <LinearLayout
             android:layout_width="match_parent"

@@ -2,11 +2,15 @@ package getresultsapp.sointeractve.pl.getresultsapp.fragments;
 
 import android.app.Activity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,7 +22,9 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.IconTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -49,6 +55,8 @@ public class LocationsFragment extends Fragment {
             if ( listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
+            Log.d(TAG, "Problem " + App.loadLoginData().getPassword());
+//            Log.d(TAG, "Problem " + App.loadUserData().getUserLocation().getLabel());
             statusCard.initLocation(App.loadUserData().getUserLocation());
             statusCard.setOnClickListener(null);
             statusCard.setClickable(false);
@@ -113,6 +121,11 @@ public class LocationsFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiverLocations);
+    }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++
     // ======== EXPANDABLE LIST ADAPTER CLASS =========
@@ -197,8 +210,11 @@ public class LocationsFragment extends Fragment {
                     .findViewById(R.id.locationStatsCounter);
             String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
             indicator.setText(state);
+            lblListHeader.setTypeface(null, Typeface.BOLD);
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
+
+            //lblListHeaderVisits.setText(headerStats);
             return convertView;
         }
 

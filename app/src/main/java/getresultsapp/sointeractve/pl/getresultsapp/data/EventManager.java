@@ -224,7 +224,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
-            generateNotification("Left beacon range", "Outside location", "Meeting room");
+//            generateNotification("Left beacon range", "Outside location", "Meeting room");
             Log.d(TAG, "EventPostLeftBeacon");
             try {
                 JSONObject body = new JSONObject();
@@ -321,27 +321,29 @@ public class EventManager {
         @Override
         protected Object doInBackground(Object... params) {
             userData = App.loadUserData();
+            Log.d(TAG, "!!!!!!!!!!!!userData!!!!!!!!!!!!!! " + userData.getName() + userData.getUserId());
             try {
-                // ACHIEVEMENTS REQUEST
-                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
-                HttpResponse responseUser = App
-                        .getConnector()
-                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
-                JSONObject achievementsJson = responseUser.getJSONObject();
-                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
-                for (int i = 0; i < arrayUser.length(); i++) {
-                    JSONObject json = (JSONObject) arrayUser.get(i);
-                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
-                }
-                HttpResponse responseGeneral = App.getConnector()
-                        .path("/cache/achievements").withLimit(1000).get();
-                JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                for (int i = 0; i < arrayGeneral.length(); i++) {
-                    JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.containsKey(json.getInt("id"))) {
-                        newAchievements.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
+                    // ACHIEVEMENTS REQUEST
+                    HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                    HttpResponse responseUser = App
+                            .getConnector()
+                            .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
+                    JSONObject achievementsJson = responseUser.getJSONObject();
+                    JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                    for (int i = 0; i < arrayUser.length(); i++) {
+                        JSONObject json = (JSONObject) arrayUser.get(i);
+                        idMap.put(json.getInt("achievement"), json.getInt("amount"));
                     }
-                }
+                    HttpResponse responseGeneral = App.getConnector()
+                            .path("/cache/achievements").withLimit(1000).get();
+                    JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                    for (int i = 0; i < arrayGeneral.length(); i++) {
+                        JSONObject json = (JSONObject) arrayGeneral.get(i);
+                        if (idMap.containsKey(json.getInt("id"))) {
+                            newAchievements.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
+                        }
+                    }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
@@ -354,6 +356,12 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
+            for(Achievement a : actualAchievements) {
+                Log.d(TAG, "actualAvhievements: " + a.getLabel());
+            }
+            for(Achievement a : newAchievements) {
+                Log.d(TAG, "new Achievements: " + a.getLabel());
+            }
 
             if (newAchievements.size() != actualAchievements.size()) {
                 // search for new achievement
@@ -370,6 +378,7 @@ public class EventManager {
                     intent.putExtra("label", recentAchievement.getLabel());
                     App.getDataManager().setAchievements(newAchievements);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+//                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", recentAchievement.getLabel());
                 }
             } else {
                 Log.d(TAG, "No new achievements.");

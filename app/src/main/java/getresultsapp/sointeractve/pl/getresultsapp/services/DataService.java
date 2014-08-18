@@ -26,7 +26,7 @@ import getresultsapp.sointeractve.pl.getresultsapp.data.App;
  */
 public class DataService extends Service{
 
-    private static Timer timer = new Timer();
+    private static Timer timer;
     private Context context;
     private WebSocketClient mWebSocketClient;
     private static final String TAG = "DataService";
@@ -44,6 +44,7 @@ public class DataService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         Log.d(TAG, "startService");
+        timer = new Timer();
         timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.dataDownloadInterval );
         connectWebSocket();
         return Service.START_NOT_STICKY;
@@ -62,6 +63,8 @@ public class DataService extends Service{
     public void onDestroy()
     {
         super.onDestroy();
+        timer.cancel();
+        Toast.makeText(this, "DataService stopped", Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -42,6 +42,7 @@ public class StatusCard extends Card {
     public void initLocation (Location newLocation) {
         this.actualLocation = newLocation;
         if(title != null) {
+//            if(actualLocation != null)
             title.setText(actualLocation.getLabel());
         }
         if (stats != null) {
