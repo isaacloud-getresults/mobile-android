@@ -74,7 +74,7 @@ public class DataManager {
 
     public boolean isNewNotification (Notification n) {
         try {
-            if (n.getData().getString("createdAt").equals(lastNotification.getData().getString("createdAt"))) {
+            if (lastNotification != null && n.getData().getString("createdAt").equals(lastNotification.getData().getString("createdAt"))) {
                 return false;
             } else {
                 this.lastNotification = n;

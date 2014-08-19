@@ -280,6 +280,15 @@ public class EventManager {
                     JSONObject userJson = (JSONObject) usersArray.get(i);
                     Person p = new Person(userJson);
                     entries.get(p.getLocation()).add(p);
+                    // CHECK ACTUAL USER POSITION:
+                    if (p.getId() == App.loadUserData().getUserId()) {
+                        if (p.getLocation() != App.loadUserData().getUserLocationId()){
+                            UserData userData = App.loadUserData();
+                            userData.setUserLocation(p.getId());
+                            App.saveUserData(userData);
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.broadcastIntentNewLocation));
+                        }
+                    }
                 }
                 App.getDataManager().setPeople(entries);
                 LoginCache.INSTANCE.logIn();
@@ -388,7 +397,7 @@ public class EventManager {
 
     private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
 
-        Notification newNotification;
+        List<Notification> entries = new ArrayList<Notification>();
 
         @Override
         protected Object doInBackground(Object... params) {
@@ -401,7 +410,12 @@ public class EventManager {
                         .path("/queues/notifications").withQuery(query).withLimit(1).withOrder(order).get();
                 JSONArray array = response.getJSONArray();
                 for (int i = 0; i < array.length(); i++) {
-                    newNotification = new Notification((JSONObject) array.get(i));
+                    if ( array.length() != 0) {
+                        entries.add(new Notification((JSONObject) array.get(i)));
+                        Log.d(TAG, "added notification: " + array.get(i).toString());
+                    } else {
+                        Log.d(TAG, "RECEIVED NULL ARRAY AS NOTIFICATIONS");
+                    }
                 }
             } catch (JSONException e1) {
                 e1.printStackTrace();
@@ -410,13 +424,16 @@ public class EventManager {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            return newNotification;
+            return entries;
         }
 
         protected void onPostExecute(Object result) {
-            if (App.getDataManager().isNewNotification(newNotification)) {
-                Toast.makeText(context,newNotification.getMessage(),Toast.LENGTH_SHORT).show();
-            }
+            if (entries.size() != 0) {
+                if (App.getDataManager().isNewNotification(entries.get(0))) {
+                    Toast.makeText(context, entries.get(0).getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "NOTIFICATION = NEW");
+                }
+            } else Log.d(TAG, "NOTIFICATION = NONE");
         }
     }
 

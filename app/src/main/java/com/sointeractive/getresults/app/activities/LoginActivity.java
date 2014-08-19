@@ -500,6 +500,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             dialog.dismiss();
             if (success) {
                 new EventGetLocations().execute();
+
             } else {
                 Log.d(TAG, "Here!");
             }
