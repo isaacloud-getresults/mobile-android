@@ -1,23 +1,20 @@
 package com.sointeractive.getresults.app.data;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
-import com.sointeractive.getresults.app.R;
-import com.sointeractive.getresults.app.activities.MainActivity;
+
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
+import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.checker.NewAchievementsNotifier;
 
@@ -30,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import pl.sointeractive.isaacloud.connection.HttpResponse;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
@@ -38,6 +36,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 // Class with IsaaCloud connection via AsyncTasks
 // @author: Pawel Dylag
 //
+
 public class EventManager {
 
     private static final String TAG = "EventManager";
@@ -47,25 +46,6 @@ public class EventManager {
 
     public EventManager() {
         this.context = App.getInstance().getApplicationContext();
-    }
-
-    private static void generateNotification(String ticker, String title, String message) {
-        Intent notificationIntent;
-        notificationIntent = new Intent(context, MainActivity.class);
-        notificationIntent.putExtra("achPointer", 1);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setTicker(ticker)
-                .setContentTitle(title)
-                .setContentIntent(intent)
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL);
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(notificationId, mBuilder.build());
-        notificationId++;
     }
 
     public void postEventLogin() {
@@ -84,19 +64,6 @@ public class EventManager {
     public void postEventUpdateData() {
         new EventUpdateData().execute();
     }
-
-
-    ////////////////////////////////////////////////
-    // ================  LOGIN EVENT ===============
-    ////////////////////////////////////////////////
-
-    public void postEventCheckAchievements() {
-        new EventCheckAchievements().execute();
-    }
-
-    ////////////////////////////////////////////////////////////////////
-    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
-    ////////////////////////////////////////////////////////////////////
 
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
@@ -134,9 +101,9 @@ public class EventManager {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////
-    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
-    ////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    // ============ POST EVENT WHEN NEW BEACON IS IN RANGE ============
+    ///////////////////////////////////////////////////////////////////
 
     private class EventPostNewBeacon extends AsyncTask<String, Object, Object> {
 
@@ -147,7 +114,6 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
-            generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.d(TAG, "EventLogin:");
             try {
                 JSONObject body = new JSONObject();
@@ -178,10 +144,9 @@ public class EventManager {
         }
     }
 
-
-    ///////////////////////////////////////////////////////////////////
-    // ============ POST EVENT WHEN NEW BEACON IS IN RANGE ============
-    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
+    ////////////////////////////////////////////////////////////////////
 
     private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
 
@@ -240,10 +205,9 @@ public class EventManager {
         }
     }
 
-
-    /////////////////////////////////////////////////////
-    // ================ UPDATE DATA EVENT ===============
-    /////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    // ============ POST EVENT WHEN BEACON IS OUT OF RANGE ============
+    ///////////////////////////////////////////////////////////////////
 
     private class EventPostLeftBeacon extends AsyncTask<String, Object, Object> {
 
@@ -285,6 +249,10 @@ public class EventManager {
             }
         }
     }
+
+    /////////////////////////////////////////////////////
+    // ================ UPDATE DATA EVENT ===============
+    /////////////////////////////////////////////////////
 
     private class EventUpdateData extends AsyncTask<String, Object, Object> {
 
@@ -339,6 +307,10 @@ public class EventManager {
             }
         }
     }
+
+    ////////////////////////////////////////////////////////////
+    // ================ CHECK ACHIEVEMENTS EVENT ===============
+    ////////////////////////////////////////////////////////////
 
     private class EventCheckAchievements extends AsyncTask<Object, Object, Object> {
 
@@ -409,6 +381,41 @@ public class EventManager {
                 }
             } else {
                 Log.d(TAG, "No new achievements.");
+            }
+            new EventCheckNotifications().execute();
+        }
+    }
+
+    private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
+
+        Notification newNotification;
+
+        @Override
+        protected Object doInBackground(Object... params) {
+            try {
+                Map<String,Object> query = new HashMap<String,Object>();
+                Map<String,String> order = new HashMap<String, String>();
+                order.put("createdAt","DESC");
+                query.put("subjectId", App.loadUserData().getUserId());
+                HttpResponse response = App.getIsaacloudConnector()
+                        .path("/queues/notifications").withQuery(query).withLimit(1).withOrder(order).get();
+                JSONArray array = response.getJSONArray();
+                for (int i = 0; i < array.length(); i++) {
+                    newNotification = new Notification((JSONObject) array.get(i));
+                }
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            } catch (IsaaCloudConnectionException e) {
+                e.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return newNotification;
+        }
+
+        protected void onPostExecute(Object result) {
+            if (App.getDataManager().isNewNotification(newNotification)) {
+                Toast.makeText(context,newNotification.getMessage(),Toast.LENGTH_SHORT).show();
             }
         }
     }
