@@ -67,7 +67,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     // Profile pic image size in pixels
     private static final int PROFILE_PIC_SIZE = 400;
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private static boolean internetConnection = true;
     private static Context context;
     // Google client to interact with Google API
@@ -512,7 +512,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     // GET LOCATIONS
     private class EventGetLocations extends AsyncTask<Object, Object, Object> {
 
-        private static final String TAG = "EventGetLocations";
+        private final String TAG = EventGetLocations.class.getSimpleName();
         public boolean success = false;
 
         @Override
@@ -575,7 +575,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     // GET LOCATIONS
     private class EventGetAchievements extends AsyncTask<Object, Object, Object> {
 
-        private static final String TAG = "EventGetLocations";
+        private final String TAG = EventGetAchievements.class.getSimpleName();
         public boolean success = false;
 
         @Override

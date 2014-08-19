@@ -30,7 +30,7 @@ import it.gmariotti.cardslib.library.view.CardGridView;
 
 public class AchievementsFragment extends Fragment {
 
-    private static final String TAG = "AchievementsFragment";
+    private static final String TAG = AchievementsFragment.class.getSimpleName();
     private final BroadcastReceiver receiverAchievements = new BroadcastReceiver() {
 
         @Override
@@ -48,7 +48,7 @@ public class AchievementsFragment extends Fragment {
     private CardGridArrayAdapter cardGridAdapter;
     private OnFragmentInteractionListener mListener;
 
-    private AchievementsFragment() {
+    public AchievementsFragment() {
         // Required empty public constructor
     }
 

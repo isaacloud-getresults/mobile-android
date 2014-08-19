@@ -31,6 +31,9 @@ public class Settings {
     public static final String KITCHEN_VISITED_COUNTER = "2";
     public static final String NULL_ROOM_COUNTER = "3";
 
+    // Beacons
+    public static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+
     // IsaaCloud
     public static String INSTANCE_ID = "179";
     public static String APP_SECRET = "cbe82930e310e3519666c8ddf9776cee"; //"3f14569b750b69a8bc352cb34ad3e";

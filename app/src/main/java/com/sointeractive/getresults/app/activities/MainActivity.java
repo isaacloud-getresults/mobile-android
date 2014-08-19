@@ -21,7 +21,7 @@ import com.sointeractive.getresults.app.services.TrackService;
 public class MainActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
-    private static final String TAG = "UserActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
     private ActionBar actionBar;
 

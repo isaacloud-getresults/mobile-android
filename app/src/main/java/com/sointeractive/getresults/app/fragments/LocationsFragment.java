@@ -31,7 +31,7 @@ import it.gmariotti.cardslib.library.view.CardView;
 
 public class LocationsFragment extends Fragment {
 
-    private static final String TAG = "LocationsFragment";
+    private static final String TAG = LocationsFragment.class.getSimpleName();
     private ExpandableListAdapter listAdapter;
     private StatusCard statusCard;
     private final BroadcastReceiver receiverLocations = new BroadcastReceiver() {

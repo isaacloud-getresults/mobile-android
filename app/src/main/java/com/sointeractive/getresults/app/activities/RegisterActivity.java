@@ -39,7 +39,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class RegisterActivity extends Activity {
 
-    private static final String TAG = "RegisterActivity";
+    private static final String TAG = RegisterActivity.class.getSimpleName();
 
     private Button buttonRegister;
     private Context context;
@@ -188,7 +188,7 @@ public class RegisterActivity extends Activity {
     // GET LOCATIONS
     private class EventGetLocations extends AsyncTask<Object, Object, Object> {
 
-        private static final String TAG = "EventGetLocations";
+        private final String TAG = EventGetLocations.class.getSimpleName();
         public boolean success = false;
 
         @Override

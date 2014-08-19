@@ -40,7 +40,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 //
 public class EventManager {
 
-    private static final String TAG = "EventManager";
+    private static final String TAG = EventManager.class.getSimpleName();
     static boolean internetConnection;
     private static Context context;
     private static int notificationId = 0;
@@ -140,8 +140,8 @@ public class EventManager {
 
     private class EventPostNewBeacon extends AsyncTask<String, Object, Object> {
 
-        final String TAG = "EventPostNewBeacon";
         final UserData userData = App.loadUserData();
+        private final String TAG = EventPostNewBeacon.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
 
@@ -186,9 +186,9 @@ public class EventManager {
     private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
 
 
-        final String TAG = "EventGetNewLocation";
         final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
         final UserData userData = App.loadUserData();
+        private final String TAG = EventGetNewLocation.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
 
@@ -246,8 +246,8 @@ public class EventManager {
 
     private class EventPostLeftBeacon extends AsyncTask<String, Object, Object> {
 
-        final String TAG = "EventPostLeftBeacon";
         final UserData userData = App.loadUserData();
+        private final String TAG = EventPostLeftBeacon.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
 
@@ -287,8 +287,8 @@ public class EventManager {
 
     private class EventUpdateData extends AsyncTask<String, Object, Object> {
 
-        final String TAG = "EventUpdateData";
         final boolean isError = false;
+        private final String TAG = EventUpdateData.class.getSimpleName();
         HttpResponse response;
 
         @Override

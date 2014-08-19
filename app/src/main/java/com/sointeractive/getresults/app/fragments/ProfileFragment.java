@@ -27,7 +27,7 @@ import it.gmariotti.cardslib.library.view.CardView;
 
 public class ProfileFragment extends Fragment {
 
-    private static final String TAG = "ProfileFragment";
+    private static final String TAG = ProfileFragment.class.getSimpleName();
     private final BroadcastReceiver receiverProfile = new BroadcastReceiver() {
 
         @Override

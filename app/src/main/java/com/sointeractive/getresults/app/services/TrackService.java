@@ -17,6 +17,7 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 import com.estimote.sdk.Utils;
+import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
 
 import java.io.IOException;
@@ -27,11 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TrackService extends Service {
-    private static final String TAG = "TrackService";
-    // TODO: UUID loaded from QR reader, not hardcoded
-    private static final String ESTIMOTE_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    private static final String TAG = TrackService.class.getSimpleName();
     //
-    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", ESTIMOTE_PROXIMITY_UUID, 6000, null);
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.ESTIMOTE_PROXIMITY_UUID, 6000, null);
     private static final SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     private static final HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
     private static final HashMap<String, Integer> counterMap = new HashMap<String, Integer>();

@@ -14,7 +14,7 @@ import java.util.TimerTask;
 
 public class DataService extends Service {
 
-    private static final String TAG = "DataService";
+    private static final String TAG = DataService.class.getSimpleName();
     private static Timer timer;
 
     public DataService() {
