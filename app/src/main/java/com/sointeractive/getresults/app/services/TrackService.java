@@ -68,9 +68,9 @@ public class TrackService extends Service {
                         trackBeacons(beacons);
                         for (Beacon beacon : beacons) {
                             writeDistance(beacon);
-                            Log.d(TAG, "Found beacon: " + beacon + " distance: " + Utils.computeAccuracy(beacon));
+                            Log.v(TAG, "Event: Found beacon: " + beacon + " distance: " + Utils.computeAccuracy(beacon));
                         }
-                        Log.d(TAG, "Ranged beacons: " + beacons);
+                        Log.d(TAG, "Event: Ranged beacons: " + beacons);
                     }
                 });
             }
@@ -83,9 +83,9 @@ public class TrackService extends Service {
             public void onServiceReady() {
                 try {
                     beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
-                    Log.d(TAG, "Start ranging");
+                    Log.i(TAG, "Action: Start ranging");
                 } catch (RemoteException e) {
-                    Log.e(TAG, "Cannot start ranging", e);
+                    Log.e(TAG, "Error: Cannot start ranging", e);
                 }
             }
         });
@@ -126,13 +126,13 @@ public class TrackService extends Service {
         double d = 0;
         ArrayList<Double> distances = beaconDistances.get(beacon.getMajor());
         for(Double tempDouble : distances) {
-            Log.d(TAG, "distance to a beacon " + beacon.getMacAddress() + ": " + tempDouble);
+            Log.v(TAG, "distance to a beacon " + beacon.getMacAddress() + ": " + tempDouble);
             d += tempDouble.doubleValue();
 
         }
         d = d / distances.size();
         beaconDistances.delete(beacon.getMajor());
-        Log.d(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + d);
+        Log.v(TAG, "Average distance to a beacon " + beacon.getMacAddress() + ": " + d);
         setAndroidNotification("You entered a new beacon range!", beacon.getMacAddress(), d);
     }
     */

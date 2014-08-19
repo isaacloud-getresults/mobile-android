@@ -156,7 +156,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         Toast.makeText(context, R.string.error_empty,
                                 Toast.LENGTH_LONG).show();
                     } else {
-                        Log.d(editEmail.getEditableText().toString(), editPassword.getEditableText().toString());
+                        Log.d(TAG, "Action: Try log in user: " + editEmail.getEditableText().toString() + ", with password: " + editPassword.getEditableText().toString());
                         userData = App.loadUserData();
                         new LoginTask().execute();
                     }
@@ -169,7 +169,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         buttonNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("ButtonAction", "New user clicked");
+                Log.d(TAG, "ButtonAction: New user clicked");
                 if (internetConnection) {
                     Intent intent = new Intent(context, RegisterActivity.class);
                     startActivity(intent);
@@ -296,7 +296,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
             configureApplication();
             initializeConnector();
-            Log.d(TAG, "After configureApplication() " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
+            Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
         if (requestCode == RC_SIGN_IN) {
@@ -412,7 +412,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPreExecute() {
-            Log.d(TAG, "onPreExecute()");
+            Log.d(TAG, "Action: logging in");
             // lock screen orientation and show progress dialog
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             dialog = ProgressDialog.show(context, "Logging in", "Please wait");
@@ -421,7 +421,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         @Override
         protected Object doInBackground(Object... params) {
 
-            Log.d(TAG, "doInBackground()");
+            Log.d(TAG, "Action: Login user in background");
 
             String email;
             boolean register = true;
@@ -446,7 +446,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 if (id > 0) {
                     HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id)
                             .withFields("id", "firstName", "lastName", "level", "email", "counterValues", "leaderboards").get();
-                    Log.d(TAG, response.toString());
+                    Log.v(TAG, response.toString());
                     final JSONObject userJSON = response.getJSONObject();
                     String userFirstName = userJSON.getString("firstName");
                     String userLastName = userJSON.getString("lastName");
@@ -497,12 +497,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
+                Log.d(TAG, "Login success");
                 new EventGetLocations().execute();
             } else {
-                Log.d(TAG, "Here!");
+                Log.e(TAG, "Cannot log in");
             }
 
         }
@@ -517,7 +517,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPreExecute() {
-            Log.d(TAG, "onPreExecute()");
+            Log.d(TAG, "Action: Downloading locations");
             dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
         }
 
@@ -529,7 +529,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             try {
                 // LOCATIONS REQUEST
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
-                Log.d(TAG, response.toString());
+                Log.v(TAG, response.toString());
                 // all locations from isa
                 JSONArray locationsArray = response.getJSONArray();
                 for (int i = 0; i < locationsArray.length(); i++) {
@@ -562,11 +562,11 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             if (success) {
+                Log.d(TAG, "Locations downloaded");
                 new EventGetAchievements().execute();
             } else {
-                Log.d(TAG, "NOT SUCCESS");
+                Log.e(TAG, "Cannot get locations");
             }
         }
 
@@ -580,7 +580,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPreExecute() {
-            Log.d(TAG, "onPreExecute()");
+            Log.d(TAG, "Action: Downloading achievements");
         }
 
 
@@ -591,7 +591,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
                 // ACHIEVEMENTS REQUEST
                 SparseIntArray idMap = new SparseIntArray();
-//                Log.d(TAG, "ACTUAL USER ID IS from object: " + userData.getUserId());
+                Log.d(TAG, "Action: Get achievements for user: " + userData.getUserId());
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
@@ -605,7 +605,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 HttpResponse responseGeneral = App.getIsaacloudConnector()
                         .path("/cache/achievements").withLimit(1000).get();
                 JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                Log.d("TEST", arrayGeneral.toString(3));
+                Log.v("TEST", arrayGeneral.toString(3));
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
                     if (idMap.get(json.getInt("id"), -1) != -1) {
@@ -615,7 +615,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 success = true;
                 DataManager dm = App.getDataManager();
                 dm.setAchievements(achievements);
-                Log.d(TAG, "ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
+                Log.d(TAG, "Event: Downloaded " + dm.getAchievements().size() + " achievements");
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -629,15 +629,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         @Override
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
-                Log.d(TAG, "SUCCESS");
+                Log.i(TAG, "Achievements downloaded");
                 isInternetCheckerActive = false;
                 LoginCache.INSTANCE.logIn();
                 runMainActivity();
             } else {
-                Log.d(TAG, "NOT SUCCESS");
+                Log.e(TAG, "Cannot get achievements");
             }
         }
 
@@ -650,6 +649,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+                    Log.e(TAG, "Event: Check internet thread interrupted");
                     return;
                 }
                 Log.d(TAG, "Connected: " + internetConnection);

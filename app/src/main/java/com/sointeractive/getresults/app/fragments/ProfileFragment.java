@@ -32,7 +32,7 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive called");
+            Log.d(TAG, "Event: onReceive called");
             refreshData();
 
         }

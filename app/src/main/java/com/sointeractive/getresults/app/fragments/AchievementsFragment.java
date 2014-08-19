@@ -35,8 +35,7 @@ public class AchievementsFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive called");
-            Log.d(TAG, "onReceive called");
+            Log.d(TAG, "Event: onReceive called");
             Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 //            v.vibrate(250);

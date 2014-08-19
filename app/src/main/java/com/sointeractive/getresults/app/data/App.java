@@ -126,7 +126,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         obj = this;
-        Log.d("APP:", "FileManager created");
+        Log.d(TAG, "Action: Create managers");
         fileManager = new FileManager();
         eventManager = new EventManager();
         dataManager = new DataManager();

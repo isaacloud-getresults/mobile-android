@@ -106,7 +106,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(Object... params) {
-            Log.d(TAG, "EventLogin:");
+            Log.d(TAG, "Action: sending login event");
             try {
                 JSONObject body = new JSONObject();
                 body.put("activity", "login");
@@ -124,12 +124,11 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
+                Log.e(TAG, "Error: Cannot log in");
             }
             if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+                Log.v(TAG, "response: " + response.toString());
             }
         }
     }
@@ -148,7 +147,7 @@ public class EventManager {
         @Override
         protected Object doInBackground(String... data) {
             generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
-            Log.d(TAG, "EventLogin:");
+            Log.d(TAG, "Action: sending new beacon event");
             try {
                 JSONObject body = new JSONObject();
                 body.put("place", data[0] + "." + data[1]);
@@ -166,14 +165,13 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             // GET ACTUAL LOCATION EVENT
             new EventGetNewLocation().execute();
             if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
+                Log.e(TAG, "Error: Cannot post new beacon");
             }
             if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+                Log.v(TAG, "response: " + response.toString());
             }
         }
     }
@@ -197,7 +195,7 @@ public class EventManager {
             try {
                 int id = userData.getUserId();
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).get();
-                Log.d(TAG, response.toString());
+                Log.v(TAG, response.toString());
                 JSONObject json = response.getJSONObject();
                 JSONArray array = json.getJSONArray("counterValues");
                 JSONArray gainedAchievements = json.getJSONArray("gainedAchievements");
@@ -224,17 +222,15 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
-
             // CHECK FOR NEW ACHIEVEMENTS
             new EventCheckAchievements().execute();
             // send broadcast
             LocalBroadcastManager.getInstance(context).sendBroadcast(message);
             if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
+                Log.e(TAG, "Error: Cannot get new location");
             }
             if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+                Log.v(TAG, "response: " + response.toString());
             }
         }
     }
@@ -254,13 +250,13 @@ public class EventManager {
         @Override
         protected Object doInBackground(String... data) {
 //            generateNotification("Left beacon range", "Outside location", "Meeting room");
-            Log.d(TAG, "EventPostLeftBeacon");
+            Log.i(TAG, "Action: sending left beacon event");
             try {
                 JSONObject body = new JSONObject();
                 body.put("place", data[0] + "." + data[1] + ".exit");
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
-                Log.d(TAG, response.toString());
+                Log.v(TAG, response.toString());
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -273,14 +269,13 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             // GET ACTUAL LOCATION EVENT
             new EventGetNewLocation().execute();
             if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
+                Log.e(TAG, "Error: Cannot post left beacon");
             }
             if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+                Log.v(TAG, "response: " + response.toString());
             }
         }
     }
@@ -303,7 +298,7 @@ public class EventManager {
 
                 // USERS REQUEST
                 HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
-                Log.d(TAG, usersResponse.toString());
+                Log.v(TAG, usersResponse.toString());
 
                 JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
@@ -320,21 +315,20 @@ public class EventManager {
             } catch (IsaaCloudConnectionException e) {
                 Log.e(TAG, "Error: IC connection");
                 e.printStackTrace();
-            } catch (IOException e1) {
-                Log.e(TAG, "Error: IO, " + e1.getMessage());
-                e1.printStackTrace();
+            } catch (IOException e) {
+                Log.e(TAG, "Error: IO, " + e.getMessage());
+                e.printStackTrace();
             }
             return null;
         }
 
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA));
             if (isError) {
-                Log.d(TAG, "onPostExecute() - error detected");
+                Log.e(TAG, "Error: Cannot update data");
             }
             if (response != null) {
-                Log.d(TAG, "onPostExecute() - response: " + response.toString());
+                Log.v(TAG, "response: " + response.toString());
             }
         }
     }
@@ -347,7 +341,7 @@ public class EventManager {
         @Override
         protected Object doInBackground(Object... params) {
             userData = App.loadUserData();
-            Log.d(TAG, "!!!!!!!!!!!!userData!!!!!!!!!!!!!! " + userData.getName() + userData.getUserId());
+            Log.d(TAG, "User data = {name: " + userData.getName() + ", id: " + userData.getUserId() + "}");
             try {
                 // ACHIEVEMENTS REQUEST
                 SparseIntArray idMap = new SparseIntArray();
@@ -382,10 +376,10 @@ public class EventManager {
         protected void onPostExecute(Object result) {
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
             for (Achievement a : actualAchievements) {
-                Log.d(TAG, "actualAchievements: " + a.getLabel());
+                Log.v(TAG, "old Achievements: " + a.getLabel());
             }
             for (Achievement a : newAchievements) {
-                Log.d(TAG, "new Achievements: " + a.getLabel());
+                Log.v(TAG, "new Achievements: " + a.getLabel());
             }
 
             if (newAchievements.size() != actualAchievements.size()) {

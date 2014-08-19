@@ -133,7 +133,7 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected Object doInBackground(Object... params) {
-            Log.d(TAG, "doInBackground()");
+            Log.d(TAG, "Action: Registering user");
 
             JSONObject jsonBody = new JSONObject();
             // generate json
@@ -193,7 +193,7 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
-            Log.d(TAG, "onPreExecute()");
+            Log.d(TAG, "Action: Downloading locations");
             dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
         }
 
@@ -207,8 +207,9 @@ public class RegisterActivity extends Activity {
             userData = App.loadUserData();
             try {
                 // LOCATIONS REQUEST
+                Log.d(TAG, "Action: Getting locations");
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
-                Log.d(TAG, response.toString());
+                Log.v(TAG, response.toString());
                 // all locations from isa
                 JSONArray locationsArray = response.getJSONArray();
                 for (int i = 0; i < locationsArray.length(); i++) {
@@ -222,8 +223,9 @@ public class RegisterActivity extends Activity {
 
 
                 // USERS REQUEST
+                Log.d(TAG, "Action: Getting users list");
                 HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
-                Log.d(TAG, usersResponse.toString());
+                Log.v(TAG, usersResponse.toString());
                 JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
                 for (int i = 0; i < usersArray.length(); i++) {
@@ -247,7 +249,7 @@ public class RegisterActivity extends Activity {
                 HttpResponse responseGeneral = App.getIsaacloudConnector()
                         .path("/cache/achievements").withLimit(1000).get();
                 JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                Log.d("TEST", arrayGeneral.toString(3));
+                Log.v("TEST", arrayGeneral.toString(3));
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
                     if (idMap.get(json.getInt("id"), -1) != -1) {
@@ -259,7 +261,7 @@ public class RegisterActivity extends Activity {
                 dm.setLocations(locations);
                 dm.setPeople(entries);
                 dm.setAchievements(achievements);
-                Log.d(TAG, "ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
+                Log.d(TAG, "Number achievements found: " + dm.getAchievements().size());
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -273,13 +275,13 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
+                Log.d(TAG, "New user registered");
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
             } else {
-                Log.d(TAG, "NOT SUCCESS");
+                Log.e(TAG, "Cannot register user");
             }
         }
 

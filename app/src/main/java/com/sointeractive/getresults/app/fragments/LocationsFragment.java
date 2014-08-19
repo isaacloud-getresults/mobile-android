@@ -38,7 +38,7 @@ public class LocationsFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive called");
+            Log.d(TAG, "Event: onReceive called");
             if (listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
@@ -68,7 +68,7 @@ public class LocationsFragment extends Fragment {
         final List<Location> locationsArray = App.getLocations();
         context = this.getActivity();
         for (Location l : locationsArray) {
-            Log.d(TAG, "Loading: " + l.getLabel());
+            Log.v(TAG, "Loading: " + l.getLabel());
         }
         statusCard = new StatusCard(context, R.layout.status_card_content);
         statusCard.setBackgroundResourceId(R.drawable.status_card_background);
