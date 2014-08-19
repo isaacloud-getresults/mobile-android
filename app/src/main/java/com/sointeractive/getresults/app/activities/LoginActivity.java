@@ -451,6 +451,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     String userFirstName = userJSON.getString("firstName");
                     String userLastName = userJSON.getString("lastName");
                     String userEmail = userJSON.getString("email");
+                    String level = userJSON.getString("level");
                     int userId = userJSON.getInt("id");
                     // send loaded data to App.UserData
                     UserData userData = new UserData();
@@ -459,6 +460,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     userData.setEmail(userEmail);
                     userData.setUserId(userId);
                     userData.setLeaderboardData(userJSON);
+                    userData.setLevel(level);
                     App.saveUserData(userData);
                     // report user found
                     success = true;
@@ -481,6 +483,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     userData.setName(Json.getString("firstName") + " "
                             + Json.getString("lastName"));
                     userData.setEmail(Json.getString("email"));
+                    userData.setLevel(Json.getString("level"));
                     App.saveUserData(userData);
                     success = true;
                 }

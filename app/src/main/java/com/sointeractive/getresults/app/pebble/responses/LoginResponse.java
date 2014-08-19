@@ -13,14 +13,16 @@ public class LoginResponse implements ResponseItem {
     private final int rank;
     private final int beaconsSize;
     private final int achievementsNumber;
+    private final int level;
 
-    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber) {
+    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber, final String level) {
         this.name = name;
         this.points = points;
         this.rank = rank;
         this.roomName = roomName;
         this.beaconsSize = beaconsSize;
         this.achievementsNumber = achievementsNumber;
+        this.level = Integer.valueOf(level);
     }
 
     @Override
@@ -32,32 +34,38 @@ public class LoginResponse implements ResponseItem {
                 .addInt(rank)
                 .addInt(beaconsSize)
                 .addInt(achievementsNumber)
+                .addInt(level)
                 .pack();
     }
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         final LoginResponse that = (LoginResponse) o;
-        return rank == that.rank &&
-                points == that.points &&
-                name.equals(that.name) &&
-                roomName.equals(that.roomName);
+
+        if (achievementsNumber != that.achievementsNumber) return false;
+        if (beaconsSize != that.beaconsSize) return false;
+        if (level != that.level) return false;
+        if (points != that.points) return false;
+        if (rank != that.rank) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (roomName != null ? !roomName.equals(that.roomName) : that.roomName != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = roomName != null ? roomName.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + points;
         result = 31 * result + rank;
-        result = 31 * result + roomName.hashCode();
+        result = 31 * result + beaconsSize;
+        result = 31 * result + achievementsNumber;
+        result = 31 * result + level;
         return result;
     }
 }

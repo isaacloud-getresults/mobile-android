@@ -158,6 +158,7 @@ public class RegisterActivity extends Activity {
                 userData.setName(json.getString("firstName") + " "
                         + json.getString("lastName"));
                 userData.setEmail(json.getString("email"));
+                userData.setLevel(json.getString("level"));
                 App.saveUserData(userData);
                 success = true;
             } catch (JSONException e) {
