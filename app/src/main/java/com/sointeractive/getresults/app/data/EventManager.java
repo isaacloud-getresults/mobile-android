@@ -384,21 +384,21 @@ public class EventManager {
 
             if (newAchievements.size() != actualAchievements.size()) {
                 // search for new achievement
-                Achievement recentAchievement = null;
+                List<Achievement> recentAchievements = new LinkedList<Achievement>();
                 int i = 0;
-                while (recentAchievement == null && i < newAchievements.size()) {
+                while (i < newAchievements.size()) {
                     if (!actualAchievements.contains(newAchievements.get(i))) {
-                        recentAchievement = newAchievements.get(i);
+                        recentAchievements.add(newAchievements.get(i));
                     }
                     i++;
                 }
-                if (recentAchievement != null) {
+                App.getDataManager().setAchievements(newAchievements);
+                NewAchievementsNotifier.notifyAchievements(recentAchievements);
+                for (Achievement achievement : recentAchievements) {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
-                    intent.putExtra("label", recentAchievement.getLabel());
-                    App.getDataManager().setAchievements(newAchievements);
+                    intent.putExtra("label", achievement.getLabel());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 //                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", recentAchievement.getLabel());
-                    NewAchievementsNotifier.notifyAchievements(newAchievements);
                 }
             } else {
                 Log.d(TAG, "No new achievements.");
