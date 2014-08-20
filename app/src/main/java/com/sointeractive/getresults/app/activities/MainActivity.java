@@ -118,6 +118,7 @@ public class MainActivity extends FragmentActivity implements
         getApplicationContext().stopService(i);
         Intent j = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().stopService(j);
+        App.getPebbleConnector().closePebbleApp();
         super.onDestroy();
 
     }

@@ -36,7 +36,7 @@ public class DataManager {
     public void setLocations(List<Location> locations) {
         this.locations = locations;
         BeaconsCache.INSTANCE.reload();
-        LoginCache.INSTANCE.reload();
+        LoginCache.INSTANCE.reload(true);
     }
 
     public List<Person> getPeopleAtLocation(Location l) {
@@ -64,6 +64,6 @@ public class DataManager {
     public void setAchievements(List<Achievement> achievements) {
         this.achievements = achievements;
         AchievementsCache.INSTANCE.reload();
-        LoginCache.INSTANCE.reload();
+        LoginCache.INSTANCE.reload(true);
     }
 }

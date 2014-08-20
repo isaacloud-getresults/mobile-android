@@ -21,7 +21,7 @@ public class LoginCache {
 
     public Collection<ResponseItem> getData() {
         if (loginResponse instanceof EmptyResponse) {
-            reload();
+            reload(false);
         }
         return getCollection();
     }
@@ -32,7 +32,7 @@ public class LoginCache {
         return responseList;
     }
 
-    public void reload() {
+    public void reload(boolean findChanges) {
         final UserData newUserData = App.loadUserData();
         if (newUserData == null || stopSending) {
             return;
@@ -41,7 +41,9 @@ public class LoginCache {
         final ResponseItem oldLoginResponse = loginResponse;
         loginResponse = getLoginResponse(newUserData);
 
-        UserChangeChecker.check(oldLoginResponse, loginResponse);
+        if (findChanges) {
+            UserChangeChecker.check(oldLoginResponse, loginResponse);
+        }
     }
 
     private ResponseItem getLoginResponse(final UserData userData) {
@@ -53,6 +55,7 @@ public class LoginCache {
 
     public void clear() {
         loginResponse = EmptyResponse.INSTANCE;
+        stopSending = true;
     }
 
     public void logIn() {

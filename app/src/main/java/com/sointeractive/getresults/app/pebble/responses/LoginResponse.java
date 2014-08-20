@@ -13,16 +13,14 @@ public class LoginResponse implements ResponseItem {
     private final int rank;
     private final int beaconsSize;
     private final int achievementsNumber;
-    private final int level;
 
-    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber, final String level) {
+    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber) {
         this.name = name;
         this.points = points;
         this.rank = rank;
         this.roomName = roomName;
         this.beaconsSize = beaconsSize;
         this.achievementsNumber = achievementsNumber;
-        this.level = Integer.valueOf(level);
     }
 
     @Override
@@ -34,7 +32,6 @@ public class LoginResponse implements ResponseItem {
                 .addInt(rank)
                 .addInt(beaconsSize)
                 .addInt(achievementsNumber)
-                .addInt(level)
                 .pack();
     }
 
@@ -47,7 +44,6 @@ public class LoginResponse implements ResponseItem {
 
         if (achievementsNumber != that.achievementsNumber) return false;
         if (beaconsSize != that.beaconsSize) return false;
-        if (level != that.level) return false;
         if (points != that.points) return false;
         if (rank != that.rank) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -65,7 +61,6 @@ public class LoginResponse implements ResponseItem {
         result = 31 * result + rank;
         result = 31 * result + beaconsSize;
         result = 31 * result + achievementsNumber;
-        result = 31 * result + level;
         return result;
     }
 }

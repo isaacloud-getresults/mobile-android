@@ -45,30 +45,8 @@ public class App extends Application {
     }
 
     public static void saveUserData(UserData userData) {
-        UserData previousUser = fileManager.loadUserData(obj);
-
-        String oldEmail = "";
-        if (previousUser != null) {
-            oldEmail = previousUser.getEmail();
-            if (oldEmail == null) {
-                oldEmail = "";
-            }
-        }
-
-        String newEmail = "";
-        if (userData != null) {
-            newEmail = userData.getEmail();
-            if (newEmail == null) {
-                newEmail = "";
-            }
-        }
-
-        if (!oldEmail.equals(newEmail)) {
-            pebbleConnector.closePebbleApp();
-        }
-
         fileManager.saveUserData(userData, obj);
-        LoginCache.INSTANCE.reload();
+        LoginCache.INSTANCE.reload(true);
     }
 
     public static UserData loadUserData() {

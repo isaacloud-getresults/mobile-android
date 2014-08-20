@@ -6,6 +6,10 @@ import android.util.Log;
 import com.sointeractive.android.kit.PebbleKit;
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.config.Settings;
+import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
+import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
+import com.sointeractive.getresults.app.pebble.cache.LoginCache;
+import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
 import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
 
 import java.util.Collection;
@@ -123,6 +127,11 @@ public class PebbleConnector extends Observable {
     }
 
     public void closePebbleApp() {
+        AchievementsCache.INSTANCE.clear();
+        BeaconsCache.INSTANCE.clear();
+        PeopleCache.INSTANCE.clear();
+        LoginCache.INSTANCE.clear();
+        clearSendingQueue();
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
     }
 }

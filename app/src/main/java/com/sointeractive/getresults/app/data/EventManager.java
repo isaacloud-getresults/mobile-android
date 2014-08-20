@@ -19,7 +19,6 @@ import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.checker.NewAchievementsNotifier;
 
 import org.json.JSONArray;
@@ -308,7 +307,6 @@ public class EventManager {
                     entries.get(p.getLocation()).add(p);
                 }
                 App.getDataManager().setPeople(entries);
-                LoginCache.INSTANCE.logIn();
             } catch (JSONException e) {
                 Log.e(TAG, "Error: JSON");
                 e.printStackTrace();
