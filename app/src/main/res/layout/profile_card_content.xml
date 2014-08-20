@@ -50,7 +50,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/color_theme_text_dark"
-                android:text="{fa-user}  Level:"
+                android:text="{fa-user}  Rank:"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"/>

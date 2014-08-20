@@ -29,6 +29,6 @@ public class Settings {
     public static final int dataDownloadInterval = 5000; // 5 sec
     // connection
     public static String INSTANCE_ID = "179";
-    public static String APP_SECRET = "3f14569b750b69a8bc352cb34ad3e";
+    public static String APP_SECRET = "cbe82930e310e3519666c8ddf9776cee";
     public static String webSocketToken = "61a16e3b91c8fd127e03ca9bf2b7dfa";
 }

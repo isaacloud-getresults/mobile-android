@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * Data store class for notifications.
  */
 
-class Notification {
+public class Notification {
 
     private JSONObject data;
     private String title, message;
