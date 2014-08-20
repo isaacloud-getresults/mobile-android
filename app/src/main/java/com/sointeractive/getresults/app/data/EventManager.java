@@ -416,7 +416,11 @@ public class EventManager {
         protected void onPostExecute(Object result) {
             if (entries.size() != 0) {
                 if (App.getDataManager().isNewNotification(entries.get(0))) {
-                    Toast.makeText(context, entries.get(0).getMessage(), Toast.LENGTH_SHORT).show();
+                    final String message = entries.get(0).getMessage();
+                    if (message != null) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
+                    }
                     Log.d(TAG, "NOTIFICATION = NEW");
                 }
             } else Log.d(TAG, "NOTIFICATION = NONE");
