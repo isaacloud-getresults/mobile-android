@@ -72,7 +72,7 @@ public class DataManager {
         LoginCache.INSTANCE.reload(true);
     }
 
-    public boolean isNewNotification (Notification n) {
+    public boolean isNewNotification(Notification n) {
         try {
             if (lastNotification != null && n.getData().getString("createdAt").equals(lastNotification.getData().getString("createdAt"))) {
                 return false;
@@ -80,8 +80,7 @@ public class DataManager {
                 this.lastNotification = n;
                 return true;
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             return false;
         }

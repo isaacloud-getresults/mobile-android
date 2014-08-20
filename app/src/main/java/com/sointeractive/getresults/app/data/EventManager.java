@@ -1,26 +1,20 @@
 package com.sointeractive.getresults.app.data;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
-import android.widget.Toast;
 import android.util.SparseIntArray;
+import android.widget.Toast;
 
-import com.sointeractive.getresults.app.R;
-import com.sointeractive.getresults.app.activities.MainActivity;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
+import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.checker.NewAchievementsNotifier;
 
 import org.json.JSONArray;
@@ -276,11 +270,11 @@ public class EventManager {
                     entries.get(p.getLocation()).add(p);
                     // CHECK ACTUAL USER POSITION:
                     if (p.getId() == App.loadUserData().getUserId()) {
-                        if (p.getLocation() != App.loadUserData().getUserLocationId()){
+                        if (p.getLocation() != App.loadUserData().getUserLocationId()) {
                             UserData userData = App.loadUserData();
                             userData.setUserLocation(p.getId());
                             App.saveUserData(userData);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.broadcastIntentNewLocation));
+                            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
                         }
                     }
                 }
@@ -394,15 +388,15 @@ public class EventManager {
         @Override
         protected Object doInBackground(Object... params) {
             try {
-                Map<String,Object> query = new HashMap<String,Object>();
-                Map<String,String> order = new HashMap<String, String>();
-                order.put("createdAt","DESC");
+                Map<String, Object> query = new HashMap<String, Object>();
+                Map<String, String> order = new HashMap<String, String>();
+                order.put("createdAt", "DESC");
                 query.put("subjectId", App.loadUserData().getUserId());
                 HttpResponse response = App.getIsaacloudConnector()
                         .path("/queues/notifications").withQuery(query).withLimit(1).withOrder(order).get();
                 JSONArray array = response.getJSONArray();
                 for (int i = 0; i < array.length(); i++) {
-                    if ( array.length() != 0) {
+                    if (array.length() != 0) {
                         entries.add(new Notification((JSONObject) array.get(i)));
                         Log.d(TAG, "added notification: " + array.get(i).toString());
                     } else {

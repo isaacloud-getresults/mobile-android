@@ -642,7 +642,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             dialog.dismiss();
             if (success) {
                 Log.i(TAG, "Achievements downloaded");
-                isInternetCheckerActive = false;
                 LoginCache.INSTANCE.logIn();
                 runMainActivity();
             } else {
