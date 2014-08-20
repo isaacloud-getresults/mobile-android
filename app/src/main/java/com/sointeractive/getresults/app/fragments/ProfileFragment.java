@@ -93,7 +93,7 @@ public class ProfileFragment extends Fragment {
         TextView counterLevel = (TextView) profileCardView.findViewById(R.id.counterLevel);
         TextView counterScore = (TextView) profileCardView.findViewById(R.id.counterScore);
         TextView counterAchievements = (TextView) profileCardView.findViewById(R.id.counterAchievements);
-        counterLevel.setText(App.loadUserData().getLevel());
+        counterLevel.setText("" + App.loadUserData().getRank());
         counterScore.setText(App.loadUserData().getScore());
         counterAchievements.setText(App.loadUserData().getGainedAchievements());
 

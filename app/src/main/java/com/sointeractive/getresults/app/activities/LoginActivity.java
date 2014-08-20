@@ -89,7 +89,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private CheckBox checkbox;
     private ActionBar actionBar;
     private boolean Glogin = true;
-    private boolean isInternetCheckerActive = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,6 +180,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Log.d(TAG, "ButtonAction: SignIn clicked");
                 if (internetConnection) {
                     Glogin = true;
                     signInWithGplus();
@@ -253,7 +253,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     private void resolveSignInError() {
+        Log.d(TAG, "ButtonAction: ResolveSignInError()");
         if (mConnectionResult != null) {
+            Log.d(TAG, "ButtonAction: " + mConnectionResult.toString());
             if (mConnectionResult.hasResolution()) {
                 try {
                     mIntentInProgress = true;
@@ -268,6 +270,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     private void signInWithGplus() {
         if (!mGoogleApiClient.isConnecting()) {
+            Log.d(TAG, "Button action: signInWithGplus()");
             mSignInClicked = true;
             resolveSignInError();
         }
@@ -344,6 +347,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
                     });
         }
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
     }
 
     public void onConnectionSuspended(int arg0) {
@@ -647,7 +654,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     private class InternetRunnable implements Runnable {
         public void run() {
-            while (isInternetCheckerActive) {
+            while (context != null) {
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);

@@ -39,6 +39,10 @@ public class UserData implements Serializable {
         return String.valueOf(score);
     }
 
+    public int getRank() {
+        return this.rank;
+    }
+
     public String getGainedAchievements() {
         return gainedAchievements;
     }
