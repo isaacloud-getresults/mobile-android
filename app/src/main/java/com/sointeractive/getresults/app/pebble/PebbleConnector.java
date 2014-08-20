@@ -11,8 +11,14 @@ import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
 import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
+import com.sointeractive.getresults.app.pebble.communication.Request;
+import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
+import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
+import com.sointeractive.getresults.app.pebble.responses.PersonOutResponse;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -133,5 +139,31 @@ public class PebbleConnector extends Observable {
         LoginCache.INSTANCE.clear();
         clearSendingQueue();
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
+    }
+
+    public void deleteAchievementResponses() {
+        synchronized (sendingQueue) {
+            final Collection<PebbleDictionary> achievementResponses = new LinkedList<PebbleDictionary>();
+            for (PebbleDictionary response : sendingQueue) {
+                final int responseType = response.getInteger(Request.RESPONSE_TYPE).intValue();
+                if (responseType == AchievementResponse.RESPONSE_ID || responseType == AchievementDescriptionResponse.RESPONSE_ID) {
+                    achievementResponses.add(response);
+                }
+            }
+            sendingQueue.removeAll(achievementResponses);
+        }
+    }
+
+    public void deletePeopleResponses() {
+        synchronized (sendingQueue) {
+            final Collection<PebbleDictionary> peopleResponses = new LinkedList<PebbleDictionary>();
+            for (PebbleDictionary response : sendingQueue) {
+                final int responseType = response.getInteger(Request.RESPONSE_TYPE).intValue();
+                if (responseType == PersonInResponse.RESPONSE_ID || responseType == PersonOutResponse.RESPONSE_ID) {
+                    peopleResponses.add(response);
+                }
+            }
+            sendingQueue.removeAll(peopleResponses);
+        }
     }
 }

@@ -5,7 +5,7 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 import java.util.List;
 
 public class PersonOutResponse implements ResponseItem {
-    private static final int RESPONSE_ID = 6;
+    public static final int RESPONSE_ID = 6;
 
     private final int id;
     private final String name;

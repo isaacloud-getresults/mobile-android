@@ -6,7 +6,7 @@ import com.sointeractive.getresults.app.config.Settings;
 import java.util.List;
 
 public class AchievementResponse implements ResponseItem {
-    private static final int RESPONSE_ID = 4;
+    public static final int RESPONSE_ID = 4;
 
     private final int id;
     private final String name;
@@ -14,8 +14,16 @@ public class AchievementResponse implements ResponseItem {
 
     public AchievementResponse(final int id, final String name, final String description) {
         this.id = id;
-        this.name = name;
+        this.name = getSafeLengthName(name, Settings.MAX_ACHIEVEMENT_NAME_STR_LEN);
         this.description = description;
+    }
+
+    private String getSafeLengthName(String name, int maxLength) {
+        if (name.length() > maxLength) {
+            return name.substring(0, maxLength);
+        } else {
+            return name;
+        }
     }
 
     @Override
@@ -29,7 +37,7 @@ public class AchievementResponse implements ResponseItem {
 
     private int getDescriptionPartsNumber() {
         final double stringLength = description.length();
-        final double partSize = Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN;
+        final double partSize = Settings.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN;
         return (int) Math.ceil(stringLength / partSize);
     }
 }

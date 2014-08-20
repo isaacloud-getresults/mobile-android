@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class AchievementDescriptionResponse implements ResponseItem {
-    private static final int RESPONSE_ID = 5;
+    public static final int RESPONSE_ID = 5;
 
     private final int id;
     private final String description;
@@ -21,7 +21,7 @@ public class AchievementDescriptionResponse implements ResponseItem {
     @Override
     public List<PebbleDictionary> getData() {
         final List<PebbleDictionary> data = new LinkedList<PebbleDictionary>();
-        final Queue<String> descriptionParts = partitionDescription(description);
+        final Queue<String> descriptionParts = partitionDescription(description, Settings.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN);
 
         int descriptionPartId = 0;
         while (!descriptionParts.isEmpty()) {
@@ -36,10 +36,10 @@ public class AchievementDescriptionResponse implements ResponseItem {
         return data;
     }
 
-    private Queue<String> partitionDescription(final String text) {
+    private Queue<String> partitionDescription(final String text, final int maxLength) {
         final Queue<String> descriptionParts = new LinkedList<String>();
-        for (int start = 0; start < text.length(); start += Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN) {
-            descriptionParts.add(text.substring(start, Math.min(text.length(), start + Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN)));
+        for (int start = 0; start < text.length(); start += maxLength) {
+            descriptionParts.add(text.substring(start, Math.min(text.length(), start + maxLength)));
         }
         return descriptionParts;
     }

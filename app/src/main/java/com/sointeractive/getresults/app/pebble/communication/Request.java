@@ -45,6 +45,12 @@ public enum Request implements Sendable {
         public Collection<ResponseItem> getSendable(final int query) {
             return BeaconsCache.INSTANCE.getData();
         }
+
+        @Override
+        void onRequest() {
+            super.onRequest();
+            App.getPebbleConnector().deleteAchievementResponses();
+        }
     },
 
     PEOPLE_IN_ROOM(3) {
@@ -53,12 +59,25 @@ public enum Request implements Sendable {
             PeopleCache.INSTANCE.setObservedRoom(query);
             return PeopleCache.INSTANCE.getData(query);
         }
+
+        @Override
+        void onRequest() {
+            super.onRequest();
+            App.getPebbleConnector().deleteAchievementResponses();
+        }
     },
 
     ACHIEVEMENTS(4) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
             return AchievementsCache.INSTANCE.getData();
+        }
+
+        @Override
+        void onRequest() {
+            super.onRequest();
+            PeopleCache.INSTANCE.clearObservedRoom();
+            App.getPebbleConnector().deletePeopleResponses();
         }
     },
 

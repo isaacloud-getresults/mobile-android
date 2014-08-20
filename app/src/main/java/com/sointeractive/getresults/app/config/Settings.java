@@ -13,7 +13,9 @@ public class Settings {
     // Pebble
     public static final String APP_NAME = "GetResults!";
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("51b19145-0542-474f-8b62-c8c34ae4b87b");
-    public static final int MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN = 50; //78;
+    public static final int MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN = 50; //78;
+    public static final int MAX_ACHIEVEMENT_NAME_STR_LEN = 80;
+    public static final int MAX_COWORKER_FULL_NAME_STR_LEN = 45;
     public static final String IC_NOTIFICATION_HEADER = "IsaaCloud notification";
     public static final int RESEND_TIMES_LIMIT = 3;
 
@@ -36,6 +38,6 @@ public class Settings {
 
     // IsaaCloud
     public static String INSTANCE_ID = "179";
-    public static String APP_SECRET = "cbe82930e310e3519666c8ddf9776cee"; //"3f14569b750b69a8bc352cb34ad3e";
+    public static String APP_SECRET = "d44faee8de99475047b64c263112f2"; //"cbe82930e310e3519666c8ddf9776cee"; //"3f14569b750b69a8bc352cb34ad3e";
     public static int DATA_DOWNLOAD_INTERVAL = 5000; // 5 sec
 }
