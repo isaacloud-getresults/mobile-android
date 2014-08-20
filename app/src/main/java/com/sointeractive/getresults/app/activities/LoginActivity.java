@@ -601,7 +601,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
                 // ACHIEVEMENTS REQUEST
                 SparseIntArray idMap = new SparseIntArray();
-                Log.d(TAG, "Action: Get achievements for user: " + userData.getUserId());
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
