@@ -44,9 +44,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -233,8 +238,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
-            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-                    0).show();
+//            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+//                    0).show();
             return;
         }
 
@@ -292,7 +297,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
                     Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
                 } else
-                    Toast.makeText(getApplicationContext(), "Inappropriate QR code", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Inappropriate QR code\n" + contents, Toast.LENGTH_SHORT).show();
             }
             if (resultCode == RESULT_CANCELED) {
                 //handle cancel
@@ -649,17 +654,72 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
+    private class GetJSON extends AsyncTask<Object, Object, Object> {
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(TAG, "onPreExecute()");
+        }
+
+
+        @Override
+        public Object doInBackground(Object... params) {
+            JSONObject json;
+            try {
+                json = readJsonFromUrl((String)params[0]);
+            } catch(JSONException e) {json = null;}
+            catch(IOException e) {json = null;}
+            if(json != null) Log.d(TAG, "JSON: " + json.toString());
+            else Log.d(TAG, "JSON: null");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object result) {
+
+        }
+
+    }
+
     private class InternetRunnable implements Runnable {
         public void run() {
             while (context != null) {
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);
+                    JSONObject json;
+                    try {
+                        json = readJsonFromUrl("http://xyz.getresults.isaacloud.com/mconfig");
+                    } catch(JSONException e) {json = null;}
+                    catch(IOException e) {json = null;}
+                    if(json != null) Log.d(TAG, "JSON: " + json.toString());
+                    else Log.d(TAG, "JSON: null");
                 } catch (InterruptedException e) {
 
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
             }
+        }
+    }
+
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
         }
     }
 }

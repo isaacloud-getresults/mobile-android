@@ -147,14 +147,14 @@ public class TrackService extends Service {
             helper.add(new String(b.getMacAddress()));
             beaconMap.put(b.getMacAddress(), b);
             if (!(majors.contains(new String(b.getMacAddress())))) {
-                if (readyToSend(b, true)) {
+
                     majors.add(new String(b.getMacAddress()));
                     Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
                     lastBeacon = b;
 //                    v.vibrate(0);
-                }
+
             } else previousFlag = false;
             if (!internetConnection)
                 Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
@@ -164,14 +164,14 @@ public class TrackService extends Service {
         for (String i : temp) {
             Beacon tempBeacon = beaconMap.get(i);
             if (!(helper.contains(i))) {
-                if (readyToSend(tempBeacon, true)) {
+//                if (readyToSend(tempBeacon, true)) {
                     majors.remove(i);
                     Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()), Integer.toString(tempBeacon.getMinor()));
 //                    v.vibrate(0);
                 }
-            } else previousFlag = false;
+//            } else previousFlag = false;
         }
     }
 
