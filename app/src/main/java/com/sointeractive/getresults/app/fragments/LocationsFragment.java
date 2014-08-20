@@ -33,16 +33,14 @@ import it.gmariotti.cardslib.library.view.CardView;
 
 public class LocationsFragment extends Fragment {
 
-    private static final String TAG = "LocationsFragment";
+    private static final String TAG = LocationsFragment.class.getSimpleName();
     private ExpandableListAdapter listAdapter;
-    private ExpandableListView expandableListView;
-    private List<Location> locationsArray;
     private StatusCard statusCard;
-    private BroadcastReceiver receiverLocations = new BroadcastReceiver() {
+    private final BroadcastReceiver receiverLocations = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive called");
+            Log.d(TAG, "Event: onReceive called");
             if (listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
@@ -70,16 +68,16 @@ public class LocationsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        locationsArray = App.getLocations();
+        final List<Location> locationsArray = App.getLocations();
         context = this.getActivity();
         for (Location l : locationsArray) {
-            Log.d(TAG, "Loading: " + l.getLabel());
+            Log.v(TAG, "Loading: " + l.getLabel());
         }
         statusCard = new StatusCard(context, R.layout.status_card_content);
         statusCard.setBackgroundResourceId(R.drawable.status_card_background);
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
-                new IntentFilter(Settings.broadcastIntentUpdateData));
+                new IntentFilter(Settings.BROADCAST_INTENT_UPDATE_DATA));
         dm = new DrawableManager();
     }
 
@@ -90,7 +88,7 @@ public class LocationsFragment extends Fragment {
         context = getActivity();
         cardView = (CardView) view.findViewById(R.id.cardStatus);
         cardView.setCard(this.statusCard);
-        expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
+        final ExpandableListView expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setGroupIndicator(null);
         expandableListView.setDivider(getResources().getDrawable(R.drawable.divider));
         expandableListView.setChildDivider(getResources().getDrawable(R.drawable.child_divider));
@@ -123,8 +121,8 @@ public class LocationsFragment extends Fragment {
 
     private class ExpandableListAdapter extends BaseExpandableListAdapter {
 
-        private Context context;
-        private List<Location> locationsList;
+        private final Context context;
+        private final List<Location> locationsList;
 
         public ExpandableListAdapter(Context context, List<Location> listDataHeader) {
             this.context = context;

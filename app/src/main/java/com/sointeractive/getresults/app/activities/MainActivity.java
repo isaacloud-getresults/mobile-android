@@ -21,7 +21,7 @@ import com.sointeractive.getresults.app.services.TrackService;
 public class MainActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
-    private static final String TAG = "UserActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
     private ViewPager viewPager;
     private ActionBar actionBar;
 
@@ -67,7 +67,6 @@ public class MainActivity extends FragmentActivity implements
                     }
                 }
         );
-
 
         // SEND LOGIN EVENT
         App.getEventManager().postEventLogin();
@@ -119,6 +118,7 @@ public class MainActivity extends FragmentActivity implements
         getApplicationContext().stopService(i);
         Intent j = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().stopService(j);
+        App.getPebbleConnector().closePebbleApp();
         super.onDestroy();
 
     }

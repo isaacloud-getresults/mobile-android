@@ -41,7 +41,7 @@ public class DataManager {
     public void setLocations(List<Location> locations) {
         this.locations = locations;
         BeaconsCache.INSTANCE.reload();
-        LoginCache.INSTANCE.reload();
+        LoginCache.INSTANCE.reload(true);
     }
 
     public List<Person> getPeopleAtLocation(Location l) {
@@ -69,10 +69,10 @@ public class DataManager {
     public void setAchievements(List<Achievement> achievements) {
         this.achievements = achievements;
         AchievementsCache.INSTANCE.reload();
-        LoginCache.INSTANCE.reload();
+        LoginCache.INSTANCE.reload(true);
     }
 
-    public boolean isNewNotification (Notification n) {
+    public boolean isNewNotification(Notification n) {
         try {
             if (lastNotification != null && n.getData().getString("createdAt").equals(lastNotification.getData().getString("createdAt"))) {
                 return false;
@@ -80,8 +80,7 @@ public class DataManager {
                 this.lastNotification = n;
                 return true;
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             return false;
         }

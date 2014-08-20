@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="30dp">
+                android:layout_width="fill_parent"
+                android:layout_height="30dp">
 
     <ImageView
         android:id="@+id/borderLeft"
@@ -12,12 +12,12 @@
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="30dp"
-        android:layout_toRightOf="@id/borderLeft"
-        android:orientation="vertical"
-        android:padding="3dp"
-        android:background="@drawable/list_item_background">
+                  android:layout_width="fill_parent"
+                  android:layout_height="30dp"
+                  android:layout_toRightOf="@id/borderLeft"
+                  android:background="@drawable/list_item_background"
+                  android:orientation="vertical"
+                  android:padding="3dp">
 
         <TextView
             android:id="@+id/lblListItem"
@@ -31,7 +31,7 @@
         android:id="@+id/borderRight"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:background="@drawable/border"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:background="@drawable/border"/>
 
 </RelativeLayout>

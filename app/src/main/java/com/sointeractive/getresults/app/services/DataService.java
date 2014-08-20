@@ -14,7 +14,7 @@ import java.util.TimerTask;
 
 public class DataService extends Service {
 
-    private static final String TAG = "DataService";
+    private static final String TAG = DataService.class.getSimpleName();
     private static Timer timer;
 
     public DataService() {
@@ -22,13 +22,13 @@ public class DataService extends Service {
 
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate");
+        Log.d(TAG, "Event: onCreate");
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "startService");
+        Log.i(TAG, "Event: StartService");
         timer = new Timer();
-        timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.dataDownloadInterval);
+        timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.DATA_DOWNLOAD_INTERVAL);
 //        SocketIONotifier.INSTANCE.connect(userId);
         return Service.START_NOT_STICKY;
     }
@@ -51,7 +51,7 @@ public class DataService extends Service {
     private class dataUpdate extends TimerTask {
         @Override
         public void run() {
-            Log.d(TAG, "postEventUpdateData");
+            Log.d(TAG, "Action: postEventUpdateData");
             App.getEventManager().postEventUpdateData();
         }
     }

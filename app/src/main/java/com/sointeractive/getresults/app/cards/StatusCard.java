@@ -13,12 +13,8 @@ import com.sointeractive.getresults.app.data.isaacloud.Location;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
 
-/**
- * Created by mac on 06.08.2014.
- */
 public class StatusCard extends Card {
 
-    private Location actualLocation;
     private TextView title;
     private IconTextView stats;
 
@@ -38,13 +34,12 @@ public class StatusCard extends Card {
     }
 
     public void initLocation(Location newLocation) {
-        this.actualLocation = newLocation;
         if (title != null) {
-//            if(actualLocation != null)
-            title.setText(actualLocation.getLabel());
+//            if(newLocation != null)
+            title.setText(newLocation.getLabel());
         }
         if (stats != null) {
-            stats.setText("{fa-users}" + " " + App.getPeopleAtLocation(actualLocation).size() + "   " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size());
+            stats.setText("{fa-users}" + " " + App.getPeopleAtLocation(newLocation).size() + "   " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size());
         }
     }
 }

@@ -21,7 +21,7 @@ public class AchievementDescriptionResponse implements ResponseItem {
     @Override
     public List<PebbleDictionary> getData() {
         final List<PebbleDictionary> data = new LinkedList<PebbleDictionary>();
-        final Queue<String> descriptionParts = partitionDescription(description, Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN);
+        final Queue<String> descriptionParts = partitionDescription(description);
 
         int descriptionPartId = 0;
         while (!descriptionParts.isEmpty()) {
@@ -36,10 +36,10 @@ public class AchievementDescriptionResponse implements ResponseItem {
         return data;
     }
 
-    private Queue<String> partitionDescription(final String text, final int size) {
+    private Queue<String> partitionDescription(final String text) {
         final Queue<String> descriptionParts = new LinkedList<String>();
-        for (int start = 0; start < text.length(); start += size) {
-            descriptionParts.add(text.substring(start, Math.min(text.length(), start + size)));
+        for (int start = 0; start < text.length(); start += Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN) {
+            descriptionParts.add(text.substring(start, Math.min(text.length(), start + Settings.MAX_ACHIEVEMENTS_DESCRIPTION_STR_LEN)));
         }
         return descriptionParts;
     }

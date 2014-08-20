@@ -37,27 +37,30 @@ public class LoginResponse implements ResponseItem {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         final LoginResponse that = (LoginResponse) o;
-        return rank == that.rank &&
-                points == that.points &&
-                name.equals(that.name) &&
-                roomName.equals(that.roomName);
+
+        if (achievementsNumber != that.achievementsNumber) return false;
+        if (beaconsSize != that.beaconsSize) return false;
+        if (points != that.points) return false;
+        if (rank != that.rank) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (roomName != null ? !roomName.equals(that.roomName) : that.roomName != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = roomName != null ? roomName.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + points;
         result = 31 * result + rank;
-        result = 31 * result + roomName.hashCode();
+        result = 31 * result + beaconsSize;
+        result = 31 * result + achievementsNumber;
         return result;
     }
 }

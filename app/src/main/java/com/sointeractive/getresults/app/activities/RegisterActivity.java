@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,7 +30,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,7 +39,7 @@ import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class RegisterActivity extends Activity {
 
-    private static final String TAG = "RegisterActivity";
+    private static final String TAG = RegisterActivity.class.getSimpleName();
 
     private Button buttonRegister;
     private Context context;
@@ -133,7 +133,7 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected Object doInBackground(Object... params) {
-            Log.d(TAG, "doInBackground()");
+            Log.d(TAG, "Action: Registering user");
 
             JSONObject jsonBody = new JSONObject();
             // generate json
@@ -158,6 +158,7 @@ public class RegisterActivity extends Activity {
                 userData.setName(json.getString("firstName") + " "
                         + json.getString("lastName"));
                 userData.setEmail(json.getString("email"));
+                userData.setLevel(json.getString("level"));
                 App.saveUserData(userData);
                 success = true;
             } catch (JSONException e) {
@@ -177,7 +178,7 @@ public class RegisterActivity extends Activity {
             if (success) {
                 new EventGetLocations().execute();
             } else {
-                // error login activity here;
+                // TODO: error login activity here;
             }
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();
@@ -188,12 +189,12 @@ public class RegisterActivity extends Activity {
     // GET LOCATIONS
     private class EventGetLocations extends AsyncTask<Object, Object, Object> {
 
-        private static final String TAG = "EventGetLocations";
+        private final String TAG = EventGetLocations.class.getSimpleName();
         public boolean success = false;
 
         @Override
         protected void onPreExecute() {
-            Log.d(TAG, "onPreExecute()");
+            Log.d(TAG, "Action: Downloading locations");
             dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
         }
 
@@ -207,8 +208,9 @@ public class RegisterActivity extends Activity {
             userData = App.loadUserData();
             try {
                 // LOCATIONS REQUEST
+                Log.d(TAG, "Action: Getting locations");
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
-                Log.d(TAG, response.toString());
+                Log.v(TAG, response.toString());
                 // all locations from isa
                 JSONArray locationsArray = response.getJSONArray();
                 for (int i = 0; i < locationsArray.length(); i++) {
@@ -222,8 +224,9 @@ public class RegisterActivity extends Activity {
 
 
                 // USERS REQUEST
+                Log.d(TAG, "Action: Getting users list");
                 HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
-                Log.d(TAG, usersResponse.toString());
+                Log.v(TAG, usersResponse.toString());
                 JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
                 for (int i = 0; i < usersArray.length(); i++) {
@@ -233,7 +236,7 @@ public class RegisterActivity extends Activity {
                 }
 
                 // ACHIEVEMENTS REQUEST
-                HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();
+                SparseIntArray idMap = new SparseIntArray();
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
@@ -247,10 +250,10 @@ public class RegisterActivity extends Activity {
                 HttpResponse responseGeneral = App.getIsaacloudConnector()
                         .path("/cache/achievements").withLimit(1000).get();
                 JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                Log.d("TEST", arrayGeneral.toString(3));
+                Log.v("TEST", arrayGeneral.toString(3));
                 for (int i = 0; i < arrayGeneral.length(); i++) {
                     JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.containsKey(json.getInt("id"))) {
+                    if (idMap.get(json.getInt("id"), -1) != -1) {
                         achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
@@ -259,7 +262,7 @@ public class RegisterActivity extends Activity {
                 dm.setLocations(locations);
                 dm.setPeople(entries);
                 dm.setAchievements(achievements);
-                Log.d(TAG, "ACHIEVEMENTS LIST SIZE: " + dm.getAchievements().size());
+                Log.d(TAG, "Number achievements found: " + dm.getAchievements().size());
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -273,13 +276,13 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
+                Log.d(TAG, "New user registered");
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
             } else {
-                Log.d(TAG, "NOT SUCCES");
+                Log.e(TAG, "Cannot register user");
             }
         }
 

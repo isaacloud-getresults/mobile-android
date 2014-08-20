@@ -9,9 +9,6 @@ import com.sointeractive.getresults.app.R;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
 
-/**
- * Created by mac on 06.08.2014.
- */
 public class SettingsCard extends Card {
 
     public SettingsCard(Context context) {
