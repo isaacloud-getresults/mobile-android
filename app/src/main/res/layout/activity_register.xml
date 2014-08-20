@@ -43,7 +43,8 @@
         android:layout_alignRight="@+id/editRegisterLastName"
         android:layout_alignStart="@+id/editRegisterLastName"
         android:layout_below="@+id/editRegisterLastName"
-        android:hint="Your e-mail"/>
+        android:hint="Your e-mail"
+        android:inputType="textEmailAddress"/>
 
     <EditText
         android:id="@+id/editRegisterPassword"

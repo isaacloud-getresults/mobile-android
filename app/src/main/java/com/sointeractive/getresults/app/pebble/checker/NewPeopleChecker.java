@@ -34,7 +34,7 @@ public class NewPeopleChecker {
 
     private static void notifyPeopleOut(final Collection<ResponseItem> people) {
         if (!people.isEmpty()) {
-            Log.i(TAG, "Check: New people exited observed room");
+            Log.i(TAG, "Checker: New people exited observed room");
             final Collection<ResponseItem> response = getPeopleOutResponse(people);
             Responder.sendResponseItemsToPebble(response);
         }

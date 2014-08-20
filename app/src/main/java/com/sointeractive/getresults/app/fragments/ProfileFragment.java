@@ -27,12 +27,12 @@ import it.gmariotti.cardslib.library.view.CardView;
 
 public class ProfileFragment extends Fragment {
 
-    private static final String TAG = "ProfileFragment";
-    private BroadcastReceiver receiverProfile = new BroadcastReceiver() {
+    private static final String TAG = ProfileFragment.class.getSimpleName();
+    private final BroadcastReceiver receiverProfile = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive called");
+            Log.d(TAG, "Event: onReceive called");
             refreshData();
 
         }
@@ -55,7 +55,7 @@ public class ProfileFragment extends Fragment {
         settingsCard = new SettingsCard(context);
         statsCard = new StatsCard(context);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverProfile,
-                new IntentFilter(Settings.broadcastIntentUpdateData));
+                new IntentFilter(Settings.BROADCAST_INTENT_UPDATE_DATA));
 
     }
 
@@ -93,7 +93,7 @@ public class ProfileFragment extends Fragment {
         TextView counterLevel = (TextView) profileCardView.findViewById(R.id.counterLevel);
         TextView counterScore = (TextView) profileCardView.findViewById(R.id.counterScore);
         TextView counterAchievements = (TextView) profileCardView.findViewById(R.id.counterAchievements);
-        counterLevel.setText(App.loadUserData().getLevel());
+        counterLevel.setText("" + App.loadUserData().getRank());
         counterScore.setText(App.loadUserData().getScore());
         counterAchievements.setText(App.loadUserData().getGainedAchievements());
 

@@ -34,7 +34,7 @@ public class Person {
             for (int j = 0; j < array.length(); j++) {
                 JSONObject counter = (JSONObject) array.get(j);
                 // get user location counter
-                if (counter.getString("counter").equals(Settings.locationCounter)) {
+                if (counter.getString("counter").equals(Settings.LOCATION_COUNTER)) {
                     this.location = Integer.parseInt(counter.getString("value"));
                 }
             }

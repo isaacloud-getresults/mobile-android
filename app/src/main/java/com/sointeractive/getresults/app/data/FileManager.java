@@ -111,7 +111,7 @@ class FileManager {
         //Check if the file exists. If not, create a new one.
         File checkFile = new File(app.getFilesDir(), configDataFileName);
         if (!checkFile.exists()) {
-            saveConfigData(new String(), app);
+            saveConfigData("", app);
         }
         //load the file
         try {

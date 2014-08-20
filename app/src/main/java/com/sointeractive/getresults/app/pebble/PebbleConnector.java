@@ -6,6 +6,10 @@ import android.util.Log;
 import com.sointeractive.android.kit.PebbleKit;
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.config.Settings;
+import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
+import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
+import com.sointeractive.getresults.app.pebble.cache.LoginCache;
+import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
 import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
 
 import java.util.Collection;
@@ -19,6 +23,9 @@ public class PebbleConnector extends Observable {
     private final Queue<PebbleDictionary> sendingQueue = new ConcurrentLinkedQueue<PebbleDictionary>();
     private final Context context;
     private final NotificationSender sender;
+
+    private PebbleDictionary lastData = null;
+    private int resendCount = 0;
 
     private boolean connectionState;
 
@@ -57,15 +64,35 @@ public class PebbleConnector extends Observable {
                 Log.i(TAG, "Event: Nothing to send, sendingQueue is empty");
             } else {
                 final PebbleDictionary data = sendingQueue.peek();
-                Log.d(TAG, "Action: Sending response: " + data.toJsonString());
-                PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+                updateResendCounter(data);
+                sendOrSkip(data);
             }
+        }
+    }
+
+    private void updateResendCounter(final PebbleDictionary data) {
+        if (lastData == data) {
+            resendCount += 1;
+        } else {
+            resendCount = 0;
+            lastData = data;
+        }
+    }
+
+    private void sendOrSkip(final PebbleDictionary data) {
+        if (resendCount < Settings.RESEND_TIMES_LIMIT) {
+            Log.d(TAG, "Action: Sending response: " + data.toJsonString());
+            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+        } else {
+            Log.i(TAG, "Error: Resend limit reached, sending next");
+            onAckReceived();
         }
     }
 
     public void onAckReceived() {
         Log.d(TAG, "Action: Poll queue");
         sendingQueue.poll();
+        sendNext();
     }
 
     public boolean isPebbleConnected() {
@@ -78,6 +105,9 @@ public class PebbleConnector extends Observable {
 
         if (connectionState != currentState) {
             connectionState = currentState;
+            if (currentState) {
+                sendNext();
+            }
             setChanged();
             notifyObservers();
         }
@@ -97,6 +127,11 @@ public class PebbleConnector extends Observable {
     }
 
     public void closePebbleApp() {
+        AchievementsCache.INSTANCE.clear();
+        BeaconsCache.INSTANCE.clear();
+        PeopleCache.INSTANCE.clear();
+        LoginCache.INSTANCE.clear();
+        clearSendingQueue();
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
     }
 }

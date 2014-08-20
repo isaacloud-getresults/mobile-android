@@ -30,22 +30,21 @@ import it.gmariotti.cardslib.library.view.CardGridView;
 
 public class AchievementsFragment extends Fragment {
 
-    private static final String TAG = "AchievementsFragment";
-    private BroadcastReceiver receiverAchievements = new BroadcastReceiver() {
+    private static final String TAG = AchievementsFragment.class.getSimpleName();
+    private final BroadcastReceiver receiverAchievements = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "onReceive called");
-            Log.d(TAG, "onReceive called");
+            Log.d(TAG, "Event: onReceive called");
             Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 //            v.vibrate(250);
             initAchievementCards();
         }
     };
+    private final ArrayList<Card> achievementCards = new ArrayList<Card>();
     private Context context;
     private CardGridArrayAdapter cardGridAdapter;
-    private ArrayList<Card> achievementCards = new ArrayList<Card>();
     private OnFragmentInteractionListener mListener;
 
     public AchievementsFragment() {
@@ -64,7 +63,7 @@ public class AchievementsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverAchievements,
-                new IntentFilter(Settings.broadcastIntentNewAchievement));
+                new IntentFilter(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT));
         context = this.getActivity();
         initAchievementCards();
         cardGridAdapter = new CardGridArrayAdapter(context, achievementCards);
