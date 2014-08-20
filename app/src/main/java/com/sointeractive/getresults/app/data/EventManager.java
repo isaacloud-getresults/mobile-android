@@ -329,7 +329,6 @@ public class EventManager {
         @Override
         protected Object doInBackground(Object... params) {
             userData = App.loadUserData();
-            Log.d(TAG, "!!!!!!!!!!!!userData!!!!!!!!!!!!!! " + userData.getName() + userData.getUserId());
             try {
                 // ACHIEVEMENTS REQUEST
                 HashMap<Integer, Integer> idMap = new HashMap<Integer, Integer>();

@@ -180,6 +180,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Log.d("ButtonAction", "SignIn clicked");
                 if (internetConnection) {
                     Glogin = true;
                     signInWithGplus();
@@ -252,7 +253,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     private void resolveSignInError() {
+        Log.d("ButtonAction", "ResolveSignInError()");
         if (mConnectionResult != null) {
+            Log.d("ButtonAction", mConnectionResult.toString());
             if (mConnectionResult.hasResolution()) {
                 try {
                     mIntentInProgress = true;
@@ -267,6 +270,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     private void signInWithGplus() {
         if (!mGoogleApiClient.isConnecting()) {
+            Log.d("ButtonAction", "signInWithGplus()");
             mSignInClicked = true;
             resolveSignInError();
         }
@@ -343,6 +347,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
                     });
         }
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
     }
 
     public void onConnectionSuspended(int arg0) {
@@ -644,7 +652,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     private class InternetRunnable implements Runnable {
         public void run() {
-            while (true) {
+            while (context != null) {
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);

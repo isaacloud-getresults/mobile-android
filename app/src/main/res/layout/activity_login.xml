@@ -76,14 +76,24 @@
                 android:layout_height="@dimen/login_button_height"
                 android:text="@string/buttonScan"/>
 
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/buttonGoogle"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/login_button_height"/>
-
 
         </LinearLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up with Google+ account"
+        android:id="@+id/googleLabel"
+        android:layout_marginTop="114dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/buttonGoogle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/login_button_height"
+        android:layout_below="@id/googleLabel" />
 
 </RelativeLayout>

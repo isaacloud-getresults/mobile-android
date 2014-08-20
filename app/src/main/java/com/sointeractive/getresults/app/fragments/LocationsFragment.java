@@ -15,12 +15,14 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.IconTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sointeractive.getresults.app.R;
 import com.sointeractive.getresults.app.cards.StatusCard;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
+import com.sointeractive.getresults.app.data.DrawableManager;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 
@@ -54,6 +56,7 @@ public class LocationsFragment extends Fragment {
     };
     private CardView cardView;
     private Context context;
+    private DrawableManager dm;
 
     public static LocationsFragment newInstance() {
         Log.d(TAG, "newInstance");
@@ -77,6 +80,7 @@ public class LocationsFragment extends Fragment {
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.broadcastIntentUpdateData));
+        dm = new DrawableManager();
     }
 
     @Override
@@ -196,6 +200,8 @@ public class LocationsFragment extends Fragment {
             String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
+            ImageView locationPic = (ImageView) convertView.findViewById(R.id.locationImage);
+            dm.fetchDrawableOnThread("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png", locationPic);
             return convertView;
         }
 
