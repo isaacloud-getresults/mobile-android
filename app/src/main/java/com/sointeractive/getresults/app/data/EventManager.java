@@ -181,6 +181,8 @@ public class EventManager {
             return null;
         }
 
+
+
         protected void onPostExecute(Object result) {
             // CHECK FOR NEW ACHIEVEMENTS
             new EventCheckAchievements().execute();

@@ -108,8 +108,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         }
 
-        // create new wrapper instance for API connection
-        initializeConnector();
 
         // find relevant views and add listeners
         final SignInButton buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
@@ -298,7 +296,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 // TODO: Handle cancel
             }
             configureApplication();
-            initializeConnector();
             Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
@@ -356,17 +353,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     public void onConnectionSuspended(int arg0) {
         mGoogleApiClient.connect();
 
-    }
-
-    void initializeConnector() {
-        Map<String, String> config = new HashMap<String, String>();
-        config.put("instanceId", Settings.INSTANCE_ID);
-        config.put("appSecret", Settings.APP_SECRET);
-        try {
-            App.setIsaacloudConnector(new Isaacloud(config));
-        } catch (InvalidConfigException e) {
-            e.printStackTrace();
-        }
     }
 
     void configureApplication() {
