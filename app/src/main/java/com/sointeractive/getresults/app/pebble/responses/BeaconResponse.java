@@ -2,6 +2,7 @@ package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
+import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class BeaconResponse implements ResponseItem {
     private static final int RESPONSE_ID = 2;
@@ -13,7 +14,7 @@ public class BeaconResponse implements ResponseItem {
 
     public BeaconResponse(final int id, final String name, final int people) {
         this.id = id;
-        this.name = name;
+        this.name = StringTrimmer.getBeaconName(name);
         this.people = people;
     }
 

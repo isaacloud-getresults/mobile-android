@@ -1,8 +1,8 @@
 package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
-import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
+import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -25,7 +25,7 @@ public class AchievementDescriptionResponse implements ResponseItem {
 
     public static Collection<ResponseItem> getResponse(final int id, final String description) {
         final List<ResponseItem> responses = new LinkedList<ResponseItem>();
-        final Queue<String> descriptionParts = partitionDescription(description, Settings.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN);
+        final Queue<String> descriptionParts = partitionDescription(description, StringTrimmer.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN);
 
         int descriptionPartId = 0;
         while (!descriptionParts.isEmpty()) {

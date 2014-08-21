@@ -1,8 +1,8 @@
 package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
-import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
+import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class PersonInResponse implements ResponseItem {
     private static final int RESPONSE_ID = 3;
@@ -16,7 +16,7 @@ public class PersonInResponse implements ResponseItem {
 
     public PersonInResponse(final int id, final String name, final int roomId) {
         this.id = id;
-        this.name = getSafeLengthName(name, Settings.MAX_COWORKER_FULL_NAME_STR_LEN);
+        this.name = StringTrimmer.getCoworkerName(name);
         this.roomId = roomId;
     }
 
@@ -24,18 +24,6 @@ public class PersonInResponse implements ResponseItem {
         final int size = totalSize;
         totalSize = 0;
         return size;
-    }
-
-    public static void resetTotalSize() {
-        totalSize = 0;
-    }
-
-    private String getSafeLengthName(String name, int maxLength) {
-        if (name.length() > maxLength) {
-            return name.substring(0, maxLength);
-        } else {
-            return name;
-        }
     }
 
     @Override

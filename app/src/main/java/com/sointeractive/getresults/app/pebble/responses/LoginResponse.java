@@ -2,12 +2,12 @@ package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
+import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class LoginResponse implements ResponseItem {
     private static final int RESPONSE_ID = 1;
     private static final int BASE_SIZE = 0;
 
-    // TODO: Trim long strings
     private final String roomName;
     private final String name;
     private final int points;
@@ -16,10 +16,10 @@ public class LoginResponse implements ResponseItem {
     private final int achievementsNumber;
 
     public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber) {
-        this.name = name;
+        this.name = StringTrimmer.getUserName(name);
         this.points = points;
         this.rank = rank;
-        this.roomName = roomName;
+        this.roomName = StringTrimmer.getBeaconName(roomName);
         this.beaconsSize = beaconsSize;
         this.achievementsNumber = achievementsNumber;
     }

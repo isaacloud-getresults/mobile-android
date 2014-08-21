@@ -1,8 +1,8 @@
 package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
-import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
+import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class AchievementResponse implements ResponseItem {
     private static final int RESPONSE_ID = 4;
@@ -16,7 +16,7 @@ public class AchievementResponse implements ResponseItem {
 
     public AchievementResponse(final int id, final String name, final String description) {
         this.id = id;
-        this.name = getSafeLengthName(name, Settings.MAX_ACHIEVEMENT_NAME_STR_LEN);
+        this.name = StringTrimmer.getAchievementName(name);
         this.description = description;
     }
 
@@ -24,14 +24,6 @@ public class AchievementResponse implements ResponseItem {
         final int size = totalSize;
         totalSize = 0;
         return size;
-    }
-
-    private String getSafeLengthName(String name, int maxLength) {
-        if (name.length() > maxLength) {
-            return name.substring(0, maxLength);
-        } else {
-            return name;
-        }
     }
 
     @Override
@@ -52,7 +44,7 @@ public class AchievementResponse implements ResponseItem {
 
     private int getDescriptionPartsNumber() {
         final double stringLength = description.length();
-        final double partSize = Settings.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN;
+        final double partSize = StringTrimmer.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN;
         return (int) Math.ceil(stringLength / partSize);
     }
 }
