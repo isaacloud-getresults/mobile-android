@@ -1,10 +1,7 @@
-package com.sointeractive.getresults.app.pebble.responses;
+package com.sointeractive.getresults.app.pebble.responses.utils;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.pebble.communication.Request;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class DictionaryBuilder {
     private final PebbleDictionary dictionary = new PebbleDictionary();
@@ -28,9 +25,5 @@ public class DictionaryBuilder {
 
     public PebbleDictionary build() {
         return dictionary;
-    }
-
-    public List<PebbleDictionary> pack() {
-        return Arrays.asList(dictionary);
     }
 }

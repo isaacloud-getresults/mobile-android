@@ -13,6 +13,7 @@ public class Settings {
     // Pebble
     public static final String APP_NAME = "GetResults!";
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("51b19145-0542-474f-8b62-c8c34ae4b87b");
+    public static final int MEMORY_AVAILABLE = 5000;
     public static final int MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN = 50; //78;
     public static final int MAX_ACHIEVEMENT_NAME_STR_LEN = 80;
     public static final int MAX_COWORKER_FULL_NAME_STR_LEN = 45;

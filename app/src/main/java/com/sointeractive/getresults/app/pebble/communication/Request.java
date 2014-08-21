@@ -4,10 +4,12 @@ import android.util.Log;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.data.App;
-import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
-import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
-import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
+import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
+import com.sointeractive.getresults.app.pebble.responses.BeaconResponse;
+import com.sointeractive.getresults.app.pebble.responses.LoginResponse;
+import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
@@ -29,7 +31,11 @@ public enum Request implements Sendable {
     LOGIN(1) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            return LoginCache.INSTANCE.getData();
+            RESPONSES_NUMBER += 1;
+            final Collection<ResponseItem> responseList = new LinkedList<ResponseItem>();
+            final LoginResponse loginResponse = new LoginResponse("Tester Test " + RESPONSES_NUMBER, 128, 8, "Test room", RESPONSES_NUMBER, RESPONSES_NUMBER);
+            responseList.add(loginResponse);
+            return responseList;
         }
 
         @Override
@@ -37,13 +43,18 @@ public enum Request implements Sendable {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
             App.getPebbleConnector().clearSendingQueue();
+            App.getPebbleConnector().resetMemory();
         }
     },
 
     BEACONS(2) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            return BeaconsCache.INSTANCE.getData();
+            Collection<ResponseItem> beaconsResponse = new LinkedList<ResponseItem>();
+            for (int i = 0; i < RESPONSES_NUMBER; i++) {
+                beaconsResponse.add(new BeaconResponse(i, "Test room " + i, i));
+            }
+            return beaconsResponse;
         }
 
         @Override
@@ -57,44 +68,55 @@ public enum Request implements Sendable {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
             PeopleCache.INSTANCE.setObservedRoom(query);
-            return PeopleCache.INSTANCE.getData(query);
-        }
-
-        @Override
-        void onRequest() {
-            super.onRequest();
-            App.getPebbleConnector().deleteAchievementResponses();
-        }
-    },
-
-    ACHIEVEMENTS(4) {
-        @Override
-        public Collection<ResponseItem> getSendable(final int query) {
-            return AchievementsCache.INSTANCE.getData();
+            Collection<ResponseItem> peopleResponse = new LinkedList<ResponseItem>();
+            for (int i = 0; i < query; i++) {
+                peopleResponse.add(new PersonInResponse(i, "Tester Test " + i, query));
+            }
+            return peopleResponse;
         }
 
         @Override
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
-            App.getPebbleConnector().deletePeopleResponses();
+            App.getPebbleConnector().clearPeopleAchievementResponses();
+        }
+    },
+
+    ACHIEVEMENTS(4) {
+        @Override
+        public Collection<ResponseItem> getSendable(final int query) {
+            final Collection<ResponseItem> achievementResponses = new LinkedList<ResponseItem>();
+            for (int i = 0; i < RESPONSES_NUMBER; i++) {
+                achievementResponses.add(new AchievementResponse(i, "Test achievement " + i, "Description " + i));
+            }
+            return achievementResponses;
+        }
+
+        @Override
+        void onRequest() {
+            super.onRequest();
+            PeopleCache.INSTANCE.clearObservedRoom();
+            App.getPebbleConnector().clearPeopleAchievementResponses();
         }
     },
 
     ACHIEVEMENT_DESCRIPTION(5) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            return AchievementsCache.INSTANCE.getDescriptionData(query);
+            return AchievementDescriptionResponse.getResponse(query, "Description " + query);
         }
     };
 
     public static final int RESPONSE_TYPE = 1;
     public static final int RESPONSE_DATA_INDEX = 2;
 
-    private static final String TAG = Responder.class.getSimpleName();
+    private static final String TAG = Request.class.getSimpleName();
 
     private static final int REQUEST_TYPE = 1;
     private static final int REQUEST_QUERY = 2;
+
+    private static int RESPONSES_NUMBER = 0;
 
     private final int id;
 

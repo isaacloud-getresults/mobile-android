@@ -1,11 +1,11 @@
 package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
-
-import java.util.List;
+import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
 
 public class BeaconResponse implements ResponseItem {
     private static final int RESPONSE_ID = 2;
+    private static final int BASE_SIZE = 28;
 
     private final int id;
     private final String name;
@@ -26,12 +26,17 @@ public class BeaconResponse implements ResponseItem {
     }
 
     @Override
-    public List<PebbleDictionary> getData() {
+    public PebbleDictionary getData() {
         return new DictionaryBuilder(RESPONSE_ID)
                 .addInt(id)
                 .addString(name)
                 .addInt(people)
-                .pack();
+                .build();
+    }
+
+    @Override
+    public int getSize() {
+        return BASE_SIZE + name.length();
     }
 
     @Override

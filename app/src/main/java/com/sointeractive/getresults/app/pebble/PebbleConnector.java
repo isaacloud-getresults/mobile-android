@@ -11,11 +11,11 @@ import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
 import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
-import com.sointeractive.getresults.app.pebble.communication.Request;
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonOutResponse;
+import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -26,12 +26,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PebbleConnector extends Observable {
     private static final String TAG = PebbleConnector.class.getSimpleName();
 
-    private final Queue<PebbleDictionary> sendingQueue = new ConcurrentLinkedQueue<PebbleDictionary>();
+    private final Queue<ResponseItem> sendingQueue = new ConcurrentLinkedQueue<ResponseItem>();
     private final Context context;
     private final NotificationSender sender;
 
-    private PebbleDictionary lastData = null;
+    private ResponseItem lastData = null;
     private int resendCount = 0;
+
+    private int memory = 6000;
 
     private boolean connectionState;
 
@@ -51,7 +53,7 @@ public class PebbleConnector extends Observable {
         sender.send(title, body);
     }
 
-    public void sendDataToPebble(final Collection<PebbleDictionary> data) {
+    public void sendDataToPebble(final Collection<ResponseItem> data) {
         synchronized (sendingQueue) {
             if (isPebbleConnected()) {
                 final boolean wasEmpty = sendingQueue.isEmpty();
@@ -69,14 +71,14 @@ public class PebbleConnector extends Observable {
             if (sendingQueue.isEmpty()) {
                 Log.i(TAG, "Event: Nothing to send, sendingQueue is empty");
             } else {
-                final PebbleDictionary data = sendingQueue.peek();
+                final ResponseItem data = sendingQueue.peek();
                 updateResendCounter(data);
                 sendOrSkip(data);
             }
         }
     }
 
-    private void updateResendCounter(final PebbleDictionary data) {
+    private void updateResendCounter(final ResponseItem data) {
         if (lastData == data) {
             resendCount += 1;
         } else {
@@ -85,12 +87,26 @@ public class PebbleConnector extends Observable {
         }
     }
 
-    private void sendOrSkip(final PebbleDictionary data) {
+    private void sendOrSkip(final ResponseItem response) {
         if (resendCount < Settings.RESEND_TIMES_LIMIT) {
-            Log.d(TAG, "Action: Sending response: " + data.toJsonString());
-            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+            send(response);
         } else {
             Log.i(TAG, "Error: Resend limit reached, sending next");
+            onAckReceived();
+        }
+    }
+
+    private void send(final ResponseItem response) {
+        final String responseType = response.getClass().getSimpleName();
+        final int size = response.getSize();
+        if (memory - size > 0) {
+            memory -= size;
+            PebbleDictionary data = response.getData();
+            Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
+            Log.v(TAG, "Memory after sending: " + memory);
+            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+        } else {
+            Log.e(TAG, "No memory, skipping " + responseType);
             onAckReceived();
         }
     }
@@ -141,29 +157,56 @@ public class PebbleConnector extends Observable {
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
     }
 
+    public void resetMemory() {
+        memory = Settings.MEMORY_AVAILABLE;
+        PersonInResponse.getMemoryCleared();
+        AchievementResponse.getMemoryCleared();
+        Log.v(TAG, "Memory set to: " + memory);
+    }
+
+    public void clearPeopleAchievementResponses() {
+        deletePeopleResponses();
+        freePeopleMemory();
+        deleteAchievementResponses();
+        freeAchievementsMemory();
+    }
+
     public void deleteAchievementResponses() {
-        synchronized (sendingQueue) {
-            final Collection<PebbleDictionary> achievementResponses = new LinkedList<PebbleDictionary>();
-            for (PebbleDictionary response : sendingQueue) {
-                final int responseType = response.getInteger(Request.RESPONSE_TYPE).intValue();
-                if (responseType == AchievementResponse.RESPONSE_ID || responseType == AchievementDescriptionResponse.RESPONSE_ID) {
-                    achievementResponses.add(response);
-                }
-            }
-            sendingQueue.removeAll(achievementResponses);
-        }
+        deleteResponses(AchievementResponse.class, AchievementDescriptionResponse.class);
+    }
+
+    public void freeAchievementsMemory() {
+        memory += AchievementResponse.getMemoryCleared();
+        Log.v(TAG, "Memory (Achievements) cleared to: " + memory);
     }
 
     public void deletePeopleResponses() {
+        deleteResponses(PersonInResponse.class, PersonOutResponse.class);
+    }
+
+    public void freePeopleMemory() {
+        memory += PersonInResponse.getMemoryCleared();
+        Log.v(TAG, "Memory (People) cleared to: " + memory);
+    }
+
+    private void deleteResponses(Class<?>... classes) {
         synchronized (sendingQueue) {
-            final Collection<PebbleDictionary> peopleResponses = new LinkedList<PebbleDictionary>();
-            for (PebbleDictionary response : sendingQueue) {
-                final int responseType = response.getInteger(Request.RESPONSE_TYPE).intValue();
-                if (responseType == PersonInResponse.RESPONSE_ID || responseType == PersonOutResponse.RESPONSE_ID) {
-                    peopleResponses.add(response);
+            final Collection<ResponseItem> responses = new LinkedList<ResponseItem>();
+            for (ResponseItem response : sendingQueue) {
+                if (classToDelete(classes, response)) {
+                    responses.add(response);
                 }
             }
-            sendingQueue.removeAll(peopleResponses);
+            sendingQueue.removeAll(responses);
         }
+    }
+
+    private boolean classToDelete(final Class<?>[] classes, final ResponseItem response) {
+        for (Class<?> cls : classes) {
+            if (cls.isInstance(response)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

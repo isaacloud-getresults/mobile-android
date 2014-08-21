@@ -1,12 +1,13 @@
 package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
-
-import java.util.List;
+import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
 
 public class LoginResponse implements ResponseItem {
     private static final int RESPONSE_ID = 1;
+    private static final int BASE_SIZE = 0;
 
+    // TODO: Trim long strings
     private final String roomName;
     private final String name;
     private final int points;
@@ -24,7 +25,7 @@ public class LoginResponse implements ResponseItem {
     }
 
     @Override
-    public List<PebbleDictionary> getData() {
+    public PebbleDictionary getData() {
         return new DictionaryBuilder(RESPONSE_ID)
                 .addString(name)
                 .addString(roomName)
@@ -32,7 +33,12 @@ public class LoginResponse implements ResponseItem {
                 .addInt(rank)
                 .addInt(beaconsSize)
                 .addInt(achievementsNumber)
-                .pack();
+                .build();
+    }
+
+    @Override
+    public int getSize() {
+        return BASE_SIZE;
     }
 
     @SuppressWarnings("RedundantIfStatement")

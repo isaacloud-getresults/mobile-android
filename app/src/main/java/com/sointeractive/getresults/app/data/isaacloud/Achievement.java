@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Data store class for Achievements.
@@ -80,9 +79,7 @@ public class Achievement {
     }
 
     public Collection<ResponseItem> toAchievementDescriptionResponse() {
-        final Collection<ResponseItem> responseItems = new LinkedList<ResponseItem>();
-        responseItems.add(new AchievementDescriptionResponse(id, description));
-        return responseItems;
+        return AchievementDescriptionResponse.getResponse(id, description);
     }
 
     public int getId() {

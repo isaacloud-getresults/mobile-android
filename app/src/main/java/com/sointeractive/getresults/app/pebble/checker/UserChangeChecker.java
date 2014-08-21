@@ -2,7 +2,7 @@ package com.sointeractive.getresults.app.pebble.checker;
 
 import android.util.Log;
 
-import com.sointeractive.getresults.app.pebble.communication.Responder;
+import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
@@ -16,7 +16,7 @@ public class UserChangeChecker {
             Log.i(TAG, "Checker: User data changed");
             final Collection<ResponseItem> loginResponse = new LinkedList<ResponseItem>();
             loginResponse.add(newUser);
-            Responder.sendResponseItemsToPebble(loginResponse);
+            App.getPebbleConnector().sendDataToPebble(loginResponse);
         }
     }
 }

@@ -3,7 +3,7 @@ package com.sointeractive.getresults.app.pebble.checker;
 import android.util.Log;
 
 import com.google.common.collect.Sets;
-import com.sointeractive.getresults.app.pebble.communication.Responder;
+import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
@@ -28,7 +28,7 @@ public class NewPeopleChecker {
     private static void notifyPeopleIn(final Collection<ResponseItem> people) {
         if (!people.isEmpty()) {
             Log.i(TAG, "Checker: New people entered observed room");
-            Responder.sendResponseItemsToPebble(people);
+            App.getPebbleConnector().sendDataToPebble(people);
         }
     }
 
@@ -36,7 +36,7 @@ public class NewPeopleChecker {
         if (!people.isEmpty()) {
             Log.i(TAG, "Checker: New people exited observed room");
             final Collection<ResponseItem> response = getPeopleOutResponse(people);
-            Responder.sendResponseItemsToPebble(response);
+            App.getPebbleConnector().sendDataToPebble(response);
         }
     }
 

@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity implements
         App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
-        getApplicationContext().startService(i);
+        //getApplicationContext().startService(i);
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
     }

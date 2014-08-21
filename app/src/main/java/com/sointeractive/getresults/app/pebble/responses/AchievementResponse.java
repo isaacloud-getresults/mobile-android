@@ -2,11 +2,13 @@ package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.config.Settings;
-
-import java.util.List;
+import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
 
 public class AchievementResponse implements ResponseItem {
-    public static final int RESPONSE_ID = 4;
+    private static final int RESPONSE_ID = 4;
+    private static final int BASE_SIZE = 28;
+
+    private static int totalSize = 0;
 
     private final int id;
     private final String name;
@@ -18,6 +20,12 @@ public class AchievementResponse implements ResponseItem {
         this.description = description;
     }
 
+    public static int getMemoryCleared() {
+        final int size = totalSize;
+        totalSize = 0;
+        return size;
+    }
+
     private String getSafeLengthName(String name, int maxLength) {
         if (name.length() > maxLength) {
             return name.substring(0, maxLength);
@@ -27,12 +35,19 @@ public class AchievementResponse implements ResponseItem {
     }
 
     @Override
-    public List<PebbleDictionary> getData() {
+    public PebbleDictionary getData() {
         return new DictionaryBuilder(RESPONSE_ID)
                 .addInt(id)
                 .addString(name)
                 .addInt(getDescriptionPartsNumber())
-                .pack();
+                .build();
+    }
+
+    @Override
+    public int getSize() {
+        final int size = BASE_SIZE + name.length();
+        totalSize += size;
+        return size;
     }
 
     private int getDescriptionPartsNumber() {

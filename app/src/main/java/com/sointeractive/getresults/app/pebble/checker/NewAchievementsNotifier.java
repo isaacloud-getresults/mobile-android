@@ -3,7 +3,6 @@ package com.sointeractive.getresults.app.pebble.checker;
 import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
-import com.sointeractive.getresults.app.pebble.communication.Responder;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
@@ -16,7 +15,7 @@ public class NewAchievementsNotifier {
 
     private static void sendListItems(final Iterable<Achievement> changedAchievements) {
         final Collection<ResponseItem> responseItems = AchievementsCache.makeResponse(changedAchievements);
-        Responder.sendResponseItemsToPebble(responseItems);
+        App.getPebbleConnector().sendDataToPebble(responseItems);
     }
 
     private static void sendNotification(final Collection<Achievement> changedAchievements) {
