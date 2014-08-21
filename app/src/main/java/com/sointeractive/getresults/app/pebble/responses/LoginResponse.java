@@ -35,6 +35,7 @@ public class LoginResponse implements ResponseItem {
                 .pack();
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -37,7 +36,7 @@ public class AchievementsFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "Event: onReceive called");
             Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
-            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+//            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 //            v.vibrate(250);
             initAchievementCards();
         }
@@ -47,6 +46,7 @@ public class AchievementsFragment extends Fragment {
     private CardGridArrayAdapter cardGridAdapter;
     private OnFragmentInteractionListener mListener;
 
+    @SuppressWarnings("WeakerAccess")
     public AchievementsFragment() {
         // Required empty public constructor
     }

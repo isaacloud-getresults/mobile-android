@@ -383,7 +383,7 @@ public class EventManager {
 
     private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
 
-        List<Notification> entries = new ArrayList<Notification>();
+        final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
         protected Object doInBackground(Object... params) {

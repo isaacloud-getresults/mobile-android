@@ -23,7 +23,7 @@ public class DrawableManager {
         drawableMap = new HashMap<String, Drawable>();
     }
 
-    public Drawable fetchDrawable(String urlString) {
+    Drawable fetchDrawable(String urlString) {
         if (drawableMap.containsKey(urlString)) {
             return drawableMap.get(urlString);
         }
@@ -77,7 +77,7 @@ public class DrawableManager {
         thread.start();
     }
 
-    private InputStream fetch(String urlString) throws MalformedURLException, IOException {
+    private InputStream fetch(String urlString) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet request = new HttpGet(urlString);
         HttpResponse response = httpClient.execute(request);

@@ -46,7 +46,7 @@ public class App extends Application {
 
     public static void saveUserData(UserData userData) {
         fileManager.saveUserData(userData, obj);
-        LoginCache.INSTANCE.reload(true);
+        LoginCache.INSTANCE.findChanges();
     }
 
     public static UserData loadUserData() {
