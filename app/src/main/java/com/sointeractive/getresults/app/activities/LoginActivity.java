@@ -531,15 +531,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 for (int i = 0; i < locationsArray.length(); i++) {
                     JSONObject locJson = (JSONObject) locationsArray.get(i);
                     Location loc = new Location(locJson);
-                    if (loc.getId() != 1 && loc.getId() != 2) {
-                        entries.put(loc.getId(), new LinkedList<Person>());
-                        locations.add(loc);
-                    }
-                    if (loc.getId() == Integer.parseInt(Settings.NULL_ROOM_COUNTER)) {
-                        UserData userData = App.loadUserData();
-                        userData.setUserLocation(loc);
-                        App.saveUserData(userData);
-                    }
+                    entries.put(loc.getId(), new LinkedList<Person>());
+                    locations.add(loc);
                 }
                 success = true;
                 DataManager dm = App.getDataManager();
