@@ -2,12 +2,15 @@ package com.sointeractive.getresults.app.pebble.cache;
 
 import android.util.SparseArray;
 
+import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
+import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class AchievementsCache {
     public static final AchievementsCache INSTANCE = new AchievementsCache();
@@ -52,6 +55,32 @@ public class AchievementsCache {
     }
 
     public int getAchievementPages() {
-        return 2;
+        return paginateAchievements().size();
+    }
+
+    public List<List<ResponseItem>> paginateAchievements() {
+        List<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
+        int totalMemory = App.getPebbleConnector().getMemory();
+        int currentMemory = 0;
+        int pageNumber = -1;
+        int items = 0;
+        for (ResponseItem generalResponse : achievementsResponse) {
+            AchievementResponse response = (AchievementResponse) generalResponse;
+            final int responseSize = response.getSize();
+            if (responseSize > totalMemory) {
+                continue;
+            }
+            response.setIsMore();
+            items += 1;
+            if (responseSize > currentMemory || items > Settings.MAX_ITEMS_PER_PAGE) {
+                items = 0;
+                pageNumber += 1;
+                pages.add(new LinkedList<ResponseItem>());
+                currentMemory = totalMemory;
+            }
+            currentMemory -= responseSize;
+            pages.get(pageNumber).add(response);
+        }
+        return pages;
     }
 }

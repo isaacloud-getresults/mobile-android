@@ -33,8 +33,6 @@ public class PebbleConnector extends Observable {
     private ResponseItem lastData = null;
     private int resendCount = 0;
 
-    private int memory = 6000;
-
     private boolean connectionState;
 
     public PebbleConnector(final Context context) {
@@ -91,7 +89,7 @@ public class PebbleConnector extends Observable {
         if (resendCount < Settings.RESEND_TIMES_LIMIT) {
             send(response);
         } else {
-            Log.i(TAG, "Error: Resend limit reached, sending next");
+            Log.e(TAG, "Error: Resend limit reached, sending next");
             onAckReceived();
         }
     }
@@ -99,16 +97,9 @@ public class PebbleConnector extends Observable {
     private void send(final ResponseItem response) {
         final String responseType = response.getClass().getSimpleName();
         final int size = response.getSize();
-        if (memory - size > 0) {
-            memory -= size;
-            PebbleDictionary data = response.getData();
-            Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
-            Log.v(TAG, "Memory after sending: " + memory);
-            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
-        } else {
-            Log.e(TAG, "No memory, skipping " + responseType);
-            onAckReceived();
-        }
+        PebbleDictionary data = response.getData();
+        Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
+        PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
     }
 
     public void onAckReceived() {
@@ -157,36 +148,17 @@ public class PebbleConnector extends Observable {
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
     }
 
-    public void resetMemory() {
-        memory = Settings.MEMORY_AVAILABLE;
-        PersonInResponse.getMemoryCleared();
-        AchievementResponse.getMemoryCleared();
-        Log.v(TAG, "Memory set to: " + memory);
-    }
-
     public void clearPeopleAchievementResponses() {
         deletePeopleResponses();
-        freePeopleMemory();
         deleteAchievementResponses();
-        freeAchievementsMemory();
     }
 
     public void deleteAchievementResponses() {
         deleteResponses(AchievementResponse.class, AchievementDescriptionResponse.class);
     }
 
-    public void freeAchievementsMemory() {
-        memory += AchievementResponse.getMemoryCleared();
-        Log.v(TAG, "Memory (Achievements) cleared to: " + memory);
-    }
-
     public void deletePeopleResponses() {
         deleteResponses(PersonInResponse.class, PersonOutResponse.class);
-    }
-
-    public void freePeopleMemory() {
-        memory += PersonInResponse.getMemoryCleared();
-        Log.v(TAG, "Memory (People) cleared to: " + memory);
     }
 
     private void deleteResponses(Class<?>... classes) {
@@ -211,6 +183,6 @@ public class PebbleConnector extends Observable {
     }
 
     public int getMemory() {
-        return memory;
+        return Settings.MEMORY_AVAILABLE - BeaconsCache.INSTANCE.getMemoryUsage();
     }
 }

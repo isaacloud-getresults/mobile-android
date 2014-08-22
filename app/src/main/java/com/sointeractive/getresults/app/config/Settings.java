@@ -13,8 +13,9 @@ public class Settings {
     // Pebble
     public static final String APP_NAME = "GetResults!";
     public static final UUID PEBBLE_APP_UUID = UUID.fromString("51b19145-0542-474f-8b62-c8c34ae4b87b");
-    public static final int MEMORY_AVAILABLE = 500;
     public static final String IC_NOTIFICATION_HEADER = "IsaaCloud notification";
+    public static final int MEMORY_AVAILABLE = 1000;
+    public static final int MAX_ITEMS_PER_PAGE = 5;
     public static final int RESEND_TIMES_LIMIT = 3;
 
     // Broadcasts

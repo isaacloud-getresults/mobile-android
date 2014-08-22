@@ -26,10 +26,6 @@ public class BeaconResponse implements ResponseItem {
         return name;
     }
 
-    public int getSizeToReserve() {
-        return BASE_SIZE + name.length();
-    }
-
     @Override
     public PebbleDictionary getData() {
         return new DictionaryBuilder(RESPONSE_ID)
@@ -41,7 +37,7 @@ public class BeaconResponse implements ResponseItem {
 
     @Override
     public int getSize() {
-        return 0;
+        return BASE_SIZE + name.length();
     }
 
     @Override

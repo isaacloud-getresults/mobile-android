@@ -56,4 +56,12 @@ public class BeaconsCache {
     public void clear() {
         beaconsResponse.clear();
     }
+
+    public int getMemoryUsage() {
+        int size = 0;
+        for (ResponseItem responseItem : beaconsResponse) {
+            size += responseItem.getSize();
+        }
+        return size;
+    }
 }

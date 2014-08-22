@@ -39,7 +39,6 @@ public enum Request implements Sendable {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
             App.getPebbleConnector().clearSendingQueue();
-            App.getPebbleConnector().resetMemory();
         }
     },
 
@@ -74,35 +73,11 @@ public enum Request implements Sendable {
     ACHIEVEMENTS(4) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            final Collection<ResponseItem> achievementResponses = AchievementsCache.INSTANCE.getData();
-            Log.d(TAG, "Sending achievements from page " + query);
-            return paginateAchievements(achievementResponses).get(query - 1);
-        }
-
-        private List<Collection<ResponseItem>> paginateAchievements(final Collection<ResponseItem> allResponses) {
-            List<Collection<ResponseItem>> pages = new LinkedList<Collection<ResponseItem>>();
-            int totalMemory = App.getPebbleConnector().getMemory();
-            int currentMemory = 0;
-            int pageNumber = -1;
-            AchievementResponse lastResponse = new AchievementResponse(-1, "", "");
-            for (ResponseItem generalResponse : allResponses) {
-                AchievementResponse response = (AchievementResponse) generalResponse;
-                final int responseSize = response.getSize();
-                if (responseSize > totalMemory) {
-                    continue;
-                }
-                response.setIsMore();
-                if (responseSize > currentMemory) {
-                    lastResponse.setLast();
-                    pageNumber += 1;
-                    pages.add(new LinkedList<ResponseItem>());
-                    currentMemory = totalMemory;
-                }
-                currentMemory -= responseSize;
-                pages.get(pageNumber).add(response);
-                lastResponse = response;
-            }
-            return pages;
+            final List<ResponseItem> achievementsPage = AchievementsCache.INSTANCE.paginateAchievements().get(query - 1);
+            final ResponseItem lastResponse = achievementsPage.get(achievementsPage.size() - 1);
+            final AchievementResponse lastAchievementResponse = (AchievementResponse) lastResponse;
+            lastAchievementResponse.setLast();
+            return achievementsPage;
         }
 
         @Override

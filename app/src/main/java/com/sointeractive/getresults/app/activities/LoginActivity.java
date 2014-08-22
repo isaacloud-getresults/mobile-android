@@ -219,10 +219,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     private void generateFakeData() throws JSONException {
+        App.getPebbleConnector().closePebbleApp();
+
         //TODO: Remove this from production code
         final int BEACONS = 10;
         final int AVG_PEOPLE = 3;
-        final int ACHIEVEMENTS = 10;
+        final int ACHIEVEMENTS = 20;
 
         // User
         UserData userData = new UserData();
@@ -269,6 +271,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         App.getDataManager().setPeople(entries);
 
         // Log in
+        App.getPebbleConnector().clearSendingQueue();
         LoginCache.INSTANCE.logIn();
     }
 
