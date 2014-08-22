@@ -54,6 +54,7 @@ public class LoginResponse implements ResponseItem {
 
         if (achievementsNumber != that.achievementsNumber) return false;
         if (beaconsSize != that.beaconsSize) return false;
+        if (pagesNumber != that.pagesNumber) return false;
         if (points != that.points) return false;
         if (rank != that.rank) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -71,6 +72,7 @@ public class LoginResponse implements ResponseItem {
         result = 31 * result + rank;
         result = 31 * result + beaconsSize;
         result = 31 * result + achievementsNumber;
+        result = 31 * result + pagesNumber;
         return result;
     }
 }

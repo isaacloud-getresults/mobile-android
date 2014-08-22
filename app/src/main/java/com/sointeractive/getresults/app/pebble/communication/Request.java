@@ -64,21 +64,20 @@ public enum Request implements Sendable {
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
-            App.getPebbleConnector().clearPeopleAchievementResponses();
+            App.getPebbleConnector().deleteAchievementResponses();
         }
     },
 
     ACHIEVEMENTS(4) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            return AchievementsCache.INSTANCE.getAchievementsPage(query);
+            return AchievementsCache.INSTANCE.getAchievementsPage(query - 1);
         }
 
         @Override
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
-//            App.getPebbleConnector().clearPeopleAchievementResponses();
             App.getPebbleConnector().deletePeopleResponses();
         }
     },

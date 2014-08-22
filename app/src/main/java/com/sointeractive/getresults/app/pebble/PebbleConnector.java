@@ -45,6 +45,7 @@ public class PebbleConnector extends Observable {
     public void clearSendingQueue() {
         Log.i(TAG, "Action: Clear sending queue");
         sendingQueue.clear();
+        resendCount = 0;
     }
 
     public void sendNotification(final String title, final String body) {
@@ -146,11 +147,6 @@ public class PebbleConnector extends Observable {
         LoginCache.INSTANCE.clear();
         clearSendingQueue();
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
-    }
-
-    public void clearPeopleAchievementResponses() {
-        deletePeopleResponses();
-        deleteAchievementResponses();
     }
 
     public void deleteAchievementResponses() {

@@ -98,7 +98,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         context = this;
         Thread thread = new Thread(new InternetRunnable());
-        thread.start();
+//        thread.start();
         configureApplication();
         loginData = App.loadLoginData();
         Bundle extras = getIntent().getExtras();
