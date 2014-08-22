@@ -58,7 +58,16 @@ public class AchievementsCache {
         return paginateAchievements().size();
     }
 
+    public List<ResponseItem> getAchievementsPage(final int pageNumber) {
+        final List<ResponseItem> achievementsPage = paginateAchievements().get(pageNumber - 1);
+        final ResponseItem lastResponse = achievementsPage.get(achievementsPage.size() - 1);
+        final AchievementResponse lastAchievementResponse = (AchievementResponse) lastResponse;
+        lastAchievementResponse.setLast();
+        return achievementsPage;
+    }
+
     public List<List<ResponseItem>> paginateAchievements() {
+        // TODO: Make private
         List<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
         int totalMemory = App.getPebbleConnector().getMemory();
         int currentMemory = 0;
@@ -71,14 +80,15 @@ public class AchievementsCache {
                 continue;
             }
             response.setIsMore();
-            items += 1;
-            if (responseSize > currentMemory || items > Settings.MAX_ITEMS_PER_PAGE) {
+            if (responseSize > currentMemory || items >= Settings.MAX_ITEMS_PER_PAGE) {
                 items = 0;
                 pageNumber += 1;
                 pages.add(new LinkedList<ResponseItem>());
                 currentMemory = totalMemory;
             }
+            items += 1;
             currentMemory -= responseSize;
+            response.setPageNumber(pageNumber);
             pages.get(pageNumber).add(response);
         }
         return pages;

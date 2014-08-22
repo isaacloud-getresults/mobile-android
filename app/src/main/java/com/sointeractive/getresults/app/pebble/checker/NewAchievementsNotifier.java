@@ -2,20 +2,18 @@ package com.sointeractive.getresults.app.pebble.checker;
 
 import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
-import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
-import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
 
 public class NewAchievementsNotifier {
     public static void notifyAchievements(final Collection<Achievement> changedAchievements) {
-        sendListItems(changedAchievements);
         sendNotification(changedAchievements);
     }
 
     private static void sendListItems(final Iterable<Achievement> changedAchievements) {
-        final Collection<ResponseItem> responseItems = AchievementsCache.makeResponse(changedAchievements);
-        App.getPebbleConnector().sendDataToPebble(responseItems);
+        // TODO: Check only observed achievements page
+//        final Collection<ResponseItem> responseItems = AchievementsCache.makeResponse(changedAchievements);
+//        App.getPebbleConnector().sendDataToPebble(responseItems);
     }
 
     private static void sendNotification(final Collection<Achievement> changedAchievements) {

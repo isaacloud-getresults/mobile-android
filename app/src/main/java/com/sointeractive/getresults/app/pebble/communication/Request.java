@@ -8,12 +8,10 @@ import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
 import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
-import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 public enum Request implements Sendable {
     UNKNOWN(0) {
@@ -73,18 +71,15 @@ public enum Request implements Sendable {
     ACHIEVEMENTS(4) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            final List<ResponseItem> achievementsPage = AchievementsCache.INSTANCE.paginateAchievements().get(query - 1);
-            final ResponseItem lastResponse = achievementsPage.get(achievementsPage.size() - 1);
-            final AchievementResponse lastAchievementResponse = (AchievementResponse) lastResponse;
-            lastAchievementResponse.setLast();
-            return achievementsPage;
+            return AchievementsCache.INSTANCE.getAchievementsPage(query);
         }
 
         @Override
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
-            App.getPebbleConnector().clearPeopleAchievementResponses();
+//            App.getPebbleConnector().clearPeopleAchievementResponses();
+            App.getPebbleConnector().deletePeopleResponses();
         }
     },
 
