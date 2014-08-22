@@ -3,8 +3,10 @@ package com.sointeractive.getresults.app.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
@@ -59,6 +61,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutionException;
 
 import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
@@ -103,7 +106,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         context = this;
         Thread thread = new Thread(new InternetRunnable());
         thread.start();
-        configureApplication();
         loginData = App.loadLoginData();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -114,8 +116,22 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
 
         // create new wrapper instance for API connection
-        initializeConnector();
+        /*
+        if(App.loadConfigData() == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
+                }
+            })
+            .setMessage("Welcome to our app\nLet me be your guide")
+            .setIcon(R.drawable.ic_launcher);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+        */
+        initializeConnector();
         // find relevant views and add listeners
         final SignInButton buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
 //        btnRevokeAccess = (Button) findViewById(R.id.buttonRevokeAccess);
@@ -143,54 +159,58 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (internetConnection) {
-                    if (checkbox.isChecked()) {
-                        loginData.setRemembered(true);
-                        loginData.setEmail(editEmail.getEditableText().toString());
-                        loginData.setPassword(editPassword.getEditableText().toString());
-                        App.saveLoginData(loginData);
+                if (Settings.APP_SECRET != null) {
+                    if (internetConnection) {
+                        if (checkbox.isChecked()) {
+                            loginData.setRemembered(true);
+                            loginData.setEmail(editEmail.getEditableText().toString());
+                            loginData.setPassword(editPassword.getEditableText().toString());
+                            App.saveLoginData(loginData);
+                        } else {
+                            loginData.setRemembered(false);
+                            loginData.setEmail("");
+                            loginData.setPassword("");
+                            App.saveLoginData(loginData);
+                        }
+                        if (editEmail.getEditableText().toString().equals("")
+                                || editPassword.getEditableText().toString().equals("")) {
+                            Toast.makeText(context, R.string.error_empty,
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d(TAG, "Action: Try log in user: " + editEmail.getEditableText().toString() + ", with password: " + editPassword.getEditableText().toString());
+                            userData = App.loadUserData();
+                            new LoginTask().execute();
+                        }
                     } else {
-                        loginData.setRemembered(false);
-                        loginData.setEmail("");
-                        loginData.setPassword("");
-                        App.saveLoginData(loginData);
+                        Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
                     }
-                    if (editEmail.getEditableText().toString().equals("")
-                            || editPassword.getEditableText().toString().equals("")) {
-                        Toast.makeText(context, R.string.error_empty,
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Log.d(TAG, "Action: Try log in user: " + editEmail.getEditableText().toString() + ", with password: " + editPassword.getEditableText().toString());
-                        userData = App.loadUserData();
-                        new LoginTask().execute();
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
-                }
+                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
         buttonNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "ButtonAction: New user clicked");
-                if (internetConnection) {
-                    Intent intent = new Intent(context, RegisterActivity.class);
-                    startActivity(intent);
-                } else
-                    Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                if (Settings.APP_SECRET != null) {
+                    if (internetConnection) {
+                        Intent intent = new Intent(context, RegisterActivity.class);
+                        startActivity(intent);
+                    } else
+                        Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
-
         });
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d(TAG, "ButtonAction: SignIn clicked");
-                if (internetConnection) {
-                    Glogin = true;
-                    signInWithGplus();
-                } else
-                    Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                if (Settings.APP_SECRET != null) {
+                    if (internetConnection) {
+                        Glogin = true;
+                        signInWithGplus();
+                    } else
+                        Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
+                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -289,12 +309,25 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
             if (resultCode == RESULT_OK) {
                 String contents = data.getStringExtra("SCAN_RESULT");
-                if (contents.contains("/?*#$!%@/")) {
-                    // String for QR code: 179/?*#$!%@/3f14569b750b69a8bc352cb34ad3e
-                    StringTokenizer tokenizer = new StringTokenizer((contents), "/?*#$!%@/");
-                    String conf = tokenizer.nextElement() + "/" + tokenizer.nextElement();
-                    App.saveConfigData(conf);
+                JSONObject json = new JSONObject();
+                try {
+                    json = new GetJSON().execute(contents).get();
+                } catch(ExecutionException e) {
+                    e.printStackTrace();
+                }
+                catch(InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+                if (json != null) {
+                    String conf = null;
+                    try {
+                        conf = json.getString("clientid") + " " + json.getString("secret") + " " +
+                        json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
+                        json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
+                    } catch(JSONException e) {}
+                    App.saveConfigData(conf);
+                    Log.d("Settings: ", "conf = " + conf);
                     Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
                 } else
                     Toast.makeText(getApplicationContext(), "Inappropriate QR code\n" + contents, Toast.LENGTH_SHORT).show();
@@ -302,7 +335,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (resultCode == RESULT_CANCELED) {
                 // TODO: Handle cancel
             }
-            configureApplication();
             initializeConnector();
             Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
@@ -366,20 +398,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     void initializeConnector() {
         Map<String, String> config = new HashMap<String, String>();
         config.put("instanceId", Settings.INSTANCE_ID);
+        Log.d("initializeConnector()", "INSTANCE_ID: " + Settings.INSTANCE_ID);
         config.put("appSecret", Settings.APP_SECRET);
+        Log.d("initializeConnector()", "appSecret: " + Settings.APP_SECRET);
+
         try {
             App.setIsaacloudConnector(new Isaacloud(config));
         } catch (InvalidConfigException e) {
             e.printStackTrace();
-        }
-    }
-
-    void configureApplication() {
-        String s = App.loadConfigData();
-        StringTokenizer tok = new StringTokenizer((s), "/");
-        while (tok.hasMoreElements()) {
-            Settings.INSTANCE_ID = (String) tok.nextElement();
-            Settings.APP_SECRET = (String) tok.nextElement();
         }
     }
 
@@ -606,7 +632,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
                 // ACHIEVEMENTS REQUEST
                 SparseIntArray idMap = new SparseIntArray();
-                Log.d(TAG, "Action: Get achievements for user: " + userData.getUserId());
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
@@ -656,29 +681,19 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
-    private class GetJSON extends AsyncTask<Object, Object, Object> {
+    private class GetJSON extends AsyncTask<String, Object, JSONObject> {
 
         @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "onPreExecute()");
-        }
-
-
-        @Override
-        public Object doInBackground(Object... params) {
+        public JSONObject doInBackground(String... params) {
+            Log.d(TAG, "URL: " + params[0]);
             JSONObject json;
             try {
-                json = readJsonFromUrl((String)params[0]);
+                json = readJsonFromUrl(params[0]);
             } catch(JSONException e) {json = null;}
             catch(IOException e) {json = null;}
             if(json != null) Log.d(TAG, "JSON: " + json.toString());
             else Log.d(TAG, "JSON: null");
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Object result) {
-
+            return json;
         }
 
     }
@@ -689,18 +704,11 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);
-                    JSONObject json;
-                    try {
-                        json = readJsonFromUrl("http://xyz.getresults.isaacloud.com/mconfig");
-                    } catch(JSONException e) {json = null;}
-                    catch(IOException e) {json = null;}
-                    if(json != null) Log.d(TAG, "JSON: " + json.toString());
-                    else Log.d(TAG, "JSON: null");
                 } catch (InterruptedException e) {
                     Log.e(TAG, "Event: Check internet thread interrupted");
                     return;
                 }
-                Log.d(TAG, "Connected: " + internetConnection);
+//                Log.d(TAG, "Connected: " + internetConnection);
             }
         }
     }

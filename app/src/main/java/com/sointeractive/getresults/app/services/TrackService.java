@@ -30,7 +30,7 @@ import java.util.List;
 public class TrackService extends Service {
     private static final String TAG = TrackService.class.getSimpleName();
     //
-    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.ESTIMOTE_PROXIMITY_UUID, 6000, null);
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.BEACON_PROXIMITY_UUID, 6000, null);
     private static final SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     private static final HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
     private static final HashMap<String, Integer> counterMap = new HashMap<String, Integer>();

@@ -199,7 +199,7 @@ public class LocationsFragment extends Fragment {
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
             ImageView locationPic = (ImageView) convertView.findViewById(R.id.locationImage);
-            dm.fetchDrawableOnThread("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png", locationPic);
+            dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", locationPic);
             return convertView;
         }
 
