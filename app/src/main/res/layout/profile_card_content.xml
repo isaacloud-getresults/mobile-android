@@ -6,16 +6,13 @@
               android:gravity="center"
               android:orientation="vertical">
 
-    <IconTextView
+    <ImageView
         android:id="@+id/userImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_margin="10dp"
-        android:background="@drawable/avatar"
         android:gravity="center"
-        android:text="{fa-user}"
-        android:textColor="@color/color_theme_gray_light"
-        android:textSize="60dp"/>
+        android:src="@drawable/avatar"/>
 
     <TextView
         android:id="@+id/profile_card_text_name"

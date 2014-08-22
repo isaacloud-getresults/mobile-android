@@ -1,17 +1,24 @@
 package com.sointeractive.getresults.app.fragments;
 
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sointeractive.getresults.app.R;
@@ -22,6 +29,7 @@ import com.sointeractive.getresults.app.cards.SettingsCard;
 import com.sointeractive.getresults.app.cards.StatsCard;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
+import com.sointeractive.getresults.app.data.ImageHelper;
 
 import it.gmariotti.cardslib.library.view.CardView;
 
@@ -42,6 +50,8 @@ public class ProfileFragment extends Fragment {
     private SettingsCard settingsCard;
     private StatsCard statsCard;
     private CardView profileCardView;
+    private static int RESULT_LOAD_IMAGE = 1;
+    private ImageView userImage;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -66,6 +76,7 @@ public class ProfileFragment extends Fragment {
         context = getActivity();
         // PROFILE CARD INIT
         profileCardView = (CardView) view.findViewById(R.id.cardProfile);
+
         CardView settingsCardView = (CardView) view.findViewById(R.id.cardSettings);
         CardView statsCardView = (CardView) view.findViewById(R.id.cardStats);
         CardView logoutCardView = (CardView) view.findViewById(R.id.cardLogout);
@@ -82,6 +93,14 @@ public class ProfileFragment extends Fragment {
                 startActivity(i);
 
                 getActivity().finish();
+            }
+        });
+
+        userImage = (ImageView) view.findViewById(R.id.userImage);
+        userImage.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
             }
         });
 
@@ -104,5 +123,28 @@ public class ProfileFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiverProfile);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+            Cursor cursor = context.getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+            BitmapFactory.Options bf = new BitmapFactory.Options();
+            bf.inSampleSize = 4;
+            Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
+            if((imageBitmap.getWidth() > 500) || (imageBitmap.getHeight() > 500)) imageBitmap = BitmapFactory.decodeFile(picturePath, bf);
+            Log.d("Bitmap", "width: " + imageBitmap.getWidth() + " " + "height: " + imageBitmap.getHeight());
+            userImage.setImageBitmap(ImageHelper.getAvatar(imageBitmap, picturePath));
+        }
     }
 }

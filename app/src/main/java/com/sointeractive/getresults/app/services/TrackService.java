@@ -222,7 +222,7 @@ public class TrackService extends Service {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    return;
+
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
             }
