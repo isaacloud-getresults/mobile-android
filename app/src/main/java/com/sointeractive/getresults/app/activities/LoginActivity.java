@@ -115,8 +115,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         }
 
-<<<<<<< HEAD
-=======
         // create new wrapper instance for API connection
         /*
         if(App.loadConfigData() == null) {
@@ -124,7 +122,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
->>>>>>> master
 
                 }
             })
@@ -134,7 +131,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             dialog.show();
         }
         */
-        initializeConnector();
+
         // find relevant views and add listeners
         final SignInButton buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
 //        btnRevokeAccess = (Button) findViewById(R.id.buttonRevokeAccess);
@@ -338,11 +335,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (resultCode == RESULT_CANCELED) {
                 // TODO: Handle cancel
             }
-<<<<<<< HEAD
             configureApplication();
-=======
-            initializeConnector();
->>>>>>> master
             Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
@@ -402,28 +395,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
-<<<<<<< HEAD
     void configureApplication() {
         String s = App.loadConfigData();
         StringTokenizer tok = new StringTokenizer((s), "/");
         while (tok.hasMoreElements()) {
             Settings.INSTANCE_ID = (String) tok.nextElement();
             Settings.APP_SECRET = (String) tok.nextElement();
-=======
-    void initializeConnector() {
-        Map<String, String> config = new HashMap<String, String>();
-        config.put("instanceId", Settings.INSTANCE_ID);
-        Log.d("initializeConnector()", "INSTANCE_ID: " + Settings.INSTANCE_ID);
-        config.put("appSecret", Settings.APP_SECRET);
-        Log.d("initializeConnector()", "appSecret: " + Settings.APP_SECRET);
-
-        try {
-            App.setIsaacloudConnector(new Isaacloud(config));
-        } catch (InvalidConfigException e) {
-            e.printStackTrace();
->>>>>>> master
         }
     }
+
 
     void runMainActivity() {
         // RUN MAIN ACTIVITY
