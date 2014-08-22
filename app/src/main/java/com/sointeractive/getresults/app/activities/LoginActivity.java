@@ -114,7 +114,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 loginData.setRemembered(false);
             }
         }
-
+        App.loadConfigData();
         // create new wrapper instance for API connection
         /*
         if(App.loadConfigData() == null) {
@@ -258,8 +258,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
-//            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
-//                    0).show();
+            GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
+                    0).show();
             return;
         }
 

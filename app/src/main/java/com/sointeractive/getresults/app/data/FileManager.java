@@ -114,6 +114,7 @@ class FileManager {
         File checkFile = new File(app.getFilesDir(), configDataFileName);
         if (!checkFile.exists()) {
             saveConfigData("", app);
+            Log.d("Settings: ", "File does not exist");
         }
         //load the file
         try {
@@ -139,6 +140,7 @@ class FileManager {
     public void saveConfigData(String data, App app) {
         //save the file
         try {
+            Log.d("Settings: ", "Data saved in the file");
             FileOutputStream fos = app.openFileOutput(configDataFileName,
                     Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -147,7 +149,7 @@ class FileManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(data != null) {
+        if(!data.equals("")) {
             StringTokenizer tokenizer = new StringTokenizer(data);
             Settings.INSTANCE_ID = (String) tokenizer.nextElement();
             Log.d("Settings: ", Settings.INSTANCE_ID);
