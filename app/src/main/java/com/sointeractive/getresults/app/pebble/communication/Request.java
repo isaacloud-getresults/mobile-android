@@ -14,6 +14,7 @@ import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public enum Request implements Sendable {
     UNKNOWN(0) {
@@ -33,7 +34,7 @@ public enum Request implements Sendable {
         public Collection<ResponseItem> getSendable(final int query) {
             RESPONSES_NUMBER += 1;
             final Collection<ResponseItem> responseList = new LinkedList<ResponseItem>();
-            final LoginResponse loginResponse = new LoginResponse("Tester Test " + RESPONSES_NUMBER, 128, 8, "Test room", RESPONSES_NUMBER, RESPONSES_NUMBER);
+            final LoginResponse loginResponse = new LoginResponse("Tester Test " + RESPONSES_NUMBER, 128, 8, "Test room", RESPONSES_NUMBER, RESPONSES_NUMBER, 1);
             responseList.add(loginResponse);
             return responseList;
         }
@@ -90,7 +91,34 @@ public enum Request implements Sendable {
             for (int i = 0; i < RESPONSES_NUMBER; i++) {
                 achievementResponses.add(new AchievementResponse(i, "Test achievement " + i, "Description " + i));
             }
-            return achievementResponses;
+            Log.d(TAG, "Sending achievements from page " + query);
+            return paginateAchievements(achievementResponses).get(query - 1);
+        }
+
+        private List<Collection<ResponseItem>> paginateAchievements(final Collection<ResponseItem> allResponses) {
+            List<Collection<ResponseItem>> pages = new LinkedList<Collection<ResponseItem>>();
+            int totalMemory = App.getPebbleConnector().getMemory();
+            int currentMemory = 0;
+            int pageNumber = -1;
+            AchievementResponse lastResponse = new AchievementResponse(-1, "", "");
+            for (ResponseItem generalResponse : allResponses) {
+                AchievementResponse response = (AchievementResponse) generalResponse;
+                final int responseSize = response.getSize();
+                if (responseSize > totalMemory) {
+                    continue;
+                }
+                response.setIsMore();
+                if (responseSize > currentMemory) {
+                    lastResponse.setLast();
+                    pageNumber += 1;
+                    pages.add(new LinkedList<ResponseItem>());
+                    currentMemory = totalMemory;
+                }
+                currentMemory -= responseSize;
+                pages.get(pageNumber).add(response);
+                lastResponse = response;
+            }
+            return pages;
         }
 
         @Override
@@ -116,7 +144,7 @@ public enum Request implements Sendable {
     private static final int REQUEST_TYPE = 1;
     private static final int REQUEST_QUERY = 2;
 
-    private static int RESPONSES_NUMBER = 0;
+    private static int RESPONSES_NUMBER = 20;
 
     private final int id;
 

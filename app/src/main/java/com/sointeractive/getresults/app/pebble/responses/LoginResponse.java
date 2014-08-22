@@ -14,14 +14,16 @@ public class LoginResponse implements ResponseItem {
     private final int rank;
     private final int beaconsSize;
     private final int achievementsNumber;
+    private final int pagesNumber;
 
-    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber) {
+    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber, final int pagesNumber) {
         this.name = StringTrimmer.getUserName(name);
         this.points = points;
         this.rank = rank;
         this.roomName = StringTrimmer.getBeaconName(roomName);
         this.beaconsSize = beaconsSize;
         this.achievementsNumber = achievementsNumber;
+        this.pagesNumber = pagesNumber;
     }
 
     @Override
@@ -33,6 +35,7 @@ public class LoginResponse implements ResponseItem {
                 .addInt(rank)
                 .addInt(beaconsSize)
                 .addInt(achievementsNumber)
+                .addInt(pagesNumber)
                 .build();
     }
 

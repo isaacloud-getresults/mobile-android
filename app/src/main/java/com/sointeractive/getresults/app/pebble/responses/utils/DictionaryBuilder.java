@@ -8,7 +8,7 @@ public class DictionaryBuilder {
     private int currentIndex = Request.RESPONSE_DATA_INDEX;
 
     public DictionaryBuilder(final int responseType) {
-        dictionary.addInt32(Request.RESPONSE_TYPE, responseType);
+        dictionary.addInt16(Request.RESPONSE_TYPE, (short) responseType);
     }
 
     public DictionaryBuilder addString(final String value) {
@@ -18,7 +18,7 @@ public class DictionaryBuilder {
     }
 
     public DictionaryBuilder addInt(final int value) {
-        dictionary.addInt32(currentIndex, value);
+        dictionary.addInt16(currentIndex, (short) value);
         currentIndex += 1;
         return this;
     }

@@ -55,6 +55,10 @@ public class UserData implements Serializable {
         return this.userLocation;
     }
 
+    public void setUserLocation(Location newLocation) {
+        this.userLocation = newLocation;
+    }
+
     public void setUserLocation(int id) {
         for (Location l : App.getLocations()) {
             if (l.getId() == id) {
@@ -62,10 +66,6 @@ public class UserData implements Serializable {
                 break;
             }
         }
-    }
-
-    public void setUserLocation(Location newLocation) {
-        this.userLocation = newLocation;
     }
 
     public int getUserLocationId() {
@@ -135,6 +135,6 @@ public class UserData implements Serializable {
     }
 
     public ResponseItem toLoginResponse(final String roomName, final int roomsNumber, final int achievementsNumber) {
-        return new LoginResponse(getName(), score, rank, roomName, roomsNumber, achievementsNumber);
+        return new LoginResponse(getName(), score, rank, roomName, roomsNumber, achievementsNumber, 1);
     }
 }

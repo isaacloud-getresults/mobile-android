@@ -14,6 +14,8 @@ public class AchievementResponse implements ResponseItem {
     private final String name;
     private final String description;
 
+    private int isMoreResponsesOnPage = 1;
+
     public AchievementResponse(final int id, final String name, final String description) {
         this.id = id;
         this.name = StringTrimmer.getAchievementName(name);
@@ -32,6 +34,7 @@ public class AchievementResponse implements ResponseItem {
                 .addInt(id)
                 .addString(name)
                 .addInt(getDescriptionPartsNumber())
+                .addInt(isMoreResponsesOnPage)
                 .build();
     }
 
@@ -46,5 +49,13 @@ public class AchievementResponse implements ResponseItem {
         final double stringLength = description.length();
         final double partSize = StringTrimmer.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN;
         return (int) Math.ceil(stringLength / partSize);
+    }
+
+    public void setLast() {
+        this.isMoreResponsesOnPage = 0;
+    }
+
+    public void setIsMore() {
+        this.isMoreResponsesOnPage = 1;
     }
 }

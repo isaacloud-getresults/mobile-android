@@ -209,4 +209,8 @@ public class PebbleConnector extends Observable {
         }
         return false;
     }
+
+    public int getMemory() {
+        return memory;
+    }
 }
