@@ -56,7 +56,8 @@ public class LoginCache {
         final String roomName = BeaconsCache.INSTANCE.getRoomName(userData.getUserLocationId());
         final int roomsNumber = BeaconsCache.INSTANCE.getSize();
         final int achievementsNumber = AchievementsCache.INSTANCE.getSize();
-        return userData.toLoginResponse(roomName, roomsNumber, achievementsNumber);
+        final int achievementPages = AchievementsCache.INSTANCE.getAchievementPages();
+        return userData.toLoginResponse(roomName, roomsNumber, achievementsNumber, achievementPages);
     }
 
     public void clear() {

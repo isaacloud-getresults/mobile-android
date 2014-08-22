@@ -4,12 +4,11 @@ import android.util.Log;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.data.App;
+import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
+import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
+import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
-import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
-import com.sointeractive.getresults.app.pebble.responses.BeaconResponse;
-import com.sointeractive.getresults.app.pebble.responses.LoginResponse;
-import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
@@ -32,11 +31,7 @@ public enum Request implements Sendable {
     LOGIN(1) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            RESPONSES_NUMBER += 1;
-            final Collection<ResponseItem> responseList = new LinkedList<ResponseItem>();
-            final LoginResponse loginResponse = new LoginResponse("Tester Test " + RESPONSES_NUMBER, 128, 8, "Test room", RESPONSES_NUMBER, RESPONSES_NUMBER, 1);
-            responseList.add(loginResponse);
-            return responseList;
+            return LoginCache.INSTANCE.getData();
         }
 
         @Override
@@ -51,11 +46,7 @@ public enum Request implements Sendable {
     BEACONS(2) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            Collection<ResponseItem> beaconsResponse = new LinkedList<ResponseItem>();
-            for (int i = 0; i < RESPONSES_NUMBER; i++) {
-                beaconsResponse.add(new BeaconResponse(i, "Test room " + i, i));
-            }
-            return beaconsResponse;
+            return BeaconsCache.INSTANCE.getData();
         }
 
         @Override
@@ -69,11 +60,7 @@ public enum Request implements Sendable {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
             PeopleCache.INSTANCE.setObservedRoom(query);
-            Collection<ResponseItem> peopleResponse = new LinkedList<ResponseItem>();
-            for (int i = 0; i < query; i++) {
-                peopleResponse.add(new PersonInResponse(i, "Tester Test " + i, query));
-            }
-            return peopleResponse;
+            return PeopleCache.INSTANCE.getData(query);
         }
 
         @Override
@@ -87,10 +74,7 @@ public enum Request implements Sendable {
     ACHIEVEMENTS(4) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            final Collection<ResponseItem> achievementResponses = new LinkedList<ResponseItem>();
-            for (int i = 0; i < RESPONSES_NUMBER; i++) {
-                achievementResponses.add(new AchievementResponse(i, "Test achievement " + i, "Description " + i));
-            }
+            final Collection<ResponseItem> achievementResponses = AchievementsCache.INSTANCE.getData();
             Log.d(TAG, "Sending achievements from page " + query);
             return paginateAchievements(achievementResponses).get(query - 1);
         }
@@ -132,7 +116,7 @@ public enum Request implements Sendable {
     ACHIEVEMENT_DESCRIPTION(5) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            return AchievementDescriptionResponse.getResponse(query, "Description " + query);
+            return AchievementsCache.INSTANCE.getDescriptionData(query);
         }
     };
 
@@ -143,8 +127,6 @@ public enum Request implements Sendable {
 
     private static final int REQUEST_TYPE = 1;
     private static final int REQUEST_QUERY = 2;
-
-    private static int RESPONSES_NUMBER = 20;
 
     private final int id;
 

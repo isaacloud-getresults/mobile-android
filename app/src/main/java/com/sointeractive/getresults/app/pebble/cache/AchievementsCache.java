@@ -50,4 +50,8 @@ public class AchievementsCache {
     public void clear() {
         achievementsResponse.clear();
     }
+
+    public int getAchievementPages() {
+        return 2;
+    }
 }

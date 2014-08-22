@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import pl.sointeractive.isaacloud.Isaacloud;
@@ -210,6 +211,65 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
+        try {
+            generateFakeData();
+        } catch (JSONException e) {
+            Log.e(TAG, "Cannot create fake data");
+        }
+    }
+
+    private void generateFakeData() throws JSONException {
+        //TODO: Remove this from production code
+        final int BEACONS = 10;
+        final int AVG_PEOPLE = 3;
+        final int ACHIEVEMENTS = 10;
+
+        // User
+        UserData userData = new UserData();
+        userData.setName("Tester Test");
+        userData.setFirstName("Tester");
+        userData.setEmail("tester@testing.test");
+        userData.setUserId(1);
+        final JSONObject userJSON = new JSONObject("{leaderboards: [{id: 1, score: 128, position: 8}]}");
+        userData.setLeaderboardData(userJSON);
+        userData.setLevel("5");
+        App.saveUserData(userData);
+
+        // Beacons
+        SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+        List<Location> locations = new ArrayList<Location>();
+        for (int i = 0; i < BEACONS; i++) {
+            JSONObject locJson = new JSONObject("{id:" + i + ",label:'test room " + i + "'}");
+            Location loc = new Location(locJson);
+            entries.put(loc.getId(), new LinkedList<Person>());
+            locations.add(loc);
+            if (loc.getId() == Integer.parseInt(Settings.NULL_ROOM_COUNTER)) {
+                userData.setUserLocation(loc);
+                App.saveUserData(userData);
+            }
+        }
+        DataManager dm = App.getDataManager();
+        dm.setLocations(locations);
+        dm.setPeople(entries);
+
+        // Achievements
+        List<Achievement> achievements = new ArrayList<Achievement>();
+        for (int i = 0; i < ACHIEVEMENTS; i++) {
+            JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
+            achievements.add(new Achievement(achievementsJSON, true, 1));
+        }
+        dm.setAchievements(achievements);
+
+        Random rnd = new Random();
+        // People
+        for (int i = 0; i < BEACONS * AVG_PEOPLE; i++) {
+            Person p = new Person("Tester", "Test " + i, rnd.nextInt(BEACONS), i);
+            entries.get(p.getLocation()).add(p);
+        }
+        App.getDataManager().setPeople(entries);
+
+        // Log in
+        LoginCache.INSTANCE.logIn();
     }
 
     protected void onStart() {
