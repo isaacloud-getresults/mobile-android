@@ -30,7 +30,7 @@ import java.util.List;
 public class TrackService extends Service {
     private static final String TAG = TrackService.class.getSimpleName();
     //
-    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.BEACON_PROXIMITY_UUID, 6000, null);
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.ESTIMOTE_PROXIMITY_UUID, 6000, null);
     private static final SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     private static final HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
     private static final HashMap<String, Integer> counterMap = new HashMap<String, Integer>();
@@ -144,15 +144,13 @@ public class TrackService extends Service {
         for (Beacon b : beacons) {
             helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
-            if (!(majors.contains(new String(b.getMacAddress())))) {
-
-                    majors.add(new String(b.getMacAddress()));
+            if (!(majors.contains(b.getMacAddress()))) {
+                    majors.add(b.getMacAddress());
                     Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
                     lastBeacon = b;
 //                    v.vibrate(0);
-
             } else previousFlag = false;
             if (!internetConnection)
                 Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
@@ -162,14 +160,14 @@ public class TrackService extends Service {
         for (String i : temp) {
             Beacon tempBeacon = beaconMap.get(i);
             if (!(helper.contains(i))) {
-//                if (readyToSend(tempBeacon, true)) {
+                if (readyToSend(tempBeacon, true)) {
                     majors.remove(i);
                     Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()), Integer.toString(tempBeacon.getMinor()));
 //                    v.vibrate(0);
                 }
-//            } else previousFlag = false;
+            } else previousFlag = false;
         }
     }
 

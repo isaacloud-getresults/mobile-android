@@ -168,6 +168,7 @@ public class EventManager {
                 String counterLevel = json.getString("level");
                 userData.setLevel(counterLevel);
                 userData.setGainedAchievements("" + gainedAchievements.length());
+                userData.setLeaderboardData(json);
                 App.saveUserData(userData);
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
