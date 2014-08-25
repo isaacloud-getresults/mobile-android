@@ -335,8 +335,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (resultCode == RESULT_CANCELED) {
                 // TODO: Handle cancel
             }
-            configureApplication();
-            Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
         if (requestCode == RC_SIGN_IN) {
@@ -394,16 +392,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         mGoogleApiClient.connect();
 
     }
-
-    void configureApplication() {
-        String s = App.loadConfigData();
-        StringTokenizer tok = new StringTokenizer((s), "/");
-        while (tok.hasMoreElements()) {
-            Settings.INSTANCE_ID = (String) tok.nextElement();
-            Settings.APP_SECRET = (String) tok.nextElement();
-        }
-    }
-
 
     void runMainActivity() {
         // RUN MAIN ACTIVITY

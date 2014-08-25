@@ -25,9 +25,6 @@ public class StatusCard extends Card {
 
     @Override
     public void setupInnerViewElements(ViewGroup parent, View view) {
-        //Example on the card
-        ViewToClickToExpand viewToClickToExpand = ViewToClickToExpand.builder().setupView(getCardView());
-        setViewToClickToExpand(viewToClickToExpand);
 
         title = (TextView) view.findViewById(R.id.status_card_main_text);
         stats = (IconTextView) view.findViewById(R.id.status_card_stats);

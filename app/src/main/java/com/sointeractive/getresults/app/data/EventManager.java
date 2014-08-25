@@ -104,13 +104,17 @@ public class EventManager {
         private final String TAG = EventPostNewBeacon.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
+        String minor;
+        String major;
 
         @Override
         protected Object doInBackground(String... data) {
             Log.d(TAG, "Action: sending new beacon event");
             try {
                 JSONObject body = new JSONObject();
-                body.put("place", data[0] + "." + data[1]);
+                major = data[0];
+                minor = data[1];
+                body.put("place", major + "." + minor);
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
             } catch (IsaaCloudConnectionException e) {
@@ -126,7 +130,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             // GET ACTUAL LOCATION EVENT
-            new EventGetNewLocation().execute();
+            new EventGetNewLocation().execute(major, minor);
             if (isError) {
                 Log.e(TAG, "Error: Cannot post new beacon");
             }
@@ -140,7 +144,7 @@ public class EventManager {
     // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
     ////////////////////////////////////////////////////////////////////
 
-    private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
+    private class EventGetNewLocation extends AsyncTask<String, Object, Object> {
 
 
         final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
@@ -150,7 +154,7 @@ public class EventManager {
         boolean isError = false;
 
         @Override
-        protected Object doInBackground(Object... beaconId) {
+        protected Object doInBackground(String... data) {
             try {
                 int id = userData.getUserId();
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).get();
@@ -170,6 +174,24 @@ public class EventManager {
                 userData.setGainedAchievements("" + gainedAchievements.length());
                 userData.setLeaderboardData(json);
                 App.saveUserData(userData);
+                // if on entering the room
+                if (data.length > 0 ) {
+                    try {
+                        // SEND GROUP EVENT
+                        JSONObject body = new JSONObject();
+                        body.put("place", data[0] + "." + data[1] + "." + "group");
+                        response = App.getIsaacloudConnector().event(userData.getUserLocationId(),
+                                "GROUP", "PRIORITY_NORMAL", 1, "NORMAL", body);
+                        Log.d(TAG, "Group message event response:" + response.toString());
+                    } catch (IsaaCloudConnectionException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        isError = true;
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -273,12 +295,10 @@ public class EventManager {
                     entries.get(p.getLocation()).add(p);
                     // CHECK ACTUAL USER POSITION:
                     if (p.getId() == App.loadUserData().getUserId()) {
-                        if (p.getLocation() != App.loadUserData().getUserLocationId()) {
                             UserData userData = App.loadUserData();
-                            userData.setUserLocation(p.getId());
+                            userData.setUserLocation(p.getLocation());
                             App.saveUserData(userData);
                             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
-                        }
                     }
                 }
                 App.getDataManager().setPeople(entries);
