@@ -12,6 +12,9 @@ public class PersonInResponse implements ResponseItem {
     private final String name;
     private final int roomId;
 
+    private int pageNumber = 0;
+    private int isMoreResponsesOnPage = 1;
+
     public PersonInResponse(final int id, final String name, final int roomId) {
         this.id = id;
         this.name = StringTrimmer.getCoworkerName(name);
@@ -24,6 +27,8 @@ public class PersonInResponse implements ResponseItem {
                 .addInt(id)
                 .addString(name)
                 .addInt(roomId)
+                .addInt(pageNumber)
+                .addInt(isMoreResponsesOnPage)
                 .build();
     }
 
@@ -33,24 +38,40 @@ public class PersonInResponse implements ResponseItem {
     }
 
     public ResponseItem toPersonOutResponse() {
-        return new PersonOutResponse(id, name, roomId);
+        return new PersonOutResponse(id, name, roomId, pageNumber);
+    }
+
+    public void setPageNumber(final int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public void setLast() {
+        this.isMoreResponsesOnPage = 0;
+    }
+
+    public void setIsMore() {
+        this.isMoreResponsesOnPage = 1;
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        if (!(obj instanceof PersonInResponse)) {
-            return false;
-        }
+        final PersonInResponse that = (PersonInResponse) o;
 
-        final PersonInResponse personInResponse = (PersonInResponse) obj;
-        return id == personInResponse.id;
+        if (id != that.id) return false;
+        if (roomId != that.roomId) return false;
+        if (!name.equals(that.name)) return false;
+
+        return true;
     }
 
+    @Override
     public int hashCode() {
-        return id;
+        int result = id;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + roomId;
+        return result;
     }
 }

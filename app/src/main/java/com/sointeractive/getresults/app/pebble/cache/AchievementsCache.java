@@ -40,7 +40,7 @@ public class AchievementsCache {
         return response;
     }
 
-    private static void paginateAchievements() {
+    private void paginateAchievements() {
         pages = new LinkedList<List<ResponseItem>>();
         int totalMemory = App.getPebbleConnector().getMemory();
         int currentMemory = 0;
@@ -53,7 +53,7 @@ public class AchievementsCache {
                 continue;
             }
             response.setIsMore();
-            if (responseSize > currentMemory || items >= Settings.MAX_ITEMS_PER_PAGE) {
+            if (responseSize > currentMemory || items >= Settings.MAX_ACHIEVEMENTS_PER_PAGE) {
                 items = 0;
                 pageNumber += 1;
                 pages.add(new LinkedList<ResponseItem>());
@@ -97,7 +97,11 @@ public class AchievementsCache {
         try {
             NewAchievementsChecker.check(oldAchievementPages.get(observedPage), pages.get(observedPage));
         } catch (IndexOutOfBoundsException e) {
-            Log.d(TAG, "Cannot check achievements on observed page: " + observedPage);
+            if (observedPage == -1) {
+                Log.d(TAG, "No achievement page is observed");
+            } else {
+                Log.e(TAG, "Cannot check achievements on observed page: " + observedPage);
+            }
         }
     }
 
@@ -116,7 +120,7 @@ public class AchievementsCache {
     }
 
     public List<ResponseItem> getAchievementsPage(final int pageNumber) {
-        if (pageNumber > getAchievementPages()) {
+        if (pageNumber >= getAchievementPages()) {
             return new LinkedList<ResponseItem>();
         }
         final List<ResponseItem> achievementsPage = pages.get(pageNumber);

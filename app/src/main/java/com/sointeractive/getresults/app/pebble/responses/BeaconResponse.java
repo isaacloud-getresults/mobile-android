@@ -11,11 +11,13 @@ public class BeaconResponse implements ResponseItem {
     private final int id;
     private final String name;
     private final int people;
+    private int pagesNumber;
 
-    public BeaconResponse(final int id, final String name, final int people) {
+    public BeaconResponse(final int id, final String name, final int people, final int pagesNumber) {
         this.id = id;
         this.name = StringTrimmer.getBeaconName(name);
         this.people = people;
+        this.pagesNumber = pagesNumber;
     }
 
     public int getId() {
@@ -32,6 +34,7 @@ public class BeaconResponse implements ResponseItem {
                 .addInt(id)
                 .addString(name)
                 .addInt(people)
+                .addInt(pagesNumber)
                 .build();
     }
 
@@ -42,19 +45,17 @@ public class BeaconResponse implements ResponseItem {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         final BeaconResponse that = (BeaconResponse) o;
-        return id == that.id &&
-                people == that.people &&
-                name.equals(that.name);
 
+        if (id != that.id) return false;
+        if (pagesNumber != that.pagesNumber) return false;
+        if (people != that.people) return false;
+        if (!name.equals(that.name)) return false;
+
+        return true;
     }
 
     @Override
@@ -62,6 +63,7 @@ public class BeaconResponse implements ResponseItem {
         int result = id;
         result = 31 * result + name.hashCode();
         result = 31 * result + people;
+        result = 31 * result + pagesNumber;
         return result;
     }
 }

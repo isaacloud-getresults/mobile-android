@@ -10,11 +10,13 @@ public class PersonOutResponse implements ResponseItem {
     private final int id;
     private final String name;
     private final int roomId;
+    private final int pageNumber;
 
-    public PersonOutResponse(final int id, final String name, final int roomId) {
+    public PersonOutResponse(final int id, final String name, final int roomId, final int pageNumber) {
         this.id = id;
         this.name = name;
         this.roomId = roomId;
+        this.pageNumber = pageNumber;
     }
 
     @Override
@@ -23,6 +25,7 @@ public class PersonOutResponse implements ResponseItem {
                 .addInt(id)
                 .addString(name)
                 .addInt(roomId)
+                .addInt(pageNumber)
                 .build();
     }
 

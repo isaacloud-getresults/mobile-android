@@ -16,7 +16,7 @@ import java.util.LinkedList;
 public enum Request implements Sendable {
     UNKNOWN(0) {
         @Override
-        public Collection<ResponseItem> getSendable(final int query) {
+        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
             return new LinkedList<ResponseItem>();
         }
 
@@ -28,7 +28,7 @@ public enum Request implements Sendable {
 
     LOGIN(1) {
         @Override
-        public Collection<ResponseItem> getSendable(final int query) {
+        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
             return LoginCache.INSTANCE.getData();
         }
 
@@ -43,7 +43,7 @@ public enum Request implements Sendable {
 
     BEACONS(2) {
         @Override
-        public Collection<ResponseItem> getSendable(final int query) {
+        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
             return BeaconsCache.INSTANCE.getData();
         }
 
@@ -55,9 +55,11 @@ public enum Request implements Sendable {
 
     PEOPLE_IN_ROOM(3) {
         @Override
-        public Collection<ResponseItem> getSendable(final int query) {
-            PeopleCache.INSTANCE.setObservedRoom(query);
-            return PeopleCache.INSTANCE.getData(query);
+        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
+            PeopleCache.INSTANCE.setObservedRoom(mainQuery);
+            final int pageIndex = secondaryQuery - 1;
+            PeopleCache.INSTANCE.setObservedPage(pageIndex);
+            return PeopleCache.INSTANCE.getPeoplePage(mainQuery, pageIndex);
         }
 
         @Override
@@ -71,8 +73,8 @@ public enum Request implements Sendable {
 
     ACHIEVEMENTS(4) {
         @Override
-        public Collection<ResponseItem> getSendable(final int query) {
-            final int pageIndex = query - 1;
+        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
+            final int pageIndex = mainQuery - 1;
             AchievementsCache.INSTANCE.setObservedPage(pageIndex);
             return AchievementsCache.INSTANCE.getAchievementsPage(pageIndex);
         }
@@ -88,8 +90,8 @@ public enum Request implements Sendable {
 
     ACHIEVEMENT_DESCRIPTION(5) {
         @Override
-        public Collection<ResponseItem> getSendable(final int query) {
-            return AchievementsCache.INSTANCE.getDescriptionData(query);
+        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
+            return AchievementsCache.INSTANCE.getDescriptionData(mainQuery);
         }
     };
 
@@ -99,7 +101,8 @@ public enum Request implements Sendable {
     private static final String TAG = Request.class.getSimpleName();
 
     private static final int REQUEST_TYPE = 1;
-    private static final int REQUEST_QUERY = 2;
+    private static final int REQUEST_MAIN_QUERY = 2;
+    private static final int REQUEST_SECONDARY_QUERY = 3;
 
     private final int id;
 
@@ -109,26 +112,36 @@ public enum Request implements Sendable {
 
     public static Collection<ResponseItem> getResponse(final PebbleDictionary data) {
         final int requestId = getRequestId(data);
-        final int query = getQuery(data);
-        return getSendable(requestId, query);
+        final int mainQuery = getMainQuery(data);
+        final int secondaryQuery = getSecondaryQuery(data);
+        return getSendable(requestId, mainQuery, secondaryQuery);
     }
+
 
     private static int getRequestId(final PebbleDictionary data) {
         final Long requestID = data.getInteger(Request.REQUEST_TYPE);
         return requestID.intValue();
     }
 
-    private static int getQuery(final PebbleDictionary data) {
-        if (data.contains(REQUEST_QUERY)) {
-            return data.getInteger(REQUEST_QUERY).intValue();
+    private static int getMainQuery(final PebbleDictionary data) {
+        if (data.contains(REQUEST_MAIN_QUERY)) {
+            return data.getInteger(REQUEST_MAIN_QUERY).intValue();
         } else {
             return -1;
         }
     }
 
-    private static Collection<ResponseItem> getSendable(final int requestId, final int query) {
+    private static int getSecondaryQuery(final PebbleDictionary data) {
+        if (data.contains(REQUEST_SECONDARY_QUERY)) {
+            return data.getInteger(REQUEST_SECONDARY_QUERY).intValue();
+        } else {
+            return -1;
+        }
+    }
+
+    private static Collection<ResponseItem> getSendable(final int requestId, final int mainQuery, final int secondaryQuery) {
         final Request request = getRequest(requestId);
-        return request.getSendable(query);
+        return request.getSendable(mainQuery, secondaryQuery);
     }
 
     private static Request getRequest(final int requestId) {

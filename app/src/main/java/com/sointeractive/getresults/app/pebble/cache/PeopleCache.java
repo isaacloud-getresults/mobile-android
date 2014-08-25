@@ -3,14 +3,18 @@ package com.sointeractive.getresults.app.pebble.cache;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
+import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.pebble.checker.NewPeopleChecker;
+import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class PeopleCache {
     public static final PeopleCache INSTANCE = new PeopleCache();
@@ -18,8 +22,10 @@ public class PeopleCache {
     private static final String TAG = PeopleCache.class.getSimpleName();
 
     private int observedRoom = -1;
+    private int observedPage = -1;
 
     private SparseArray<Collection<ResponseItem>> peopleResponses = new SparseArray<Collection<ResponseItem>>();
+    private SparseArray<List<List<ResponseItem>>> peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
 
     private PeopleCache() {
         // Exists only to defeat instantiation.
@@ -30,8 +36,14 @@ public class PeopleCache {
         this.observedRoom = observedRoom;
     }
 
+    public void setObservedPage(final int observedPage) {
+        Log.d(TAG, "Action: Set observed page to: " + observedPage);
+        this.observedPage = observedPage;
+    }
+
     public void clearObservedRoom() {
         observedRoom = -1;
+        observedPage = -1;
     }
 
     public Collection<ResponseItem> getData(final int room) {
@@ -42,13 +54,14 @@ public class PeopleCache {
     }
 
     public void reload() {
-        final SparseArray<Collection<ResponseItem>> oldResponses = peopleResponses;
+        final SparseArray<List<List<ResponseItem>>> oldPages = peopleInRoomPages;
 
         peopleResponses = new SparseArray<Collection<ResponseItem>>();
         final Collection<Person> people = App.getDataManager().getPeople();
         updatePeopleList(people);
+        paginatePeople();
 
-        findChanges(oldResponses);
+        findChanges(oldPages);
     }
 
     private void updatePeopleList(final Iterable<Person> people) {
@@ -66,11 +79,29 @@ public class PeopleCache {
         peopleResponses.get(roomId).add(person.toPersonInResponse());
     }
 
-    private void findChanges(final SparseArray<Collection<ResponseItem>> oldResponses) {
-        Log.d(TAG, "Check: Changes in roomId: " + observedRoom);
-        final Collection<ResponseItem> oldResponsesRoom = oldResponses.get(observedRoom, new LinkedList<ResponseItem>());
-        final Collection<ResponseItem> newResponsesRoom = peopleResponses.get(observedRoom, new LinkedList<ResponseItem>());
-        NewPeopleChecker.check(oldResponsesRoom, newResponsesRoom);
+    private void findChanges(final SparseArray<List<List<ResponseItem>>> oldPeopleInRoomPages) {
+        try {
+            Log.d(TAG, "Check: Changes in roomId: " + observedRoom + " on page: " + observedPage);
+            final List<List<ResponseItem>> oldRoom = oldPeopleInRoomPages.get(observedRoom);
+            final List<List<ResponseItem>> newRoom = peopleInRoomPages.get(observedRoom);
+            if (oldRoom == null || newRoom == null) {
+                throw new IndexOutOfBoundsException();
+            }
+            final List<ResponseItem> oldPage = oldRoom.get(observedPage);
+            final List<ResponseItem> newPage = newRoom.get(observedPage);
+            NewPeopleChecker.check(oldPage, newPage);
+        } catch (IndexOutOfBoundsException e) {
+            if (observedPage == -1) {
+                Log.d(TAG, "No people page is observed");
+            } else {
+                Log.e(TAG, "Cannot check people on observed page: " + observedPage);
+            }
+            if (observedRoom == -1) {
+                Log.d(TAG, "No people room is observed");
+            } else {
+                Log.e(TAG, "Cannot check people on observed room: " + observedRoom);
+            }
+        }
     }
 
     private Collection<ResponseItem> getPeopleRoomResponse(final int room) {
@@ -88,5 +119,68 @@ public class PeopleCache {
     public void clear() {
         peopleResponses.clear();
         clearObservedRoom();
+        peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
+    }
+
+    private void paginatePeople() {
+        peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
+        final List<Location> locations = App.getDataManager().getLocations();
+        for (Location location : locations) {
+            final int locationId = location.getId();
+            peopleInRoomPages.append(locationId, paginatePeopleInRoom(locationId));
+        }
+    }
+
+    private List<List<ResponseItem>> paginatePeopleInRoom(final int roomId) {
+        final Collection<ResponseItem> peopleInRoom = peopleResponses.get(roomId);
+        LinkedList<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
+        if (peopleInRoom == null) {
+            return pages;
+        }
+        int totalMemory = App.getPebbleConnector().getMemory();
+        int currentMemory = 0;
+        int pageNumber = -1;
+        int items = 0;
+        for (ResponseItem generalResponse : peopleInRoom) {
+            PersonInResponse response = (PersonInResponse) generalResponse;
+            final int responseSize = response.getSize();
+            if (responseSize > totalMemory) {
+                continue;
+            }
+            response.setIsMore();
+            if (responseSize > currentMemory || items >= Settings.MAX_PEOPLE_PER_PAGE) {
+                items = 0;
+                pageNumber += 1;
+                pages.add(new LinkedList<ResponseItem>());
+                currentMemory = totalMemory;
+            }
+            items += 1;
+            currentMemory -= responseSize;
+            response.setPageNumber(pageNumber);
+            pages.get(pageNumber).add(response);
+        }
+        return pages;
+    }
+
+
+    public int getPeoplePages(final int roomId) {
+        return peopleInRoomPages.get(roomId).size();
+    }
+
+    public Collection<ResponseItem> getPeoplePage(final int roomId, final int pageNumber) {
+        final List<List<ResponseItem>> pages = peopleInRoomPages.get(roomId);
+        if (pages == null) {
+            return new LinkedList<ResponseItem>();
+        }
+
+        final List<ResponseItem> page = pages.get(pageNumber);
+        if (page == null) {
+            return new LinkedList<ResponseItem>();
+        }
+
+        final ResponseItem lastResponse = page.get(page.size() - 1);
+        final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
+        lastPersonResponse.setLast();
+        return page;
     }
 }
