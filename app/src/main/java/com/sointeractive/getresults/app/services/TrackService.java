@@ -185,7 +185,7 @@ public class TrackService extends Service {
             Toast.makeText(getApplicationContext(), "i = " + i, Toast.LENGTH_SHORT).show();
         }
         previousFlag = flag;
-        if (counterMap.get(mac) == 5) {
+        if (counterMap.get(mac) == 2) {
             counterMap.remove(mac);
             return true;
         }

@@ -131,7 +131,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             dialog.show();
         }
         */
-        initializeConnector();
+
         // find relevant views and add listeners
         final SignInButton buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
 //        btnRevokeAccess = (Button) findViewById(R.id.buttonRevokeAccess);
@@ -335,7 +335,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (resultCode == RESULT_CANCELED) {
                 // TODO: Handle cancel
             }
-            initializeConnector();
+            configureApplication();
             Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
@@ -395,19 +395,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
-    void initializeConnector() {
-        Map<String, String> config = new HashMap<String, String>();
-        config.put("instanceId", Settings.INSTANCE_ID);
-        Log.d("initializeConnector()", "INSTANCE_ID: " + Settings.INSTANCE_ID);
-        config.put("appSecret", Settings.APP_SECRET);
-        Log.d("initializeConnector()", "appSecret: " + Settings.APP_SECRET);
-
-        try {
-            App.setIsaacloudConnector(new Isaacloud(config));
-        } catch (InvalidConfigException e) {
-            e.printStackTrace();
+    void configureApplication() {
+        String s = App.loadConfigData();
+        StringTokenizer tok = new StringTokenizer((s), "/");
+        while (tok.hasMoreElements()) {
+            Settings.INSTANCE_ID = (String) tok.nextElement();
+            Settings.APP_SECRET = (String) tok.nextElement();
         }
     }
+
 
     void runMainActivity() {
         // RUN MAIN ACTIVITY
@@ -576,15 +572,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 for (int i = 0; i < locationsArray.length(); i++) {
                     JSONObject locJson = (JSONObject) locationsArray.get(i);
                     Location loc = new Location(locJson);
-                    if (loc.getId() != 1 && loc.getId() != 2) {
-                        entries.put(loc.getId(), new LinkedList<Person>());
-                        locations.add(loc);
-                    }
-                    if (loc.getId() == Integer.parseInt(Settings.NULL_ROOM_COUNTER)) {
-                        UserData userData = App.loadUserData();
-                        userData.setUserLocation(loc);
-                        App.saveUserData(userData);
-                    }
+                    entries.put(loc.getId(), new LinkedList<Person>());
+                    locations.add(loc);
                 }
                 success = true;
                 DataManager dm = App.getDataManager();
