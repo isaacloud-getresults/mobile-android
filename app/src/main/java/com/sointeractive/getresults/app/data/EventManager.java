@@ -181,6 +181,8 @@ public class EventManager {
             return null;
         }
 
+
+
         protected void onPostExecute(Object result) {
             // CHECK FOR NEW ACHIEVEMENTS
             new EventCheckAchievements().execute();
@@ -416,11 +418,13 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             if (entries.size() != 0) {
-                if (App.getDataManager().isNewNotification(entries.get(0))) {
-                    Toast.makeText(context, entries.get(0).getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "NOTIFICATION = NEW");
+                for (int i = 0; i < entries.size(); i++) {
+                    if (App.getDataManager().isNewNotification(entries.get(i))) {
+                        Toast.makeText(context, entries.get(i).getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "NOTIFICATION = NEW");
+                    } else Log.d(TAG, "NOTIFICATION = NONE");
                 }
-            } else Log.d(TAG, "NOTIFICATION = NONE");
+            }
         }
     }
 
