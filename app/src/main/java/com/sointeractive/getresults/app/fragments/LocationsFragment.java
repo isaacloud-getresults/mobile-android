@@ -44,8 +44,14 @@ public class LocationsFragment extends Fragment {
             if (listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
-            Log.d(TAG, "Problem " + App.loadLoginData().getPassword());
-//            Log.d(TAG, "Problem " + App.loadUserData().getUserLocation().getLabel());
+        }
+    };
+    private final BroadcastReceiver receiverStatus = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Event: onReceive called");
+            Log.d(TAG, "User location is now: " + App.loadUserData().getUserLocation().getLabel());
             statusCard.initLocation(App.loadUserData().getUserLocation());
             statusCard.setOnClickListener(null);
             statusCard.setClickable(false);
@@ -78,6 +84,8 @@ public class LocationsFragment extends Fragment {
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.BROADCAST_INTENT_UPDATE_DATA));
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiverStatus,
+                new IntentFilter(Settings.BROADCAST_INTENT_NEW_LOCATION));
         dm = new DrawableManager();
     }
 
@@ -186,7 +194,7 @@ public class LocationsFragment extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
-            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size() + "   " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size();
+            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -26,10 +26,8 @@ public class Settings {
     public static int LEADERBOARD_ID = 1;
     public static int PEBBLE_NOTIFICATION_ID; // 1;
     public static int ANDROID_NOTIFICATION_ID; // 2;
-
     public static String LOCATION_COUNTER; // 1; // location id counter from IsaaCloud
-    public static final String KITCHEN_VISITED_COUNTER = "2";
-    public static final String NULL_ROOM_COUNTER = "3";
+
 
     // Beacons
     public static String BEACON_PROXIMITY_UUID; // "B9407F30-F5F8-466E-AFF9-25556B57FE6D"
