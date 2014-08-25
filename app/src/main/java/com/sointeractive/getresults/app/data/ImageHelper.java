@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 import android.media.ExifInterface;
+import android.os.AsyncTask;
 
 import java.io.IOException;
 
@@ -120,4 +121,6 @@ public class ImageHelper {
         }
 //        return bitmap;
     }
+
+
 }

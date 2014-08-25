@@ -2,6 +2,7 @@ package com.sointeractive.getresults.app.fragments;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sointeractive.getresults.app.R;
 import com.sointeractive.getresults.app.activities.LoginActivity;
@@ -30,6 +33,16 @@ import com.sointeractive.getresults.app.cards.StatsCard;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.ImageHelper;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import it.gmariotti.cardslib.library.view.CardView;
 
@@ -144,7 +157,48 @@ public class ProfileFragment extends Fragment {
             Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
             if((imageBitmap.getWidth() > 500) || (imageBitmap.getHeight() > 500)) imageBitmap = BitmapFactory.decodeFile(picturePath, bf);
             Log.d("Bitmap", "width: " + imageBitmap.getWidth() + " " + "height: " + imageBitmap.getHeight());
+//            new SendToServerTask().execute(picturePath);
             userImage.setImageBitmap(ImageHelper.getAvatar(imageBitmap, picturePath));
         }
+    }
+
+    public class SendToServerTask extends AsyncTask<String, Object, Object> {
+        boolean success = false;
+        ProgressDialog dialog = ProgressDialog.show(getActivity(), "Saving profile picture", "Please wait...");
+
+        @Override
+        public Object doInBackground(String... params) {
+            String url = "http://xyz.getresults.isaacloud.com/";
+
+            File file = new File(params[0]);
+            try {
+                HttpClient httpclient = new DefaultHttpClient();
+
+                HttpPost httppost = new HttpPost(url);
+
+                InputStreamEntity reqEntity = new InputStreamEntity(
+                        new FileInputStream(file), -1);
+                reqEntity.setContentType("binary/octet-stream");
+                reqEntity.setChunked(true); // Send in multiple parts if needed
+                httppost.setEntity(reqEntity);
+                HttpResponse response = httpclient.execute(httppost);
+                success = true;
+                //Do something with response...
+
+            } catch (Exception e) {
+                Log.e(TAG, "Could not send file");
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Object result) {
+            dialog.dismiss();
+            if (success) {
+                Log.e(TAG, "Success");
+            } else {
+                Log.e(TAG, "Failed");
+            }
+        }
+
     }
 }
