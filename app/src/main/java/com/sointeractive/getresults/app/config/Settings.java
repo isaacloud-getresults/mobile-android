@@ -16,7 +16,7 @@ public class Settings {
     public static final String IC_NOTIFICATION_HEADER = "IsaaCloud notification";
     public static final int MEMORY_AVAILABLE = 1000;
     public static final int RESEND_TIMES_LIMIT = 3;
-    public static final int MAX_ITEMS_PER_PAGE = 5;
+    public static final int MAX_ITEMS_PER_PAGE = 10;
     public static final int MAX_ACHIEVEMENTS_PER_PAGE = MAX_ITEMS_PER_PAGE;
     public static final int MAX_PEOPLE_PER_PAGE = MAX_ITEMS_PER_PAGE;
 

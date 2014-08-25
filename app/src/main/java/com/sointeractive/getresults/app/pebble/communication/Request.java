@@ -46,20 +46,15 @@ public enum Request implements Sendable {
         public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
             return BeaconsCache.INSTANCE.getData();
         }
-
-        @Override
-        void onRequest() {
-            super.onRequest();
-        }
     },
 
     PEOPLE_IN_ROOM(3) {
         @Override
-        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
-            PeopleCache.INSTANCE.setObservedRoom(mainQuery);
-            final int pageIndex = secondaryQuery - 1;
+        public Collection<ResponseItem> getSendable(final int roomId, final int pageNumber) {
+            PeopleCache.INSTANCE.setObservedRoom(roomId);
+            final int pageIndex = pageNumber - 1;
             PeopleCache.INSTANCE.setObservedPage(pageIndex);
-            return PeopleCache.INSTANCE.getPeoplePage(mainQuery, pageIndex);
+            return PeopleCache.INSTANCE.getPeoplePage(roomId, pageIndex);
         }
 
         @Override
@@ -73,8 +68,8 @@ public enum Request implements Sendable {
 
     ACHIEVEMENTS(4) {
         @Override
-        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
-            final int pageIndex = mainQuery - 1;
+        public Collection<ResponseItem> getSendable(final int pageNumber, final int secondaryQuery) {
+            final int pageIndex = pageNumber - 1;
             AchievementsCache.INSTANCE.setObservedPage(pageIndex);
             return AchievementsCache.INSTANCE.getAchievementsPage(pageIndex);
         }

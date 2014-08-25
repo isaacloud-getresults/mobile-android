@@ -31,28 +31,6 @@ public class PeopleCache {
         // Exists only to defeat instantiation.
     }
 
-    public void setObservedRoom(final int observedRoom) {
-        Log.i(TAG, "Action: Set observed room to: " + observedRoom);
-        this.observedRoom = observedRoom;
-    }
-
-    public void setObservedPage(final int observedPage) {
-        Log.d(TAG, "Action: Set observed page to: " + observedPage);
-        this.observedPage = observedPage;
-    }
-
-    public void clearObservedRoom() {
-        observedRoom = -1;
-        observedPage = -1;
-    }
-
-    public Collection<ResponseItem> getData(final int room) {
-        if (peopleResponses.size() == 0) {
-            reload();
-        }
-        return getPeopleRoomResponse(room);
-    }
-
     public void reload() {
         final SparseArray<List<List<ResponseItem>>> oldPages = peopleInRoomPages;
 
@@ -77,49 +55,6 @@ public class PeopleCache {
             peopleResponses.put(roomId, new ArrayList<ResponseItem>());
         }
         peopleResponses.get(roomId).add(person.toPersonInResponse());
-    }
-
-    private void findChanges(final SparseArray<List<List<ResponseItem>>> oldPeopleInRoomPages) {
-        try {
-            Log.d(TAG, "Check: Changes in roomId: " + observedRoom + " on page: " + observedPage);
-            final List<List<ResponseItem>> oldRoom = oldPeopleInRoomPages.get(observedRoom);
-            final List<List<ResponseItem>> newRoom = peopleInRoomPages.get(observedRoom);
-            if (oldRoom == null || newRoom == null) {
-                throw new IndexOutOfBoundsException();
-            }
-            final List<ResponseItem> oldPage = oldRoom.get(observedPage);
-            final List<ResponseItem> newPage = newRoom.get(observedPage);
-            NewPeopleChecker.check(oldPage, newPage);
-        } catch (IndexOutOfBoundsException e) {
-            if (observedPage == -1) {
-                Log.d(TAG, "No people page is observed");
-            } else {
-                Log.e(TAG, "Cannot check people on observed page: " + observedPage);
-            }
-            if (observedRoom == -1) {
-                Log.d(TAG, "No people room is observed");
-            } else {
-                Log.e(TAG, "Cannot check people on observed room: " + observedRoom);
-            }
-        }
-    }
-
-    private Collection<ResponseItem> getPeopleRoomResponse(final int room) {
-        Collection<ResponseItem> response = peopleResponses.get(room);
-        if (response == null) {
-            response = new LinkedList<ResponseItem>();
-        }
-        return response;
-    }
-
-    public int getSize(final int room) {
-        return getData(room).size();
-    }
-
-    public void clear() {
-        peopleResponses.clear();
-        clearObservedRoom();
-        peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
     }
 
     private void paginatePeople() {
@@ -162,9 +97,29 @@ public class PeopleCache {
         return pages;
     }
 
-
-    public int getPeoplePages(final int roomId) {
-        return peopleInRoomPages.get(roomId).size();
+    private void findChanges(final SparseArray<List<List<ResponseItem>>> oldPeopleInRoomPages) {
+        try {
+            Log.d(TAG, "Check: Changes in roomId: " + observedRoom + " on page: " + observedPage);
+            final List<List<ResponseItem>> oldRoom = oldPeopleInRoomPages.get(observedRoom);
+            final List<List<ResponseItem>> newRoom = peopleInRoomPages.get(observedRoom);
+            if (oldRoom == null || newRoom == null) {
+                throw new IndexOutOfBoundsException();
+            }
+            final List<ResponseItem> oldPage = oldRoom.get(observedPage);
+            final List<ResponseItem> newPage = newRoom.get(observedPage);
+            NewPeopleChecker.check(oldPage, newPage);
+        } catch (IndexOutOfBoundsException e) {
+            if (observedPage == -1) {
+                Log.d(TAG, "No people page is observed");
+            } else {
+                Log.e(TAG, "Cannot check people on observed page: " + observedPage);
+            }
+            if (observedRoom == -1) {
+                Log.d(TAG, "No people room is observed");
+            } else {
+                Log.e(TAG, "Cannot check people on observed room: " + observedRoom);
+            }
+        }
     }
 
     public Collection<ResponseItem> getPeoplePage(final int roomId, final int pageNumber) {
@@ -182,5 +137,49 @@ public class PeopleCache {
         final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
         lastPersonResponse.setLast();
         return page;
+    }
+
+    public void clear() {
+        peopleResponses.clear();
+        clearObservedRoom();
+        peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
+    }
+
+    public int getPeoplePagesNumber(final int roomId) {
+        return peopleInRoomPages.get(roomId).size();
+    }
+
+    public int getSize(final int room) {
+        return getData(room).size();
+    }
+
+    public Collection<ResponseItem> getData(final int room) {
+        if (peopleResponses.size() == 0) {
+            reload();
+        }
+        return getPeopleRoomResponse(room);
+    }
+
+    private Collection<ResponseItem> getPeopleRoomResponse(final int room) {
+        Collection<ResponseItem> response = peopleResponses.get(room);
+        if (response == null) {
+            response = new LinkedList<ResponseItem>();
+        }
+        return response;
+    }
+
+    public void setObservedRoom(final int observedRoom) {
+        Log.i(TAG, "Action: Set observed room to: " + observedRoom);
+        this.observedRoom = observedRoom;
+    }
+
+    public void setObservedPage(final int observedPage) {
+        Log.d(TAG, "Action: Set observed page to: " + observedPage);
+        this.observedPage = observedPage;
+    }
+
+    public void clearObservedRoom() {
+        observedRoom = -1;
+        observedPage = -1;
     }
 }

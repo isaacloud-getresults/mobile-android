@@ -210,7 +210,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
-        //TODO: Remove this from production code
         /*try {
             generateFakeData();
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -228,7 +227,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     dm.setAchievements(achievements);
 
                     SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
-//                    final DataManager dm = App.getDataManager();
                     final int peopleNumber = dm.getPeople().size();
                     final int beaconsNumber = dm.getLocations().size();
                     for (int i = 0; i < beaconsNumber; i++) {

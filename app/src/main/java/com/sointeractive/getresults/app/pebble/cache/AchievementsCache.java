@@ -40,6 +40,34 @@ public class AchievementsCache {
         return response;
     }
 
+    public void reload() {
+        final List<List<ResponseItem>> oldAchievementPages = pages;
+
+        final Collection<Achievement> achievements = App.getDataManager().getAchievements();
+        achievementsResponse = makeResponse(achievements);
+        paginateAchievements();
+
+        findChanges(oldAchievementPages);
+    }
+
+    private void findChanges(final List<List<ResponseItem>> oldAchievementPages) {
+        try {
+            NewAchievementsChecker.check(oldAchievementPages.get(observedPage), pages.get(observedPage));
+        } catch (IndexOutOfBoundsException e) {
+            if (observedPage == -1) {
+                Log.d(TAG, "No achievement page is observed");
+            } else {
+                Log.e(TAG, "Cannot check achievements on observed page: " + observedPage);
+            }
+        }
+    }
+
+    public void clear() {
+        achievementsResponse.clear();
+        paginateAchievements();
+        clearObservedPage();
+    }
+
     private void paginateAchievements() {
         pages = new LinkedList<List<ResponseItem>>();
         int totalMemory = App.getPebbleConnector().getMemory();
@@ -66,53 +94,8 @@ public class AchievementsCache {
         }
     }
 
-    public void setObservedPage(final int observedPage) {
-        Log.i(TAG, "Action: Set observed page to: " + observedPage);
-        this.observedPage = observedPage;
-    }
-
     public void clearObservedPage() {
         observedPage = -1;
-    }
-
-    public Collection<ResponseItem> getData() {
-        return achievementsResponse;
-    }
-
-    public Collection<ResponseItem> getDescriptionData(final int id) {
-        return achievementDescriptionResponses.get(id, new LinkedList<ResponseItem>());
-    }
-
-    public void reload() {
-        final List<List<ResponseItem>> oldAchievementPages = pages;
-
-        final Collection<Achievement> achievements = App.getDataManager().getAchievements();
-        achievementsResponse = makeResponse(achievements);
-        paginateAchievements();
-
-        findChanges(oldAchievementPages);
-    }
-
-    private void findChanges(final List<List<ResponseItem>> oldAchievementPages) {
-        try {
-            NewAchievementsChecker.check(oldAchievementPages.get(observedPage), pages.get(observedPage));
-        } catch (IndexOutOfBoundsException e) {
-            if (observedPage == -1) {
-                Log.d(TAG, "No achievement page is observed");
-            } else {
-                Log.e(TAG, "Cannot check achievements on observed page: " + observedPage);
-            }
-        }
-    }
-
-    public int getSize() {
-        return achievementsResponse.size();
-    }
-
-    public void clear() {
-        achievementsResponse.clear();
-        paginateAchievements();
-        clearObservedPage();
     }
 
     public int getAchievementPages() {
@@ -128,5 +111,18 @@ public class AchievementsCache {
         final AchievementInResponse lastAchievementResponse = (AchievementInResponse) lastResponse;
         lastAchievementResponse.setLast();
         return achievementsPage;
+    }
+
+    public int getSize() {
+        return achievementsResponse.size();
+    }
+
+    public Collection<ResponseItem> getDescriptionData(final int id) {
+        return achievementDescriptionResponses.get(id, new LinkedList<ResponseItem>());
+    }
+
+    public void setObservedPage(final int observedPage) {
+        Log.i(TAG, "Action: Set observed page to: " + observedPage);
+        this.observedPage = observedPage;
     }
 }
