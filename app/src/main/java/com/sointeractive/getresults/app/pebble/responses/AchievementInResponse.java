@@ -4,7 +4,7 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
 import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
-public class AchievementResponse implements ResponseItem {
+public class AchievementInResponse implements ResponseItem {
     private static final int RESPONSE_ID = 4;
     private static final int BASE_SIZE = 28;
 
@@ -13,9 +13,9 @@ public class AchievementResponse implements ResponseItem {
     private final String description;
 
     private int pageNumber = 0;
-
     private int isMoreResponsesOnPage = 1;
-    public AchievementResponse(final int id, final String name, final String description) {
+
+    public AchievementInResponse(final int id, final String name, final String description) {
         this.id = id;
         this.name = StringTrimmer.getAchievementName(name);
         this.description = description;
@@ -53,5 +53,31 @@ public class AchievementResponse implements ResponseItem {
 
     public void setIsMore() {
         this.isMoreResponsesOnPage = 1;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final AchievementInResponse that = (AchievementInResponse) o;
+
+        if (id != that.id) return false;
+        if (!description.equals(that.description)) return false;
+        if (!name.equals(that.name)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + description.hashCode();
+        return result;
+    }
+
+    public ResponseItem toAchievementOutResponse() {
+        return new AchievementOutResponse(id, name, pageNumber);
     }
 }

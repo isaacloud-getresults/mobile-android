@@ -36,6 +36,7 @@ public enum Request implements Sendable {
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
+            AchievementsCache.INSTANCE.clearObservedPage();
             App.getPebbleConnector().clearSendingQueue();
         }
     },
@@ -49,7 +50,6 @@ public enum Request implements Sendable {
         @Override
         void onRequest() {
             super.onRequest();
-            App.getPebbleConnector().deleteAchievementResponses();
         }
     },
 
@@ -64,6 +64,7 @@ public enum Request implements Sendable {
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
+            AchievementsCache.INSTANCE.clearObservedPage();
             App.getPebbleConnector().deleteAchievementResponses();
         }
     },
@@ -71,13 +72,16 @@ public enum Request implements Sendable {
     ACHIEVEMENTS(4) {
         @Override
         public Collection<ResponseItem> getSendable(final int query) {
-            return AchievementsCache.INSTANCE.getAchievementsPage(query - 1);
+            final int pageIndex = query - 1;
+            AchievementsCache.INSTANCE.setObservedPage(pageIndex);
+            return AchievementsCache.INSTANCE.getAchievementsPage(pageIndex);
         }
 
         @Override
         void onRequest() {
             super.onRequest();
             PeopleCache.INSTANCE.clearObservedRoom();
+            AchievementsCache.INSTANCE.clearObservedPage();
             App.getPebbleConnector().deletePeopleResponses();
         }
     },

@@ -1,7 +1,7 @@
 package com.sointeractive.getresults.app.data.isaacloud;
 
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
-import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import org.json.JSONException;
@@ -75,7 +75,7 @@ public class Achievement {
     }
 
     public ResponseItem toAchievementResponse() {
-        return new AchievementResponse(id, label, description);
+        return new AchievementInResponse(id, label, description);
     }
 
     public Collection<ResponseItem> toAchievementDescriptionResponse() {

@@ -12,7 +12,8 @@ import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
 import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
-import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementOutResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonOutResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
@@ -150,7 +151,7 @@ public class PebbleConnector extends Observable {
     }
 
     public void deleteAchievementResponses() {
-        deleteResponses(AchievementResponse.class, AchievementDescriptionResponse.class);
+        deleteResponses(AchievementInResponse.class, AchievementOutResponse.class, AchievementDescriptionResponse.class);
     }
 
     public void deletePeopleResponses() {

@@ -19,6 +19,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -213,6 +214,21 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 */
         try {
             generateFakeData();
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
+                    final DataManager dm = App.getDataManager();
+                    List<Achievement> achievements = dm.getAchievements();
+                    final int i = achievements.size();
+                    try {
+                        JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
+                        achievements.add(0, new Achievement(achievementsJSON, true, 1));
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Cannot add fake achievement");
+                    }
+                    dm.setAchievements(achievements);
+                }
+            });
         } catch (JSONException e) {
             Log.e(TAG, "Cannot create fake data");
         }
@@ -224,7 +240,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         //TODO: Remove this from production code
         final int BEACONS = 10;
         final int AVG_PEOPLE = 3;
-        final int ACHIEVEMENTS = 20;
+        final int ACHIEVEMENTS = 8;
 
         // User
         UserData userData = new UserData();
@@ -258,7 +274,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         List<Achievement> achievements = new ArrayList<Achievement>();
         for (int i = 0; i < ACHIEVEMENTS; i++) {
             JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
-            achievements.add(new Achievement(achievementsJSON, true, 1));
+            achievements.add(0, new Achievement(achievementsJSON, true, 1));
         }
         dm.setAchievements(achievements);
 
