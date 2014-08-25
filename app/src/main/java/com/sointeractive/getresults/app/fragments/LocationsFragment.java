@@ -88,6 +88,8 @@ public class LocationsFragment extends Fragment {
         context = getActivity();
         cardView = (CardView) view.findViewById(R.id.cardStatus);
         cardView.setCard(this.statusCard);
+        ImageView currentRoom = (ImageView) view.findViewById(R.id.colorBorder);
+        dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", currentRoom, true);
         final ExpandableListView expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setGroupIndicator(null);
         expandableListView.setDivider(getResources().getDrawable(R.drawable.divider));
@@ -199,7 +201,7 @@ public class LocationsFragment extends Fragment {
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
             ImageView locationPic = (ImageView) convertView.findViewById(R.id.locationImage);
-            dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", locationPic);
+            dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", locationPic, true);
             return convertView;
         }
 

@@ -1,5 +1,8 @@
 package com.sointeractive.getresults.app.data;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +38,7 @@ public class DrawableManager {
 
 
             if (drawable != null) {
-                drawableMap.put(urlString, drawable);
+
                 Log.d(this.getClass().getSimpleName(), "got a thumbnail drawable: " + drawable.getBounds() + ", "
                         + drawable.getIntrinsicHeight() + "," + drawable.getIntrinsicWidth() + ", "
                         + drawable.getMinimumHeight() + "," + drawable.getMinimumWidth());
@@ -53,7 +56,7 @@ public class DrawableManager {
         }
     }
 
-    public void fetchDrawableOnThread(final String urlString, final ImageView imageView) {
+    public void fetchDrawableOnThread(final String urlString, final ImageView imageView, final boolean process) {
         if (drawableMap.containsKey(urlString)) {
             imageView.setImageDrawable(drawableMap.get(urlString));
         }
@@ -61,6 +64,16 @@ public class DrawableManager {
         final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
+                if(process) {
+                    BitmapFactory.Options bf = new BitmapFactory.Options();
+                    bf.inSampleSize = 4;
+                    BitmapDrawable bd = (BitmapDrawable) message.obj;
+                    Bitmap imageBitmap = bd.getBitmap();
+                    Log.d("Bitmap", "width: " + imageBitmap.getWidth() + " " + "height: " + imageBitmap.getHeight());
+//            new SendToServerTask().execute(picturePath);
+                    imageView.setImageBitmap(ImageHelper.getAvatar(imageBitmap, null));
+                    drawableMap.put(urlString, imageView.getDrawable());
+                } else
                 imageView.setImageDrawable((Drawable) message.obj);
             }
         };
@@ -78,6 +91,7 @@ public class DrawableManager {
     }
 
     private InputStream fetch(String urlString) throws MalformedURLException, IOException {
+        Log.d("InputStream", "Fetch");
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet request = new HttpGet(urlString);
         HttpResponse response = httpClient.execute(request);

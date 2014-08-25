@@ -308,7 +308,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         if (requestCode == 101) {
 
             if (resultCode == RESULT_OK) {
-                String contents = data.getStringExtra("SCAN_RESULT");
+                String contents = data.getStringExtra("SCAN_RESULT") + "config.json";
                 JSONObject json = new JSONObject();
                 try {
                     json = new GetJSON().execute(contents).get();
@@ -322,7 +322,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 if (json != null) {
                     String conf = null;
                     try {
-                        conf = json.getString("clientid") + " " + json.getString("secret") + " " +
+                        conf = json.getString("clientid") + " " + json.getString("androidsecret") + " " +
                         json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
                         json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
                     } catch(JSONException e) {}
@@ -335,8 +335,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             if (resultCode == RESULT_CANCELED) {
                 // TODO: Handle cancel
             }
-            configureApplication();
-            Log.i(TAG, "Action: Configure application with: " + Settings.INSTANCE_ID + " / " + Settings.APP_SECRET);
         }
 
         if (requestCode == RC_SIGN_IN) {
@@ -394,16 +392,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         mGoogleApiClient.connect();
 
     }
-
-    void configureApplication() {
-        String s = App.loadConfigData();
-        StringTokenizer tok = new StringTokenizer((s), "/");
-        while (tok.hasMoreElements()) {
-            Settings.INSTANCE_ID = (String) tok.nextElement();
-            Settings.APP_SECRET = (String) tok.nextElement();
-        }
-    }
-
 
     void runMainActivity() {
         // RUN MAIN ACTIVITY

@@ -17,12 +17,14 @@ import java.io.IOException;
 public class ImageHelper {
     public static Bitmap getAvatar(Bitmap imageBitmap, String picturePath) {
         int orientation;
-        try {
-            ExifInterface exif = new ExifInterface((picturePath));
-            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
-            imageBitmap = rotateBitmap(imageBitmap, orientation);
-        } catch(IOException e) {
-            e.printStackTrace();
+        if(picturePath != null) {
+            try {
+                ExifInterface exif = new ExifInterface((picturePath));
+                orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                imageBitmap = rotateBitmap(imageBitmap, orientation);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         int biggerDimension;
         int squareSize;

@@ -1,14 +1,19 @@
 package com.sointeractive.getresults.app.data;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.widget.Toast;
 
+import com.sointeractive.getresults.app.R;
+import com.sointeractive.getresults.app.activities.MainActivity;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
@@ -107,6 +112,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
+            generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.d(TAG, "Action: sending new beacon event");
             try {
                 JSONObject body = new JSONObject();
@@ -428,5 +434,22 @@ public class EventManager {
         }
     }
 
+    private static void generateNotification(String ticker, String title, String message) {
+          Intent notificationIntent;
+          notificationIntent = new Intent(context, MainActivity.class);
+          notificationIntent.putExtra("achPointer", 1);
+          PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+          NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                   .setSmallIcon(R.drawable.ic_launcher)
+                   .setTicker(ticker)
+                   .setContentTitle(title)
+                   .setContentIntent(intent)
+                   .setContentText(message)
+                   .setAutoCancel(true)
+                   .setDefaults(android.app.Notification.DEFAULT_ALL);
+          NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+          mNotificationManager.notify(notificationId, mBuilder.build());
+          notificationId++;
+          }
 }
