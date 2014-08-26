@@ -11,8 +11,15 @@ import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 import com.sointeractive.getresults.app.pebble.cache.PeopleCache;
 import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
+import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementOutResponse;
+import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
+import com.sointeractive.getresults.app.pebble.responses.PersonOutResponse;
+import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,11 +27,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PebbleConnector extends Observable {
     private static final String TAG = PebbleConnector.class.getSimpleName();
 
-    private final Queue<PebbleDictionary> sendingQueue = new ConcurrentLinkedQueue<PebbleDictionary>();
+    private final Queue<ResponseItem> sendingQueue = new ConcurrentLinkedQueue<ResponseItem>();
     private final Context context;
     private final NotificationSender sender;
 
-    private PebbleDictionary lastData = null;
+    private ResponseItem lastData = null;
     private int resendCount = 0;
 
     private boolean connectionState;
@@ -39,13 +46,14 @@ public class PebbleConnector extends Observable {
     public void clearSendingQueue() {
         Log.i(TAG, "Action: Clear sending queue");
         sendingQueue.clear();
+        resendCount = 0;
     }
 
     public void sendNotification(final String title, final String body) {
         sender.send(title, body);
     }
 
-    public void sendDataToPebble(final Collection<PebbleDictionary> data) {
+    public void sendDataToPebble(final Collection<ResponseItem> data) {
         synchronized (sendingQueue) {
             if (isPebbleConnected()) {
                 final boolean wasEmpty = sendingQueue.isEmpty();
@@ -63,14 +71,14 @@ public class PebbleConnector extends Observable {
             if (sendingQueue.isEmpty()) {
                 Log.i(TAG, "Event: Nothing to send, sendingQueue is empty");
             } else {
-                final PebbleDictionary data = sendingQueue.peek();
+                final ResponseItem data = sendingQueue.peek();
                 updateResendCounter(data);
                 sendOrSkip(data);
             }
         }
     }
 
-    private void updateResendCounter(final PebbleDictionary data) {
+    private void updateResendCounter(final ResponseItem data) {
         if (lastData == data) {
             resendCount += 1;
         } else {
@@ -79,14 +87,21 @@ public class PebbleConnector extends Observable {
         }
     }
 
-    private void sendOrSkip(final PebbleDictionary data) {
+    private void sendOrSkip(final ResponseItem response) {
         if (resendCount < Settings.RESEND_TIMES_LIMIT) {
-            Log.d(TAG, "Action: Sending response: " + data.toJsonString());
-            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+            send(response);
         } else {
-            Log.i(TAG, "Error: Resend limit reached, sending next");
+            Log.e(TAG, "Error: Resend limit reached, sending next");
             onAckReceived();
         }
+    }
+
+    private void send(final ResponseItem response) {
+        final String responseType = response.getClass().getSimpleName();
+        final int size = response.getSize();
+        PebbleDictionary data = response.getData();
+        Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
+        PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
     }
 
     public void onAckReceived() {
@@ -133,5 +148,38 @@ public class PebbleConnector extends Observable {
         LoginCache.INSTANCE.clear();
         clearSendingQueue();
         PebbleKit.closeAppOnPebble(context, Settings.PEBBLE_APP_UUID);
+    }
+
+    public void deleteAchievementResponses() {
+        deleteResponses(AchievementInResponse.class, AchievementOutResponse.class, AchievementDescriptionResponse.class);
+    }
+
+    public void deletePeopleResponses() {
+        deleteResponses(PersonInResponse.class, PersonOutResponse.class);
+    }
+
+    private void deleteResponses(Class<?>... classes) {
+        synchronized (sendingQueue) {
+            final Collection<ResponseItem> responses = new LinkedList<ResponseItem>();
+            for (ResponseItem response : sendingQueue) {
+                if (classToDelete(classes, response)) {
+                    responses.add(response);
+                }
+            }
+            sendingQueue.removeAll(responses);
+        }
+    }
+
+    private boolean classToDelete(final Class<?>[] classes, final ResponseItem response) {
+        for (Class<?> cls : classes) {
+            if (cls.isInstance(response)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getMemory() {
+        return Settings.MEMORY_AVAILABLE - BeaconsCache.INSTANCE.getMemoryUsage();
     }
 }

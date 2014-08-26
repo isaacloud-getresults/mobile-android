@@ -3,10 +3,8 @@ package com.sointeractive.getresults.app.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
@@ -60,12 +58,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
-import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -97,6 +92,27 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private CheckBox checkbox;
     private ActionBar actionBar;
     private boolean Glogin = true;
+
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +200,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     } else {
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
                     }
-                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -197,7 +214,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         startActivity(intent);
                     } else
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
-                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -210,7 +228,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         signInWithGplus();
                     } else
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
-                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -235,6 +254,94 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
+        /*try {
+            generateFakeData();
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
+                    final DataManager dm = App.getDataManager();
+                    List<Achievement> achievements = dm.getAchievements();
+                    final int achievementsNumber = achievements.size();
+                    try {
+                        JSONObject achievementsJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
+                        achievements.add(0, new Achievement(achievementsJSON, true, 1));
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Cannot add fake achievement");
+                    }
+                    dm.setAchievements(achievements);
+
+                    SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+                    final int peopleNumber = dm.getPeople().size();
+                    final int beaconsNumber = dm.getLocations().size();
+                    for (int i = 0; i < beaconsNumber; i++) {
+                        entries.put(i, new LinkedList<Person>());
+                    }
+                    for (int i = 0; i < peopleNumber; i++) {
+                        Person p = new Person("Tester", "Test " + i, i % beaconsNumber, i);
+                        entries.get(p.getLocation()).add(p);
+                    }
+                    entries.get(peopleNumber % beaconsNumber).add(new Person("Tester", "Test " + peopleNumber, peopleNumber % beaconsNumber, peopleNumber));
+                    App.getDataManager().setPeople(entries);
+                }
+            });
+        } catch (JSONException e) {
+            Log.e(TAG, "Cannot create fake data");
+        }*/
+    }
+
+    private void generateFakeData() throws JSONException {
+        App.getPebbleConnector().closePebbleApp();
+
+        final int BEACONS = 3;
+        final int AVG_PEOPLE = 3;
+        final int ACHIEVEMENTS = 3;
+
+        // User
+        UserData userData = new UserData();
+        userData.setName("Tester Test");
+        userData.setFirstName("Tester");
+        userData.setEmail("tester@testing.test");
+        userData.setUserId(1);
+        final JSONObject userJSON = new JSONObject("{leaderboards: [{id: 1, score: 128, position: 8}]}");
+        userData.setLeaderboardData(userJSON);
+        userData.setLevel("5");
+        App.saveUserData(userData);
+
+        // Beacons
+        SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+        List<Location> locations = new ArrayList<Location>();
+        for (int i = 0; i < BEACONS; i++) {
+            JSONObject locJson = new JSONObject("{id:" + i + ",label:'test room " + i + "'}");
+            Location loc = new Location(locJson);
+            entries.put(loc.getId(), new LinkedList<Person>());
+            locations.add(loc);
+            if (loc.getId() == 0) {
+                userData.setUserLocation(loc);
+                App.saveUserData(userData);
+            }
+        }
+        DataManager dm = App.getDataManager();
+        dm.setLocations(locations);
+        dm.setPeople(entries);
+
+        // Achievements
+        List<Achievement> achievements = new ArrayList<Achievement>();
+        for (int i = 0; i < ACHIEVEMENTS; i++) {
+            JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
+            achievements.add(0, new Achievement(achievementsJSON, true, 1));
+        }
+        dm.setAchievements(achievements);
+
+        // People
+        for (int i = 0; i < BEACONS * AVG_PEOPLE; i++) {
+            Person p = new Person("Tester", "Test " + i, i % BEACONS, i);
+            entries.get(p.getLocation()).add(p);
+        }
+        App.getDataManager().setPeople(entries);
+
+        // Log in
+        App.getPebbleConnector().clearSendingQueue();
+        LoginCache.INSTANCE.logIn();
     }
 
     protected void onStart() {
@@ -254,7 +361,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         super.onDestroy();
         context = null;
     }
-
 
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
@@ -312,10 +418,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 JSONObject json = new JSONObject();
                 try {
                     json = new GetJSON().execute(contents).get();
-                } catch(ExecutionException e) {
+                } catch (ExecutionException e) {
                     e.printStackTrace();
-                }
-                catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -323,9 +428,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     String conf = null;
                     try {
                         conf = json.getString("clientid") + " " + json.getString("androidsecret") + " " +
-                        json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
-                        json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
-                    } catch(JSONException e) {}
+                                json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
+                                json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
+                    } catch (JSONException e) {
+                    }
                     App.saveConfigData(conf);
                     Log.d("Settings: ", "conf = " + conf);
                     Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
@@ -597,18 +703,13 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         public boolean success = false;
 
         @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "Action: Downloading achievements");
-        }
-
-
-        @Override
         public Object doInBackground(Object... params) {
             List<Achievement> achievements = new ArrayList<Achievement>();
             try {
 
                 // ACHIEVEMENTS REQUEST
                 SparseIntArray idMap = new SparseIntArray();
+                Log.d(TAG, "Action: Get achievements for user: " + userData.getUserId());
                 HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
@@ -666,9 +767,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             JSONObject json;
             try {
                 json = readJsonFromUrl(params[0]);
-            } catch(JSONException e) {json = null;}
-            catch(IOException e) {json = null;}
-            if(json != null) Log.d(TAG, "JSON: " + json.toString());
+            } catch (JSONException e) {
+                json = null;
+            } catch (IOException e) {
+                json = null;
+            }
+            if (json != null) Log.d(TAG, "JSON: " + json.toString());
             else Log.d(TAG, "JSON: null");
             return json;
         }
@@ -687,27 +791,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 }
 //                Log.d(TAG, "Connected: " + internetConnection);
             }
-        }
-    }
-
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
         }
     }
 }

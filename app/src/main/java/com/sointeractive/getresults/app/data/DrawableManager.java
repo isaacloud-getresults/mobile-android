@@ -64,7 +64,7 @@ public class DrawableManager {
         final Handler handler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if(process) {
+                if (process) {
                     BitmapFactory.Options bf = new BitmapFactory.Options();
                     bf.inSampleSize = 4;
                     BitmapDrawable bd = (BitmapDrawable) message.obj;
@@ -74,7 +74,7 @@ public class DrawableManager {
                     imageView.setImageBitmap(ImageHelper.getAvatar(imageBitmap, null));
                     drawableMap.put(urlString, imageView.getDrawable());
                 } else
-                imageView.setImageDrawable((Drawable) message.obj);
+                    imageView.setImageDrawable((Drawable) message.obj);
             }
         };
 

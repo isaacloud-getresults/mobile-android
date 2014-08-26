@@ -11,6 +11,7 @@ KONTAKT Z ISAA CLOUD:
 UŻYTE BIBLIOTEKI:
   - IsaaCloud android SDK
   - Estimote SDK for Android
-  - Google Collections 
+  - Google Guava
   - CardsLib by Gabriele Mariotti
   - Android Iconify 
+  - PebbleKit Android

@@ -1,14 +1,13 @@
 package com.sointeractive.getresults.app.data.isaacloud;
 
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
-import com.sointeractive.getresults.app.pebble.responses.AchievementResponse;
+import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Data store class for Achievements.
@@ -76,13 +75,11 @@ public class Achievement {
     }
 
     public ResponseItem toAchievementResponse() {
-        return new AchievementResponse(id, label, description);
+        return new AchievementInResponse(id, label, description);
     }
 
     public Collection<ResponseItem> toAchievementDescriptionResponse() {
-        final Collection<ResponseItem> responseItems = new LinkedList<ResponseItem>();
-        responseItems.add(new AchievementDescriptionResponse(id, description));
-        return responseItems;
+        return AchievementDescriptionResponse.getResponse(id, description);
     }
 
     public int getId() {
@@ -93,6 +90,7 @@ public class Achievement {
         this.id = id;
     }
 
+    @SuppressWarnings("RedundantIfStatement")
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

@@ -4,21 +4,21 @@ import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.pebble.responses.utils.DictionaryBuilder;
 import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
-public class PersonInResponse implements ResponseItem {
-    private static final int RESPONSE_ID = 3;
+public class AchievementInResponse implements ResponseItem {
+    private static final int RESPONSE_ID = 4;
     private static final int BASE_SIZE = 28;
 
     private final int id;
     private final String name;
-    private final int roomId;
+    private final String description;
 
     private int pageNumber = 0;
     private int isMoreResponsesOnPage = 1;
 
-    public PersonInResponse(final int id, final String name, final int roomId) {
+    public AchievementInResponse(final int id, final String name, final String description) {
         this.id = id;
-        this.name = StringTrimmer.getCoworkerName(name);
-        this.roomId = roomId;
+        this.name = StringTrimmer.getAchievementName(name);
+        this.description = description;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class PersonInResponse implements ResponseItem {
         return new DictionaryBuilder(RESPONSE_ID)
                 .addInt(id)
                 .addString(name)
-                .addInt(roomId)
+                .addInt(getDescriptionPartsNumber())
                 .addInt(pageNumber)
                 .addInt(isMoreResponsesOnPage)
                 .build();
@@ -37,8 +37,10 @@ public class PersonInResponse implements ResponseItem {
         return BASE_SIZE + name.length();
     }
 
-    public ResponseItem toPersonOutResponse() {
-        return new PersonOutResponse(id, name, roomId, pageNumber);
+    private int getDescriptionPartsNumber() {
+        final double stringLength = description.length();
+        final double partSize = StringTrimmer.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN;
+        return (int) Math.ceil(stringLength / partSize);
     }
 
     public void setPageNumber(final int pageNumber) {
@@ -58,10 +60,10 @@ public class PersonInResponse implements ResponseItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final PersonInResponse that = (PersonInResponse) o;
+        final AchievementInResponse that = (AchievementInResponse) o;
 
         if (id != that.id) return false;
-        if (roomId != that.roomId) return false;
+        if (!description.equals(that.description)) return false;
         if (!name.equals(that.name)) return false;
 
         return true;
@@ -71,7 +73,11 @@ public class PersonInResponse implements ResponseItem {
     public int hashCode() {
         int result = id;
         result = 31 * result + name.hashCode();
-        result = 31 * result + roomId;
+        result = 31 * result + description.hashCode();
         return result;
+    }
+
+    public ResponseItem toAchievementOutResponse() {
+        return new AchievementOutResponse(id, name, pageNumber);
     }
 }

@@ -5,7 +5,7 @@ android {
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId 'com.getpebble.android.kit'
-        minSdkVersion 16
+        minSdkVersion 15
     }
     buildTypes {
         release {

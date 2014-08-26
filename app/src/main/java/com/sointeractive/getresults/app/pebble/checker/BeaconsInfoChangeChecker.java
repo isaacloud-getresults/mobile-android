@@ -3,7 +3,7 @@ package com.sointeractive.getresults.app.pebble.checker;
 import android.util.Log;
 
 import com.google.common.collect.Sets;
-import com.sointeractive.getresults.app.pebble.communication.Responder;
+import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ public class BeaconsInfoChangeChecker {
         final Set<ResponseItem> changedBeacons = getChangedBeacons(oldBeacons, newBeacons);
         if (!changedBeacons.isEmpty()) {
             Log.i(TAG, "Checker: Beacons info changed");
-            Responder.sendResponseItemsToPebble(changedBeacons);
+            App.getPebbleConnector().sendDataToPebble(changedBeacons);
         }
     }
 

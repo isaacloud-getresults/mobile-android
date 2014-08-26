@@ -8,7 +8,6 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.os.Vibrator;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -140,16 +139,16 @@ public class TrackService extends Service {
     void trackBeacons(List<Beacon> beacons) {
 
         ArrayList<String> helper = new ArrayList<String>();
-        Vibrator v = (Vibrator) context.getSystemService((Context.VIBRATOR_SERVICE));
+//        Vibrator v = (Vibrator) context.getSystemService((Context.VIBRATOR_SERVICE));
         for (Beacon b : beacons) {
             helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
             if (!(majors.contains(b.getMacAddress()))) {
-                    majors.add(b.getMacAddress());
-                    Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
-                    if (internetConnection)
-                        App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
-                    lastBeacon = b;
+                majors.add(b.getMacAddress());
+                Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
+                if (internetConnection)
+                    App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
+                lastBeacon = b;
 //                    v.vibrate(0);
             } else previousFlag = false;
             if (!internetConnection)
