@@ -155,6 +155,11 @@ class FileManager {
             Log.d("Settings: ", Settings.INSTANCE_ID);
             Settings.APP_SECRET = (String) tokenizer.nextElement();
             Log.d("Settings: ", Settings.APP_SECRET);
+
+// DEBUG ONLY
+//            Settings.INSTANCE_ID = "280";
+//            Settings.APP_SECRET = "dafdb94c83cf267bd83b5fa145b28d1c";
+
             Settings.BEACON_PROXIMITY_UUID = (String) tokenizer.nextElement();
             Log.d("Settings: ", Settings.BEACON_PROXIMITY_UUID);
             Settings.PEBBLE_NOTIFICATION_ID = Integer.valueOf((String) tokenizer.nextElement());
