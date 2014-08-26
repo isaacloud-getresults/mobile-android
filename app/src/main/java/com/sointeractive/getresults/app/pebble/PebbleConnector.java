@@ -98,9 +98,8 @@ public class PebbleConnector extends Observable {
 
     private void send(final ResponseItem response) {
         final String responseType = response.getClass().getSimpleName();
-        final int size = response.getSize();
         PebbleDictionary data = response.getData();
-        Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
+        Log.d(TAG, "Action: Sending " + responseType + ": " + data.toJsonString());
         PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
     }
 
@@ -166,7 +165,7 @@ public class PebbleConnector extends Observable {
                     responses.add(response);
                 }
             }
-            sendingQueue.removeAll(responses);
+            //sendingQueue.removeAll(responses);
         }
     }
 
@@ -177,9 +176,5 @@ public class PebbleConnector extends Observable {
             }
         }
         return false;
-    }
-
-    public int getMemory() {
-        return Settings.MEMORY_AVAILABLE - BeaconsCache.INSTANCE.getMemoryUsage();
     }
 }

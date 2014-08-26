@@ -67,32 +67,29 @@ public class PeopleCache {
     }
 
     private List<List<ResponseItem>> paginatePeopleInRoom(final int roomId) {
-        final Collection<ResponseItem> peopleInRoom = peopleResponses.get(roomId);
         LinkedList<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
-        if (peopleInRoom == null) {
-            return pages;
-        }
-        int totalMemory = App.getPebbleConnector().getMemory();
-        int currentMemory = 0;
-        int pageNumber = -1;
-        int items = 0;
-        for (ResponseItem generalResponse : peopleInRoom) {
-            PersonInResponse response = (PersonInResponse) generalResponse;
-            final int responseSize = response.getSize();
-            if (responseSize > totalMemory) {
-                continue;
+        try {
+            final Collection<ResponseItem> peopleInRoom = peopleResponses.get(roomId);
+            if (peopleInRoom == null) {
+                return pages;
             }
-            response.setIsMore();
-            if (responseSize > currentMemory || items >= Settings.MAX_PEOPLE_PER_PAGE) {
-                items = 0;
-                pageNumber += 1;
-                pages.add(new LinkedList<ResponseItem>());
-                currentMemory = totalMemory;
+            pages.add(new LinkedList<ResponseItem>());
+            int pageNumber = 0;
+            int items = 0;
+            for (ResponseItem generalResponse : peopleInRoom) {
+                PersonInResponse response = (PersonInResponse) generalResponse;
+                response.setIsMore();
+                if (items >= Settings.MAX_PEOPLE_PER_PAGE) {
+                    items = 0;
+                    pageNumber += 1;
+                    pages.add(new LinkedList<ResponseItem>());
+                }
+                items += 1;
+                response.setPageNumber(pageNumber);
+                pages.get(pageNumber).add(response);
             }
-            items += 1;
-            currentMemory -= responseSize;
-            response.setPageNumber(pageNumber);
-            pages.get(pageNumber).add(response);
+        } catch (final IndexOutOfBoundsException e) {
+            Log.e(TAG, "Cannot get room " + roomId + " for pagination");
         }
         return pages;
     }
@@ -123,18 +120,15 @@ public class PeopleCache {
     }
 
     public Collection<ResponseItem> getPeoplePage(final int roomId, final int pageNumber) {
-        final List<List<ResponseItem>> pages = peopleInRoomPages.get(roomId);
-        if (pages == null) {
-            return new LinkedList<ResponseItem>();
-        }
-
         try {
+            final List<List<ResponseItem>> pages = peopleInRoomPages.get(roomId);
             final List<ResponseItem> page = pages.get(pageNumber);
             final ResponseItem lastResponse = page.get(page.size() - 1);
             final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
             lastPersonResponse.setLast();
             return page;
         } catch (final IndexOutOfBoundsException e) {
+            Log.e(TAG, "Error: Cannot get page " + pageNumber);
             return new LinkedList<ResponseItem>();
         }
     }

@@ -6,18 +6,20 @@ import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class BeaconResponse implements ResponseItem {
     private static final int RESPONSE_ID = 2;
-    private static final int BASE_SIZE = 28;
 
     private final int id;
     private final String name;
     private final int people;
-    private int pagesNumber;
+    private final int peoplePagesNumber;
 
-    public BeaconResponse(final int id, final String name, final int people, final int pagesNumber) {
+    private int pageNumber = 0;
+    private int isMoreResponsesOnPage = 1;
+
+    public BeaconResponse(final int id, final String name, final int people, final int peoplePagesNumber) {
         this.id = id;
         this.name = StringTrimmer.getBeaconName(name);
         this.people = people;
-        this.pagesNumber = pagesNumber;
+        this.peoplePagesNumber = peoplePagesNumber;
     }
 
     public int getId() {
@@ -34,13 +36,22 @@ public class BeaconResponse implements ResponseItem {
                 .addInt(id)
                 .addString(name)
                 .addInt(people)
-                .addInt(pagesNumber)
+                .addInt(peoplePagesNumber)
+                .addInt(pageNumber)
+                .addInt(isMoreResponsesOnPage)
                 .build();
     }
 
-    @Override
-    public int getSize() {
-        return BASE_SIZE + name.length();
+    public void setPageNumber(final int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public void setLast() {
+        this.isMoreResponsesOnPage = 0;
+    }
+
+    public void setIsMore() {
+        this.isMoreResponsesOnPage = 1;
     }
 
     @Override
@@ -51,7 +62,7 @@ public class BeaconResponse implements ResponseItem {
         final BeaconResponse that = (BeaconResponse) o;
 
         if (id != that.id) return false;
-        if (pagesNumber != that.pagesNumber) return false;
+        if (peoplePagesNumber != that.peoplePagesNumber) return false;
         if (people != that.people) return false;
         if (!name.equals(that.name)) return false;
 
@@ -63,7 +74,7 @@ public class BeaconResponse implements ResponseItem {
         int result = id;
         result = 31 * result + name.hashCode();
         result = 31 * result + people;
-        result = 31 * result + pagesNumber;
+        result = 31 * result + peoplePagesNumber;
         return result;
     }
 }

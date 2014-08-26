@@ -6,7 +6,6 @@ import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class PersonInResponse implements ResponseItem {
     private static final int RESPONSE_ID = 3;
-    private static final int BASE_SIZE = 28;
 
     private final int id;
     private final String name;
@@ -30,11 +29,6 @@ public class PersonInResponse implements ResponseItem {
                 .addInt(pageNumber)
                 .addInt(isMoreResponsesOnPage)
                 .build();
-    }
-
-    @Override
-    public int getSize() {
-        return BASE_SIZE + name.length();
     }
 
     public ResponseItem toPersonOutResponse() {

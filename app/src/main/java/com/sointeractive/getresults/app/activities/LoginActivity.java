@@ -19,6 +19,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -254,7 +255,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
-        /*try {
+        try {
             generateFakeData();
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -286,13 +287,13 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             });
         } catch (JSONException e) {
             Log.e(TAG, "Cannot create fake data");
-        }*/
+        }
     }
 
     private void generateFakeData() throws JSONException {
         App.getPebbleConnector().closePebbleApp();
 
-        final int BEACONS = 3;
+        final int BEACONS = 16;
         final int AVG_PEOPLE = 3;
         final int ACHIEVEMENTS = 3;
 
