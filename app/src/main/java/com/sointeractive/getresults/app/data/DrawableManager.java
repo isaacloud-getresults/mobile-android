@@ -26,32 +26,32 @@ public class DrawableManager {
         drawableMap = new HashMap<String, Drawable>();
     }
 
-    public Drawable fetchDrawable(String urlString) {
+    public Drawable fetchDrawable(final String urlString) {
         if (drawableMap.containsKey(urlString)) {
             return drawableMap.get(urlString);
         }
 
-        Log.d(this.getClass().getSimpleName(), "image url:" + urlString);
+        Log.d(getClass().getSimpleName(), "image url:" + urlString);
         try {
-            InputStream is = fetch(urlString);
-            Drawable drawable = Drawable.createFromStream(is, "src");
+            final InputStream is = fetch(urlString);
+            final Drawable drawable = Drawable.createFromStream(is, "src");
 
 
             if (drawable != null) {
 
-                Log.d(this.getClass().getSimpleName(), "got a thumbnail drawable: " + drawable.getBounds() + ", "
+                Log.d(getClass().getSimpleName(), "got a thumbnail drawable: " + drawable.getBounds() + ", "
                         + drawable.getIntrinsicHeight() + "," + drawable.getIntrinsicWidth() + ", "
                         + drawable.getMinimumHeight() + "," + drawable.getMinimumWidth());
             } else {
-                Log.w(this.getClass().getSimpleName(), "could not get thumbnail");
+                Log.w(getClass().getSimpleName(), "could not get thumbnail");
             }
 
             return drawable;
-        } catch (MalformedURLException e) {
-            Log.e(this.getClass().getSimpleName(), "fetchDrawable failed", e);
+        } catch (final MalformedURLException e) {
+            Log.e(getClass().getSimpleName(), "fetchDrawable failed", e);
             return null;
-        } catch (IOException e) {
-            Log.e(this.getClass().getSimpleName(), "fetchDrawable failed", e);
+        } catch (final IOException e) {
+            Log.e(getClass().getSimpleName(), "fetchDrawable failed", e);
             return null;
         }
     }
@@ -63,12 +63,12 @@ public class DrawableManager {
 
         final Handler handler = new Handler() {
             @Override
-            public void handleMessage(Message message) {
+            public void handleMessage(final Message message) {
                 if (process) {
-                    BitmapFactory.Options bf = new BitmapFactory.Options();
+                    final BitmapFactory.Options bf = new BitmapFactory.Options();
                     bf.inSampleSize = 4;
-                    BitmapDrawable bd = (BitmapDrawable) message.obj;
-                    Bitmap imageBitmap = bd.getBitmap();
+                    final BitmapDrawable bd = (BitmapDrawable) message.obj;
+                    final Bitmap imageBitmap = bd.getBitmap();
                     Log.d("Bitmap", "width: " + imageBitmap.getWidth() + " " + "height: " + imageBitmap.getHeight());
 //            new SendToServerTask().execute(picturePath);
                     imageView.setImageBitmap(ImageHelper.getAvatar(imageBitmap, null));
@@ -78,23 +78,23 @@ public class DrawableManager {
             }
         };
 
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
             @Override
             public void run() {
                 //TODO : set imageView to a "pending" image
-                Drawable drawable = fetchDrawable(urlString);
-                Message message = handler.obtainMessage(1, drawable);
+                final Drawable drawable = fetchDrawable(urlString);
+                final Message message = handler.obtainMessage(1, drawable);
                 handler.sendMessage(message);
             }
         };
         thread.start();
     }
 
-    private InputStream fetch(String urlString) throws MalformedURLException, IOException {
+    private InputStream fetch(final String urlString) throws MalformedURLException, IOException {
         Log.d("InputStream", "Fetch");
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpGet request = new HttpGet(urlString);
-        HttpResponse response = httpClient.execute(request);
+        final DefaultHttpClient httpClient = new DefaultHttpClient();
+        final HttpGet request = new HttpGet(urlString);
+        final HttpResponse response = httpClient.execute(request);
         return response.getEntity().getContent();
     }
 }

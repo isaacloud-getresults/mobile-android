@@ -47,13 +47,13 @@ public class EventManager {
         context = App.getInstance().getApplicationContext();
     }
 
-    private static void generateNotification(String ticker, String title, String message) {
-        Intent notificationIntent;
+    private static void generateNotification(final String ticker, final String title, final String message) {
+        final Intent notificationIntent;
         notificationIntent = new Intent(context, MainActivity.class);
         notificationIntent.putExtra("achPointer", 1);
-        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        final PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+        final NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setTicker(ticker)
                 .setContentTitle(title)
@@ -61,7 +61,7 @@ public class EventManager {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setDefaults(android.app.Notification.DEFAULT_ALL);
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        final NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(notificationId, mBuilder.build());
         notificationId++;
     }
@@ -70,12 +70,12 @@ public class EventManager {
         new EventLogin().execute();
     }
 
-    public void postEventNewBeacon(String beaconMajor, String beaconMinor) {
+    public void postEventNewBeacon(final String beaconMajor, final String beaconMinor) {
         Log.d(TAG + "SPRAWDAZMY BIKONA: ", beaconMajor + " " + beaconMinor);
         new EventPostNewBeacon().execute(beaconMajor, beaconMinor);
     }
 
-    public void postEventLeftBeacon(String beaconMajor, String beaconMinor) {
+    public void postEventLeftBeacon(final String beaconMajor, final String beaconMinor) {
         new EventPostLeftBeacon().execute(beaconMajor, beaconMinor);
     }
 
@@ -94,25 +94,25 @@ public class EventManager {
         boolean isError = false;
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected Object doInBackground(final Object... params) {
             Log.d(TAG, "Action: sending login event");
             try {
-                JSONObject body = new JSONObject();
+                final JSONObject body = new JSONObject();
                 body.put("activity", "login");
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 isError = true;
                 e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             if (isError) {
                 Log.e(TAG, "Error: Cannot log in");
             }
@@ -136,28 +136,28 @@ public class EventManager {
         String major;
 
         @Override
-        protected Object doInBackground(String... data) {
+        protected Object doInBackground(final String... data) {
             generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.d(TAG, "Action: sending new beacon event");
             try {
-                JSONObject body = new JSONObject();
+                final JSONObject body = new JSONObject();
                 major = data[0];
                 minor = data[1];
                 body.put("place", major + "." + minor);
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 isError = true;
                 e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             // GET ACTUAL LOCATION EVENT
             new EventGetNewLocation().execute(major, minor);
             if (isError) {
@@ -183,22 +183,22 @@ public class EventManager {
         boolean isError = false;
 
         @Override
-        protected Object doInBackground(String... data) {
+        protected Object doInBackground(final String... data) {
             try {
-                int id = userData.getUserId();
+                final int id = userData.getUserId();
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).get();
                 Log.v(TAG, response.toString());
-                JSONObject json = response.getJSONObject();
-                JSONArray array = json.getJSONArray("counterValues");
-                JSONArray gainedAchievements = json.getJSONArray("gainedAchievements");
+                final JSONObject json = response.getJSONObject();
+                final JSONArray array = json.getJSONArray("counterValues");
+                final JSONArray gainedAchievements = json.getJSONArray("gainedAchievements");
                 for (int i = 0; i < array.length(); i++) {
-                    JSONObject o = (JSONObject) array.get(i);
+                    final JSONObject o = (JSONObject) array.get(i);
                     if (o.getString("counter").equals(Settings.LOCATION_COUNTER)) {
                         userData.setUserLocation(Integer.parseInt(o.getString("value")));
                     }
                 }
                 // set user profile counter values
-                String counterLevel = json.getString("level");
+                final String counterLevel = json.getString("level");
                 userData.setLevel(counterLevel);
                 userData.setGainedAchievements("" + gainedAchievements.length());
                 userData.setLeaderboardData(json);
@@ -207,32 +207,32 @@ public class EventManager {
                 if (data.length > 0) {
                     try {
                         // SEND GROUP EVENT
-                        JSONObject body = new JSONObject();
+                        final JSONObject body = new JSONObject();
                         body.put("place", data[0] + "." + data[1] + "." + "group");
                         response = App.getIsaacloudConnector().event(userData.getUserLocationId(),
                                 "GROUP", "PRIORITY_NORMAL", 1, "NORMAL", body);
                         Log.d(TAG, "Group message event response:" + response.toString());
-                    } catch (IsaaCloudConnectionException e) {
+                    } catch (final IsaaCloudConnectionException e) {
                         e.printStackTrace();
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         isError = true;
                         e.printStackTrace();
-                    } catch (JSONException e) {
+                    } catch (final JSONException e) {
                         e.printStackTrace();
                     }
                 }
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 isError = true;
                 e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             // CHECK FOR NEW ACHIEVEMENTS
             new EventCheckAchievements().execute();
             // send broadcast
@@ -258,27 +258,27 @@ public class EventManager {
         boolean isError = false;
 
         @Override
-        protected Object doInBackground(String... data) {
+        protected Object doInBackground(final String... data) {
 //            generateNotification("Left beacon range", "Outside location", "Meeting room");
             Log.i(TAG, "Action: sending left beacon event");
             try {
-                JSONObject body = new JSONObject();
+                final JSONObject body = new JSONObject();
                 body.put("place", data[0] + "." + data[1] + ".exit");
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
                 Log.v(TAG, response.toString());
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 isError = true;
                 e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             // GET ACTUAL LOCATION EVENT
             new EventGetNewLocation().execute();
             if (isError) {
@@ -301,44 +301,44 @@ public class EventManager {
         HttpResponse response;
 
         @Override
-        protected Object doInBackground(String... data) {
-            SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
-            List<Location> locationsArray = App.getLocations();
-            for (Location loc : locationsArray) {
+        protected Object doInBackground(final String... data) {
+            final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+            final List<Location> locationsArray = App.getLocations();
+            for (final Location loc : locationsArray) {
                 entries.put(loc.getId(), new LinkedList<Person>());
             }
             entries.put(0, new LinkedList<Person>());
             try {
 
                 // USERS REQUEST
-                HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
+                final HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
                 Log.v(TAG, usersResponse.toString());
 
-                JSONArray usersArray = usersResponse.getJSONArray();
+                final JSONArray usersArray = usersResponse.getJSONArray();
                 // for every user
                 for (int i = 0; i < usersArray.length(); i++) {
-                    JSONObject userJson = (JSONObject) usersArray.get(i);
-                    Person p = new Person(userJson);
+                    final JSONObject userJson = (JSONObject) usersArray.get(i);
+                    final Person p = new Person(userJson);
                     entries.get(p.getLocation()).add(p);
                     // CHECK ACTUAL USER POSITION:
                     if (p.getId() == App.loadUserData().getUserId()) {
-                        UserData userData = App.loadUserData();
+                        final UserData userData = App.loadUserData();
                         userData.setUserLocation(p.getLocation());
                         App.saveUserData(userData);
                         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
                     }
                 }
                 App.getDataManager().setPeople(entries);
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 Log.e(TAG, "Error: JSON");
                 e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 Log.e(TAG, "Error: IC connection");
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Log.e(TAG, "Error: IO, " + e.getMessage());
                 e.printStackTrace();
-            } catch (NullPointerException e) {
+            } catch (final NullPointerException e) {
                 Log.e(TAG, "Error: Null pointer, " + e.getMessage());
                 e.printStackTrace();
                 isError = true;
@@ -346,7 +346,7 @@ public class EventManager {
             return null;
         }
 
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA));
             if (isError) {
                 Log.e(TAG, "Error: Cannot update data");
@@ -363,52 +363,52 @@ public class EventManager {
         UserData userData;
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected Object doInBackground(final Object... params) {
             userData = App.loadUserData();
             Log.d(TAG, "User data = {name: " + userData.getName() + ", id: " + userData.getUserId() + "}");
             try {
                 // ACHIEVEMENTS REQUEST
-                SparseIntArray idMap = new SparseIntArray();
-                HttpResponse responseUser = App
+                final SparseIntArray idMap = new SparseIntArray();
+                final HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
-                JSONObject achievementsJson = responseUser.getJSONObject();
-                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                final JSONObject achievementsJson = responseUser.getJSONObject();
+                final JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
                 for (int i = 0; i < arrayUser.length(); i++) {
-                    JSONObject json = (JSONObject) arrayUser.get(i);
+                    final JSONObject json = (JSONObject) arrayUser.get(i);
                     idMap.put(json.getInt("achievement"), json.getInt("amount"));
                 }
-                HttpResponse responseGeneral = App.getIsaacloudConnector()
+                final HttpResponse responseGeneral = App.getIsaacloudConnector()
                         .path("/cache/achievements").withLimit(1000).get();
-                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                final JSONArray arrayGeneral = responseGeneral.getJSONArray();
                 for (int i = 0; i < arrayGeneral.length(); i++) {
-                    JSONObject json = (JSONObject) arrayGeneral.get(i);
+                    final JSONObject json = (JSONObject) arrayGeneral.get(i);
                     if (idMap.get(json.getInt("id"), -1) != -1) {
                         newAchievements.add(0, new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e1) {
+            } catch (final IOException e1) {
                 e1.printStackTrace();
             }
             return null;
         }
 
-        protected void onPostExecute(Object result) {
-            List<Achievement> actualAchievements = App.getDataManager().getAchievements();
-            for (Achievement a : actualAchievements) {
+        protected void onPostExecute(final Object result) {
+            final List<Achievement> actualAchievements = App.getDataManager().getAchievements();
+            for (final Achievement a : actualAchievements) {
                 Log.v(TAG, "old Achievements: " + a.getLabel());
             }
-            for (Achievement a : newAchievements) {
+            for (final Achievement a : newAchievements) {
                 Log.v(TAG, "new Achievements: " + a.getLabel());
             }
 
             if (newAchievements.size() != actualAchievements.size()) {
                 // search for new achievement
-                List<Achievement> recentAchievements = new LinkedList<Achievement>();
+                final List<Achievement> recentAchievements = new LinkedList<Achievement>();
                 int i = 0;
                 while (i < newAchievements.size()) {
                     if (!actualAchievements.contains(newAchievements.get(i))) {
@@ -418,8 +418,8 @@ public class EventManager {
                 }
                 App.getDataManager().setAchievements(newAchievements);
                 NewAchievementsChecker.notifyAchievements(recentAchievements);
-                for (Achievement achievement : recentAchievements) {
-                    Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
+                for (final Achievement achievement : recentAchievements) {
+                    final Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 //                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", recentAchievement.getLabel());
@@ -436,15 +436,15 @@ public class EventManager {
         final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected Object doInBackground(final Object... params) {
             try {
-                Map<String, Object> query = new HashMap<String, Object>();
-                Map<String, String> order = new HashMap<String, String>();
+                final Map<String, Object> query = new HashMap<String, Object>();
+                final Map<String, String> order = new HashMap<String, String>();
                 order.put("createdAt", "DESC");
                 query.put("subjectId", App.loadUserData().getUserId());
-                HttpResponse response = App.getIsaacloudConnector()
+                final HttpResponse response = App.getIsaacloudConnector()
                         .path("/queues/notifications").withQuery(query).withLimit(1).withOrder(order).get();
-                JSONArray array = response.getJSONArray();
+                final JSONArray array = response.getJSONArray();
                 for (int i = 0; i < array.length(); i++) {
                     if (array.length() != 0) {
                         entries.add(new Notification((JSONObject) array.get(i)));
@@ -453,18 +453,18 @@ public class EventManager {
                         Log.d(TAG, "RECEIVED NULL ARRAY AS NOTIFICATIONS");
                     }
                 }
-            } catch (JSONException e1) {
+            } catch (final JSONException e1) {
                 e1.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e1) {
+            } catch (final IOException e1) {
                 e1.printStackTrace();
             }
             return entries;
         }
 
-        protected void onPostExecute(Object result) {
-            if (entries.size() != 0) {
+        protected void onPostExecute(final Object result) {
+            if (!entries.isEmpty()) {
                 for (int i = 0; i < entries.size(); i++) {
                     if (App.getDataManager().isNewNotification(entries.get(i))) {
                         final String message = entries.get(i).getMessage();

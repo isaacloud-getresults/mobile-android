@@ -38,25 +38,25 @@ public class DataManager {
         return locations;
     }
 
-    public void setLocations(List<Location> locations) {
+    public void setLocations(final List<Location> locations) {
         this.locations = locations;
         BeaconsCache.INSTANCE.reload();
         LoginCache.INSTANCE.findChanges();
     }
 
-    public List<Person> getPeopleAtLocation(Location l) {
-        int id = l.getId();
+    public List<Person> getPeopleAtLocation(final Location l) {
+        final int id = l.getId();
         return people.get(id);
     }
 
     public List<Person> getPeople() {
-        List<Person> peopleList = new LinkedList<Person>();
+        final List<Person> peopleList = new LinkedList<Person>();
         for (int i = 0; i < people.size(); i++)
             peopleList.addAll(people.valueAt(i));
         return peopleList;
     }
 
-    public void setPeople(SparseArray<List<Person>> people) {
+    public void setPeople(final SparseArray<List<Person>> people) {
         this.people = people;
         PeopleCache.INSTANCE.reload();
         BeaconsCache.INSTANCE.reload();
@@ -66,13 +66,13 @@ public class DataManager {
         return achievements;
     }
 
-    public void setAchievements(List<Achievement> achievements) {
+    public void setAchievements(final List<Achievement> achievements) {
         this.achievements = achievements;
         AchievementsCache.INSTANCE.reload();
         LoginCache.INSTANCE.findChanges();
     }
 
-    public boolean isNewNotification(Notification n) {
+    public boolean isNewNotification(final Notification n) {
         try {
             if (lastNotification != null && n.getData().getString("createdAt").equals(lastNotification.getData().getString("createdAt"))) {
                 return false;
@@ -80,7 +80,7 @@ public class DataManager {
                 this.lastNotification = n;
                 return true;
             }
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             e.printStackTrace();
             return false;
         }

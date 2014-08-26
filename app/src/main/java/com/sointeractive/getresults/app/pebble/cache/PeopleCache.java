@@ -60,14 +60,14 @@ public class PeopleCache {
     private void paginatePeople() {
         peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
         final List<Location> locations = App.getDataManager().getLocations();
-        for (Location location : locations) {
+        for (final Location location : locations) {
             final int locationId = location.getId();
             peopleInRoomPages.append(locationId, paginatePeopleInRoom(locationId));
         }
     }
 
     private List<List<ResponseItem>> paginatePeopleInRoom(final int roomId) {
-        LinkedList<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
+        final LinkedList<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
         try {
             final Collection<ResponseItem> peopleInRoom = peopleResponses.get(roomId);
             if (peopleInRoom == null) {
@@ -76,8 +76,8 @@ public class PeopleCache {
             pages.add(new LinkedList<ResponseItem>());
             int pageNumber = 0;
             int items = 0;
-            for (ResponseItem generalResponse : peopleInRoom) {
-                PersonInResponse response = (PersonInResponse) generalResponse;
+            for (final ResponseItem generalResponse : peopleInRoom) {
+                final PersonInResponse response = (PersonInResponse) generalResponse;
                 response.setIsMore();
                 if (items >= Settings.MAX_PEOPLE_PER_PAGE) {
                     items = 0;
@@ -105,7 +105,7 @@ public class PeopleCache {
             final List<ResponseItem> oldPage = oldRoom.get(observedPage);
             final List<ResponseItem> newPage = newRoom.get(observedPage);
             NewPeopleChecker.check(oldPage, newPage);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             if (observedPage == -1) {
                 Log.d(TAG, "No people page is observed");
             } else {

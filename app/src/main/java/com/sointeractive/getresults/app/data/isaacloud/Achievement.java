@@ -22,19 +22,19 @@ public class Achievement {
 
     private int id;
 
-    public Achievement(JSONObject json, boolean isGained, int amount) throws JSONException {
-        this.setId(json.getInt("id"));
-        this.setLabel(json.getString("label"));
-        this.setDesc(json.getString("description"));
-        this.setGained(isGained);
-        this.setCounter(amount);
+    public Achievement(final JSONObject json, final boolean isGained, final int amount) throws JSONException {
+        setId(json.getInt("id"));
+        setLabel(json.getString("label"));
+        setDesc(json.getString("description"));
+        setGained(isGained);
+        setCounter(amount);
     }
 
     public String getLabel() {
         return label;
     }
 
-    void setLabel(String label) {
+    void setLabel(final String label) {
         this.label = label;
     }
 
@@ -42,7 +42,7 @@ public class Achievement {
         return description;
     }
 
-    void setDesc(String desc) {
+    void setDesc(final String desc) {
         this.description = desc;
     }
 
@@ -50,7 +50,7 @@ public class Achievement {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(final String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -58,7 +58,7 @@ public class Achievement {
         return isGained;
     }
 
-    void setGained(boolean isGained) {
+    void setGained(final boolean isGained) {
         this.isGained = isGained;
     }
 
@@ -70,7 +70,7 @@ public class Achievement {
         return counter;
     }
 
-    void setCounter(int counter) {
+    void setCounter(final int counter) {
         this.counter = counter;
     }
 

@@ -25,7 +25,7 @@ public class StringTrimmer {
         return getSafeLengthString(name, MAX_USER_NAME_STR_LEN);
     }
 
-    private static String getSafeLengthString(String s, int maxLength) {
+    private static String getSafeLengthString(final String s, final int maxLength) {
         if (s.length() > maxLength) {
             return s.substring(0, maxLength);
         } else {

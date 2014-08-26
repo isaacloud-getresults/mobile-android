@@ -54,8 +54,8 @@ public class BeaconsCache {
         beaconPages.add(new LinkedList<ResponseItem>());
         int pageNumber = 0;
         int items = 0;
-        for (ResponseItem generalResponse : beaconsResponse) {
-            BeaconResponse response = (BeaconResponse) generalResponse;
+        for (final ResponseItem generalResponse : beaconsResponse) {
+            final BeaconResponse response = (BeaconResponse) generalResponse;
             response.setIsMore();
             if (items >= Settings.MAX_BEACONS_PER_PAGE) {
                 items = 0;

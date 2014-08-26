@@ -94,8 +94,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private ActionBar actionBar;
     private boolean Glogin = true;
 
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
+    private static String readAll(final Reader rd) throws IOException {
+        final StringBuilder sb = new StringBuilder();
         int cp;
         while ((cp = rd.read()) != -1) {
             sb.append((char) cp);
@@ -103,12 +103,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         return sb.toString();
     }
 
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
+    public static JSONObject readJsonFromUrl(final String url) throws IOException, JSONException {
+        final InputStream is = new URL(url).openStream();
         try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
+            final BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            final String jsonText = readAll(rd);
+            final JSONObject json = new JSONObject(jsonText);
             return json;
         } finally {
             is.close();
@@ -116,15 +116,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         context = this;
-        Thread thread = new Thread(new InternetRunnable());
+        final Thread thread = new Thread(new InternetRunnable());
         thread.start();
         loginData = App.loadLoginData();
-        Bundle extras = getIntent().getExtras();
+        final Bundle extras = getIntent().getExtras();
         if (extras != null) {
             if (extras.containsKey("logout")) {
                 Glogin = false;
@@ -175,7 +175,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         // add listeners
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 if (Settings.APP_SECRET != null) {
                     if (internetConnection) {
                         if (checkbox.isChecked()) {
@@ -208,10 +208,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         buttonNewUser.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 if (Settings.APP_SECRET != null) {
                     if (internetConnection) {
-                        Intent intent = new Intent(context, RegisterActivity.class);
+                        final Intent intent = new Intent(context, RegisterActivity.class);
                         startActivity(intent);
                     } else
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
@@ -221,7 +221,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         });
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 Log.d(TAG, "ButtonAction: SignIn clicked");
                 if (Settings.APP_SECRET != null) {
                     if (internetConnection) {
@@ -235,15 +235,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         });
 
         buttonScan.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 try {
-                    Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                    final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                     intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
                     startActivityForResult(intent, 101);
 
-                } catch (Exception e) {
-                    Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
-                    Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
+                } catch (final Exception e) {
+                    final Uri marketUri = Uri.parse("market://details?id=com.google.zxing.client.android");
+                    final Intent marketIntent = new Intent(Intent.ACTION_VIEW, marketUri);
                     startActivity(marketIntent);
                 }
             }
@@ -261,31 +261,31 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 @Override
                 public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
                     final DataManager dm = App.getDataManager();
-                    List<Achievement> achievements = dm.getAchievements();
+                    final List<Achievement> achievements = dm.getAchievements();
                     final int achievementsNumber = achievements.size();
                     try {
-                        JSONObject achievementsJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
+                        final JSONObject achievementsJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
                         achievements.add(0, new Achievement(achievementsJSON, true, 1));
-                    } catch (JSONException e) {
+                    } catch (final JSONException e) {
                         Log.e(TAG, "Cannot add fake achievement");
                     }
                     dm.setAchievements(achievements);
 
-                    SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+                    final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
                     final int peopleNumber = dm.getPeople().size();
                     final int beaconsNumber = dm.getLocations().size();
                     for (int i = 0; i < beaconsNumber; i++) {
                         entries.put(i, new LinkedList<Person>());
                     }
                     for (int i = 0; i < peopleNumber; i++) {
-                        Person p = new Person("Tester", "Test " + i, i % beaconsNumber, i);
+                        final Person p = new Person("Tester", "Test " + i, i % beaconsNumber, i);
                         entries.get(p.getLocation()).add(p);
                     }
                     entries.get(peopleNumber % beaconsNumber).add(new Person("Tester", "Test " + peopleNumber, peopleNumber % beaconsNumber, peopleNumber));
                     App.getDataManager().setPeople(entries);
                 }
             });
-        } catch (JSONException e) {
+        } catch (final JSONException e) {
             Log.e(TAG, "Cannot create fake data");
         }
     }
@@ -298,7 +298,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         final int ACHIEVEMENTS = 3;
 
         // User
-        UserData userData = new UserData();
+        final UserData userData = new UserData();
         userData.setName("Tester Test");
         userData.setFirstName("Tester");
         userData.setEmail("tester@testing.test");
@@ -309,11 +309,11 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         App.saveUserData(userData);
 
         // Beacons
-        SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
-        List<Location> locations = new ArrayList<Location>();
+        final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+        final List<Location> locations = new ArrayList<Location>();
         for (int i = 0; i < BEACONS; i++) {
-            JSONObject locJson = new JSONObject("{id:" + i + ",label:'test room " + i + "'}");
-            Location loc = new Location(locJson);
+            final JSONObject locJson = new JSONObject("{id:" + i + ",label:'test room " + i + "'}");
+            final Location loc = new Location(locJson);
             entries.put(loc.getId(), new LinkedList<Person>());
             locations.add(loc);
             if (loc.getId() == 0) {
@@ -321,21 +321,21 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 App.saveUserData(userData);
             }
         }
-        DataManager dm = App.getDataManager();
+        final DataManager dm = App.getDataManager();
         dm.setLocations(locations);
         dm.setPeople(entries);
 
         // Achievements
-        List<Achievement> achievements = new ArrayList<Achievement>();
+        final List<Achievement> achievements = new ArrayList<Achievement>();
         for (int i = 0; i < ACHIEVEMENTS; i++) {
-            JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
+            final JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
             achievements.add(0, new Achievement(achievementsJSON, true, 1));
         }
         dm.setAchievements(achievements);
 
         // People
         for (int i = 0; i < BEACONS * AVG_PEOPLE; i++) {
-            Person p = new Person("Tester", "Test " + i, i % BEACONS, i);
+            final Person p = new Person("Tester", "Test " + i, i % BEACONS, i);
             entries.get(p.getLocation()).add(p);
         }
         App.getDataManager().setPeople(entries);
@@ -363,7 +363,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         context = null;
     }
 
-    public void onConnectionFailed(ConnectionResult result) {
+    public void onConnectionFailed(final ConnectionResult result) {
         if (!result.hasResolution()) {
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
                     0).show();
@@ -392,7 +392,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 try {
                     mIntentInProgress = true;
                     mConnectionResult.startResolutionForResult(this, RC_SIGN_IN);
-                } catch (IntentSender.SendIntentException e) {
+                } catch (final IntentSender.SendIntentException e) {
                     mIntentInProgress = false;
                     mGoogleApiClient.connect();
                 }
@@ -410,18 +410,18 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     // Handler for the result from QR code scanner
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 101) {
 
             if (resultCode == RESULT_OK) {
-                String contents = data.getStringExtra("SCAN_RESULT") + "config.json";
+                final String contents = data.getStringExtra("SCAN_RESULT") + "config.json";
                 JSONObject json = new JSONObject();
                 try {
                     json = new GetJSON().execute(contents).get();
-                } catch (ExecutionException e) {
+                } catch (final ExecutionException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -431,7 +431,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         conf = json.getString("clientid") + " " + json.getString("androidsecret") + " " +
                                 json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
                                 json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
-                    } catch (JSONException e) {
+                    } catch (final JSONException e) {
                     }
                     App.saveConfigData(conf);
                     Log.d("Settings: ", "conf = " + conf);
@@ -458,12 +458,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
     }
 
-    public void onConnected(Bundle arg0) {
+    public void onConnected(final Bundle arg0) {
         mSignInClicked = false;
         googleLogin = true;
         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            com.google.android.gms.plus.model.people.Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            String info = currentPerson.getName().getGivenName() + " " + currentPerson.getName().getFamilyName() + "\n" + Plus.AccountApi.getAccountName(mGoogleApiClient);
+            final com.google.android.gms.plus.model.people.Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            final String info = currentPerson.getName().getGivenName() + " " + currentPerson.getName().getFamilyName() + "\n" + Plus.AccountApi.getAccountName(mGoogleApiClient);
             Toast.makeText(this, info, Toast.LENGTH_LONG).show();
             if (internetConnection) {
                 if (Glogin && googleLogin) new LoginTask().execute();
@@ -481,7 +481,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient)
                     .setResultCallback(new ResultCallback<Status>() {
                         @Override
-                        public void onResult(Status arg0) {
+                        public void onResult(final Status arg0) {
                             Toast.makeText(getApplicationContext(), "Access revoked!", Toast.LENGTH_SHORT).show();
                             mGoogleApiClient.connect();
 
@@ -495,14 +495,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 .addScope(Plus.SCOPE_PLUS_LOGIN).build();
     }
 
-    public void onConnectionSuspended(int arg0) {
+    public void onConnectionSuspended(final int arg0) {
         mGoogleApiClient.connect();
 
     }
 
     void runMainActivity() {
         // RUN MAIN ACTIVITY
-        Intent intent = new Intent(context, MainActivity.class);
+        final Intent intent = new Intent(context, MainActivity.class);
         startActivity(intent);
         finish();
     }
@@ -510,13 +510,13 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     boolean hasActiveInternetConnection() {
         if (isNetworkAvailable()) {
             try {
-                HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+                final HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
                 urlc.setRequestProperty("User-Agent", "Test");
                 urlc.setRequestProperty("Connection", "close");
                 urlc.setConnectTimeout(1500);
                 urlc.connect();
                 return (urlc.getResponseCode() == 200);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
@@ -524,9 +524,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        final ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
 
@@ -548,42 +548,42 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected Object doInBackground(final Object... params) {
 
             Log.d(TAG, "Action: Login user in background");
 
-            String email;
+            final String email;
             boolean register = true;
             if (googleLogin && Glogin) email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-            else email = LoginActivity.this.editEmail.getEditableText().toString();
+            else email = editEmail.getEditableText().toString();
             final Map<String, Object> query = new HashMap<String, Object>();
             query.put("email", email);
 
             int id = -1;
             try {
-                HttpResponse idResponse = App.getIsaacloudConnector().path("/cache/users").withFields("id").withQuery(query).get();
+                final HttpResponse idResponse = App.getIsaacloudConnector().path("/cache/users").withFields("id").withQuery(query).get();
                 id = idResponse.getJSONArray().getJSONObject(0).getInt("id");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
             }
 
             try {
                 if (id > 0) {
-                    HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id)
+                    final HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id)
                             .withFields("id", "firstName", "lastName", "level", "email", "counterValues", "leaderboards").get();
                     Log.v(TAG, response.toString());
                     final JSONObject userJSON = response.getJSONObject();
-                    String userFirstName = userJSON.getString("firstName");
-                    String userLastName = userJSON.getString("lastName");
-                    String userEmail = userJSON.getString("email");
-                    String level = userJSON.getString("level");
-                    int userId = userJSON.getInt("id");
+                    final String userFirstName = userJSON.getString("firstName");
+                    final String userLastName = userJSON.getString("lastName");
+                    final String userEmail = userJSON.getString("email");
+                    final String level = userJSON.getString("level");
+                    final int userId = userJSON.getInt("id");
                     // send loaded data to App.UserData
-                    UserData userData = new UserData();
+                    final UserData userData = new UserData();
                     userData.setName(userFirstName + " " + userLastName);
                     userData.setFirstName(userFirstName);
                     userData.setEmail(userEmail);
@@ -597,17 +597,17 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 }
 
                 if (googleLogin && register) {
-                    JSONObject jsonBody = new JSONObject();
+                    final JSONObject jsonBody = new JSONObject();
                     jsonBody.put("email", Plus.AccountApi.getAccountName(mGoogleApiClient));
                     jsonBody.put("password", "Google@1998");
                     jsonBody.put("firstName", Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getName().getGivenName());
                     jsonBody.put("lastName", Plus.PeopleApi.getCurrentPerson(mGoogleApiClient).getName().getFamilyName());
                     jsonBody.put("status", 1);
 
-                    UserData userData = App.loadUserData();
-                    HttpResponse registerResponse = App.getIsaacloudConnector().path("/admin/users")
+                    final UserData userData = App.loadUserData();
+                    final HttpResponse registerResponse = App.getIsaacloudConnector().path("/admin/users")
                             .post(jsonBody);
-                    JSONObject Json = registerResponse.getJSONObject();
+                    final JSONObject Json = registerResponse.getJSONObject();
                     userData.setUserId(Json.getInt("id"));
                     userData.setName(Json.getString("firstName") + " "
                             + Json.getString("lastName"));
@@ -617,18 +617,18 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     success = true;
                 }
 
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             dialog.dismiss();
             if (success) {
                 Log.d(TAG, "Login success");
@@ -655,38 +655,38 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
 
         @Override
-        public Object doInBackground(Object... params) {
-            SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
-            List<Location> locations = new ArrayList<Location>();
+        public Object doInBackground(final Object... params) {
+            final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+            final List<Location> locations = new ArrayList<Location>();
             try {
                 // LOCATIONS REQUEST
-                HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
+                final HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
                 Log.v(TAG, response.toString());
                 // all locations from isa
-                JSONArray locationsArray = response.getJSONArray();
+                final JSONArray locationsArray = response.getJSONArray();
                 for (int i = 0; i < locationsArray.length(); i++) {
-                    JSONObject locJson = (JSONObject) locationsArray.get(i);
-                    Location loc = new Location(locJson);
+                    final JSONObject locJson = (JSONObject) locationsArray.get(i);
+                    final Location loc = new Location(locJson);
                     entries.put(loc.getId(), new LinkedList<Person>());
                     locations.add(loc);
                 }
                 success = true;
-                DataManager dm = App.getDataManager();
+                final DataManager dm = App.getDataManager();
                 dm.setLocations(locations);
                 dm.setPeople(entries);
 
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e1) {
+            } catch (final IOException e1) {
                 e1.printStackTrace();
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             if (success) {
                 Log.d(TAG, "Locations downloaded");
                 new EventGetAchievements().execute();
@@ -704,50 +704,50 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         public boolean success = false;
 
         @Override
-        public Object doInBackground(Object... params) {
-            List<Achievement> achievements = new ArrayList<Achievement>();
+        public Object doInBackground(final Object... params) {
+            final List<Achievement> achievements = new ArrayList<Achievement>();
             try {
 
                 // ACHIEVEMENTS REQUEST
-                SparseIntArray idMap = new SparseIntArray();
+                final SparseIntArray idMap = new SparseIntArray();
                 Log.d(TAG, "Action: Get achievements for user: " + userData.getUserId());
-                HttpResponse responseUser = App
+                final HttpResponse responseUser = App
                         .getIsaacloudConnector()
                         .path("/cache/users/" + App.loadUserData().getUserId()).withFields("gainedAchievements").withLimit(0).get();
-                JSONObject achievementsJson = responseUser.getJSONObject();
-                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
+                final JSONObject achievementsJson = responseUser.getJSONObject();
+                final JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
                 for (int i = 0; i < arrayUser.length(); i++) {
-                    JSONObject json = (JSONObject) arrayUser.get(i);
+                    final JSONObject json = (JSONObject) arrayUser.get(i);
                     idMap.put(json.getInt("achievement"), json.getInt("amount"));
                 }
 
-                HttpResponse responseGeneral = App.getIsaacloudConnector()
+                final HttpResponse responseGeneral = App.getIsaacloudConnector()
                         .path("/cache/achievements").withLimit(1000).get();
-                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                final JSONArray arrayGeneral = responseGeneral.getJSONArray();
                 Log.v("TEST", arrayGeneral.toString(3));
                 for (int i = 0; i < arrayGeneral.length(); i++) {
-                    JSONObject json = (JSONObject) arrayGeneral.get(i);
+                    final JSONObject json = (JSONObject) arrayGeneral.get(i);
                     if (idMap.get(json.getInt("id"), -1) != -1) {
                         achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
                     }
                 }
                 success = true;
-                DataManager dm = App.getDataManager();
+                final DataManager dm = App.getDataManager();
                 dm.setAchievements(achievements);
                 Log.d(TAG, "Event: Downloaded " + dm.getAchievements().size() + " achievements");
 
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
+            } catch (final IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (IOException e1) {
+            } catch (final IOException e1) {
                 e1.printStackTrace();
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             dialog.dismiss();
             if (success) {
                 Log.i(TAG, "Achievements downloaded");
@@ -763,14 +763,14 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private class GetJSON extends AsyncTask<String, Object, JSONObject> {
 
         @Override
-        public JSONObject doInBackground(String... params) {
+        public JSONObject doInBackground(final String... params) {
             Log.d(TAG, "URL: " + params[0]);
             JSONObject json;
             try {
                 json = readJsonFromUrl(params[0]);
-            } catch (JSONException e) {
+            } catch (final JSONException e) {
                 json = null;
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 json = null;
             }
             if (json != null) Log.d(TAG, "JSON: " + json.toString());
@@ -786,7 +786,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 internetConnection = hasActiveInternetConnection();
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     Log.e(TAG, "Event: Check internet thread interrupted");
                     return;
                 }

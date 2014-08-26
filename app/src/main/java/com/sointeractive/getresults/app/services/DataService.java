@@ -17,15 +17,12 @@ public class DataService extends Service {
     private static final String TAG = DataService.class.getSimpleName();
     private static Timer timer;
 
-    public DataService() {
-    }
-
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "Event: onCreate");
     }
 
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         Log.i(TAG, "Event: StartService");
         timer = new Timer();
         timer.scheduleAtFixedRate(new dataUpdate(), 0, Settings.DATA_DOWNLOAD_INTERVAL);
@@ -40,7 +37,7 @@ public class DataService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(final Intent intent) {
         return null;
     }
 

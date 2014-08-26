@@ -10,11 +10,11 @@ public class AchievementCard extends Card {
 
     private final Achievement achievementData;
 
-    public AchievementCard(Context context, Achievement a) {
+    public AchievementCard(final Context context, final Achievement a) {
         super(context);
         this.achievementData = a;
-        this.setTitle(a.getLabel());
-        this.setShadow(false);
+        setTitle(a.getLabel());
+        setShadow(false);
     }
 
     public Achievement getAchievementData() {

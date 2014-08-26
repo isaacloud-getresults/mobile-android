@@ -50,13 +50,13 @@ public class ProfileFragment extends Fragment {
     private final BroadcastReceiver receiverProfile = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             Log.d(TAG, "Event: onReceive called");
             refreshData();
 
         }
     };
-    private static int RESULT_LOAD_IMAGE = 1;
+    private static final int RESULT_LOAD_IMAGE = 1;
     private Context context;
     private ProfileCard profileCard;
     private SettingsCard settingsCard;
@@ -69,9 +69,9 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this.getActivity();
+        context = getActivity();
         profileCard = new ProfileCard(context, R.layout.profile_card_content);
         settingsCard = new SettingsCard(context);
         statsCard = new StatsCard(context);
@@ -81,25 +81,25 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        final View view = inflater.inflate(R.layout.fragment_profile, container, false);
         context = getActivity();
         // PROFILE CARD INIT
         profileCardView = (CardView) view.findViewById(R.id.cardProfile);
 
-        CardView settingsCardView = (CardView) view.findViewById(R.id.cardSettings);
-        CardView statsCardView = (CardView) view.findViewById(R.id.cardStats);
-        CardView logoutCardView = (CardView) view.findViewById(R.id.cardLogout);
-        profileCardView.setCard(this.profileCard);
-        settingsCardView.setCard(this.settingsCard);
-        statsCardView.setCard(this.statsCard);
+        final CardView settingsCardView = (CardView) view.findViewById(R.id.cardSettings);
+        final CardView statsCardView = (CardView) view.findViewById(R.id.cardStats);
+        final CardView logoutCardView = (CardView) view.findViewById(R.id.cardLogout);
+        profileCardView.setCard(profileCard);
+        settingsCardView.setCard(settingsCard);
+        statsCardView.setCard(statsCard);
         logoutCardView.setCard(new LogoutCard(context));
 
         logoutCardView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
-                Intent i = new Intent(context, LoginActivity.class);
+                final Intent i = new Intent(context, LoginActivity.class);
                 i.putExtra("logout", true);
                 startActivity(i);
 
@@ -109,8 +109,8 @@ public class ProfileFragment extends Fragment {
 
         userImage = (ImageView) view.findViewById(R.id.userImage);
         userImage.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            public void onClick(final View v) {
+                final Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(i, RESULT_LOAD_IMAGE);
             }
         });
@@ -120,9 +120,9 @@ public class ProfileFragment extends Fragment {
 
 
     void refreshData() {
-        TextView counterLevel = (TextView) profileCardView.findViewById(R.id.counterLevel);
-        TextView counterScore = (TextView) profileCardView.findViewById(R.id.counterScore);
-        TextView counterAchievements = (TextView) profileCardView.findViewById(R.id.counterAchievements);
+        final TextView counterLevel = (TextView) profileCardView.findViewById(R.id.counterLevel);
+        final TextView counterScore = (TextView) profileCardView.findViewById(R.id.counterScore);
+        final TextView counterAchievements = (TextView) profileCardView.findViewById(R.id.counterAchievements);
         counterLevel.setText("" + App.loadUserData().getRank());
         counterScore.setText(App.loadUserData().getScore());
         counterAchievements.setText(App.loadUserData().getGainedAchievements());
@@ -137,20 +137,20 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            final Uri selectedImage = data.getData();
+            final String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-            Cursor cursor = context.getContentResolver().query(selectedImage,
+            final Cursor cursor = context.getContentResolver().query(selectedImage,
                     filePathColumn, null, null, null);
             cursor.moveToFirst();
 
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
+            final int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            final String picturePath = cursor.getString(columnIndex);
             cursor.close();
-            BitmapFactory.Options bf = new BitmapFactory.Options();
+            final BitmapFactory.Options bf = new BitmapFactory.Options();
             bf.inSampleSize = 4;
             Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
             if ((imageBitmap.getWidth() > 500) || (imageBitmap.getHeight() > 500))
@@ -166,31 +166,31 @@ public class ProfileFragment extends Fragment {
         ProgressDialog dialog = ProgressDialog.show(getActivity(), "Saving profile picture", "Please wait...");
 
         @Override
-        public Object doInBackground(String... params) {
-            String url = "http://xyz.getresults.isaacloud.com/";
+        public Object doInBackground(final String... params) {
+            final String url = "http://xyz.getresults.isaacloud.com/";
 
-            File file = new File(params[0]);
+            final File file = new File(params[0]);
             try {
-                HttpClient httpclient = new DefaultHttpClient();
+                final HttpClient httpclient = new DefaultHttpClient();
 
-                HttpPost httppost = new HttpPost(url);
+                final HttpPost httppost = new HttpPost(url);
 
-                InputStreamEntity reqEntity = new InputStreamEntity(
+                final InputStreamEntity reqEntity = new InputStreamEntity(
                         new FileInputStream(file), -1);
                 reqEntity.setContentType("binary/octet-stream");
                 reqEntity.setChunked(true); // Send in multiple parts if needed
                 httppost.setEntity(reqEntity);
-                HttpResponse response = httpclient.execute(httppost);
+                final HttpResponse response = httpclient.execute(httppost);
                 success = true;
                 //Do something with response...
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.e(TAG, "Could not send file");
             }
             return null;
         }
 
-        protected void onPostExecute(Object result) {
+        protected void onPostExecute(final Object result) {
             dialog.dismiss();
             if (success) {
                 Log.e(TAG, "Success");

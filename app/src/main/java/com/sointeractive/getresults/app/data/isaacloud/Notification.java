@@ -12,13 +12,13 @@ public class Notification {
     private JSONObject data;
     private String title, message;
 
-    public Notification(JSONObject data, String title, String message) {
+    public Notification(final JSONObject data, final String title, final String message) {
         this.data = data;
         //this.title = title;
         this.message = message;
     }
 
-    public Notification(JSONObject json) throws JSONException {
+    public Notification(final JSONObject json) throws JSONException {
         this.data = json.getJSONObject("data");
         //this.title = data.getString("");
         this.message = data.getJSONObject("body").getString("message");
@@ -28,7 +28,7 @@ public class Notification {
         return data;
     }
 
-    public void setData(JSONObject data) {
+    public void setData(final JSONObject data) {
         this.data = data;
     }
 
@@ -36,7 +36,7 @@ public class Notification {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -44,7 +44,7 @@ public class Notification {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 

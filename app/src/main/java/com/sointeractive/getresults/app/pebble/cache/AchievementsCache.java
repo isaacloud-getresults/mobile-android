@@ -53,7 +53,7 @@ public class AchievementsCache {
     private void findChanges(final List<List<ResponseItem>> oldAchievementPages) {
         try {
             NewAchievementsChecker.check(oldAchievementPages.get(observedPage), achievementPages.get(observedPage));
-        } catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             if (observedPage == -1) {
                 Log.d(TAG, "No achievement page is observed");
             } else {
@@ -73,8 +73,8 @@ public class AchievementsCache {
         achievementPages.add(new LinkedList<ResponseItem>());
         int pageNumber = 0;
         int items = 0;
-        for (ResponseItem generalResponse : achievementsResponse) {
-            AchievementInResponse response = (AchievementInResponse) generalResponse;
+        for (final ResponseItem generalResponse : achievementsResponse) {
+            final AchievementInResponse response = (AchievementInResponse) generalResponse;
             response.setIsMore();
             if (items >= Settings.MAX_ACHIEVEMENTS_PER_PAGE) {
                 items = 0;

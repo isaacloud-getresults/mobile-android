@@ -38,7 +38,7 @@ public class LocationsFragment extends Fragment {
     private final BroadcastReceiver receiverLocations = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             Log.d(TAG, "Event: onReceive called");
             if (listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
@@ -49,7 +49,7 @@ public class LocationsFragment extends Fragment {
     private final BroadcastReceiver receiverStatus = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             Log.d(TAG, "Event: onReceive called");
             Log.d(TAG, "User location is now: " + App.loadUserData().getUserLocation().getLabel());
             statusCard.initLocation(App.loadUserData().getUserLocation());
@@ -64,19 +64,19 @@ public class LocationsFragment extends Fragment {
 
     public static LocationsFragment newInstance() {
         Log.d(TAG, "newInstance");
-        LocationsFragment f = new LocationsFragment();
-        Bundle b = new Bundle();
+        final LocationsFragment f = new LocationsFragment();
+        final Bundle b = new Bundle();
         f.setArguments(b);
         return f;
     }
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final List<Location> locationsArray = App.getLocations();
-        context = this.getActivity();
-        for (Location l : locationsArray) {
+        context = getActivity();
+        for (final Location l : locationsArray) {
             Log.v(TAG, "Loading: " + l.getLabel());
         }
         statusCard = new StatusCard(context, R.layout.status_card_content);
@@ -90,13 +90,13 @@ public class LocationsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView");
-        View view = inflater.inflate(R.layout.fragment_locations, container, false);
+        final View view = inflater.inflate(R.layout.fragment_locations, container, false);
         context = getActivity();
         cardView = (CardView) view.findViewById(R.id.cardStatus);
-        cardView.setCard(this.statusCard);
-        ImageView currentRoom = (ImageView) view.findViewById(R.id.colorBorder);
+        cardView.setCard(statusCard);
+        final ImageView currentRoom = (ImageView) view.findViewById(R.id.colorBorder);
         dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", currentRoom, true);
         final ExpandableListView expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setGroupIndicator(null);
@@ -107,7 +107,7 @@ public class LocationsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(final Activity activity) {
         super.onAttach(activity);
         context = activity.getApplicationContext();
     }
@@ -134,35 +134,35 @@ public class LocationsFragment extends Fragment {
         private final Context context;
         private final List<Location> locationsList;
 
-        public ExpandableListAdapter(Context context, List<Location> listDataHeader) {
+        public ExpandableListAdapter(final Context context, final List<Location> listDataHeader) {
             this.context = context;
             this.locationsList = listDataHeader;
         }
 
         @Override
-        public Person getChild(int groupPosition, int childPosition) {
-            List<Person> list = App.getPeopleAtLocation(locationsList.get(groupPosition));
+        public Person getChild(final int groupPosition, final int childPosition) {
+            final List<Person> list = App.getPeopleAtLocation(locationsList.get(groupPosition));
             return list.get(childPosition);
         }
 
         @Override
-        public long getChildId(int groupPosition, int childPosition) {
+        public long getChildId(final int groupPosition, final int childPosition) {
             return childPosition;
         }
 
         @Override
-        public View getChildView(int groupPosition, int childPosition,
-                                 boolean isLastChild, View convertView, ViewGroup parent) {
+        public View getChildView(final int groupPosition, final int childPosition,
+                                 final boolean isLastChild, View convertView, final ViewGroup parent) {
 
             final String childText = getChild(groupPosition, childPosition).getFullName();
 
             if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this.context
+                final LayoutInflater infalInflater = (LayoutInflater) context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_item, null);
             }
             convertView.setPadding(0, 0, 10, 0);
-            TextView txtListChild = (TextView) convertView
+            final TextView txtListChild = (TextView) convertView
                     .findViewById(R.id.lblListItem);
 
             txtListChild.setText(childText);
@@ -170,45 +170,45 @@ public class LocationsFragment extends Fragment {
         }
 
         @Override
-        public int getChildrenCount(int groupPosition) {
-            List<Person> list = App.getPeopleAtLocation(locationsList.get(groupPosition));
+        public int getChildrenCount(final int groupPosition) {
+            final List<Person> list = App.getPeopleAtLocation(locationsList.get(groupPosition));
             return list.size();
         }
 
         @Override
-        public Location getGroup(int groupPosition) {
-            return this.locationsList.get(groupPosition);
+        public Location getGroup(final int groupPosition) {
+            return locationsList.get(groupPosition);
         }
 
         @Override
         public int getGroupCount() {
-            return this.locationsList.size();
+            return locationsList.size();
         }
 
         @Override
-        public long getGroupId(int groupPosition) {
+        public long getGroupId(final int groupPosition) {
             return groupPosition;
         }
 
         @Override
-        public View getGroupView(int groupPosition, boolean isExpanded,
-                                 View convertView, ViewGroup parent) {
-            String headerTitle = getGroup(groupPosition).getLabel();
-            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
+        public View getGroupView(final int groupPosition, final boolean isExpanded,
+                                 View convertView, final ViewGroup parent) {
+            final String headerTitle = getGroup(groupPosition).getLabel();
+            final String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
             if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this.context
+                final LayoutInflater infalInflater = (LayoutInflater) context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = infalInflater.inflate(R.layout.list_group, null);
             }
-            IconTextView indicator = (IconTextView) convertView.findViewById(R.id.indicator);
-            TextView lblListHeader = (TextView) convertView
+            final IconTextView indicator = (IconTextView) convertView.findViewById(R.id.indicator);
+            final TextView lblListHeader = (TextView) convertView
                     .findViewById(R.id.lblListHeader);
-            TextView lblListHeaderVisits = (TextView) convertView
+            final TextView lblListHeaderVisits = (TextView) convertView
                     .findViewById(R.id.locationStatsCounter);
-            String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
+            final String state = isExpanded ? "{fa-chevron-up}" : "{fa-chevron-down}";
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
-            ImageView locationPic = (ImageView) convertView.findViewById(R.id.locationImage);
+            final ImageView locationPic = (ImageView) convertView.findViewById(R.id.locationImage);
             dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", locationPic, true);
             return convertView;
         }
@@ -219,7 +219,7 @@ public class LocationsFragment extends Fragment {
         }
 
         @Override
-        public boolean isChildSelectable(int groupPosition, int childPosition) {
+        public boolean isChildSelectable(final int groupPosition, final int childPosition) {
             return true;
         }
 
