@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.joanzapata.android.iconify.IconDrawable;
@@ -73,6 +74,7 @@ public class MainActivity extends FragmentActivity implements
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         //getApplicationContext().startService(i);
+        Log.e(TAG, "DEBUG MODE: NO TRACK SERVICE");
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
     }

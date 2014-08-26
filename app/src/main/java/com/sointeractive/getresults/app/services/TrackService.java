@@ -144,11 +144,11 @@ public class TrackService extends Service {
             helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
             if (!(majors.contains(b.getMacAddress()))) {
-                    majors.add(b.getMacAddress());
-                    Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
-                    if (internetConnection)
-                        App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
-                    lastBeacon = b;
+                majors.add(b.getMacAddress());
+                Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
+                if (internetConnection)
+                    App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
+                lastBeacon = b;
 //                    v.vibrate(0);
             } else previousFlag = false;
             if (!internetConnection)

@@ -2,8 +2,6 @@ package com.sointeractive.getresults.app.cards;
 
 import android.content.Context;
 
-import com.sointeractive.getresults.app.R;
-
 import it.gmariotti.cardslib.library.internal.Card;
 
 public class LogoutCard extends Card {

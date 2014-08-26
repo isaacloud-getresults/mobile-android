@@ -1,23 +1,22 @@
 package com.sointeractive.getresults.app.data;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Bitmap.Config;
-import android.graphics.PorterDuff.Mode;
 import android.media.ExifInterface;
-import android.os.AsyncTask;
 
 import java.io.IOException;
 
 public class ImageHelper {
     public static Bitmap getAvatar(Bitmap imageBitmap, String picturePath) {
         int orientation;
-        if(picturePath != null) {
+        if (picturePath != null) {
             try {
                 ExifInterface exif = new ExifInterface((picturePath));
                 orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
@@ -30,7 +29,7 @@ public class ImageHelper {
         int squareSize;
         int x1, x2, y1, y2;
         Bitmap squareBitmap;
-        if(imageBitmap.getWidth() > imageBitmap.getHeight()) {
+        if (imageBitmap.getWidth() > imageBitmap.getHeight()) {
             squareSize = imageBitmap.getHeight();
             biggerDimension = imageBitmap.getWidth();
             y1 = 0;
@@ -38,8 +37,7 @@ public class ImageHelper {
             y2 = squareSize;
             x2 = squareSize;
             squareBitmap = Bitmap.createBitmap(imageBitmap, x1, y1, x2, y2);
-        }
-        else if(imageBitmap.getHeight() > imageBitmap.getWidth()) {
+        } else if (imageBitmap.getHeight() > imageBitmap.getWidth()) {
             squareSize = imageBitmap.getWidth();
             biggerDimension = imageBitmap.getHeight();
             x1 = 0;
@@ -111,13 +109,11 @@ public class ImageHelper {
                 Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 bitmap.recycle();
                 return bmRotated;
-            }
-            catch (OutOfMemoryError e) {
+            } catch (OutOfMemoryError e) {
                 e.printStackTrace();
                 return null;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return bitmap;
         }

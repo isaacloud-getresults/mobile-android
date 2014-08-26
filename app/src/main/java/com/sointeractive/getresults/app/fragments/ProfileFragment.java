@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sointeractive.getresults.app.R;
 import com.sointeractive.getresults.app.activities.LoginActivity;
@@ -42,7 +41,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 
 import it.gmariotti.cardslib.library.view.CardView;
 
@@ -58,12 +56,12 @@ public class ProfileFragment extends Fragment {
 
         }
     };
+    private static int RESULT_LOAD_IMAGE = 1;
     private Context context;
     private ProfileCard profileCard;
     private SettingsCard settingsCard;
     private StatsCard statsCard;
     private CardView profileCardView;
-    private static int RESULT_LOAD_IMAGE = 1;
     private ImageView userImage;
 
     public static ProfileFragment newInstance() {
@@ -155,7 +153,8 @@ public class ProfileFragment extends Fragment {
             BitmapFactory.Options bf = new BitmapFactory.Options();
             bf.inSampleSize = 4;
             Bitmap imageBitmap = BitmapFactory.decodeFile(picturePath);
-            if((imageBitmap.getWidth() > 500) || (imageBitmap.getHeight() > 500)) imageBitmap = BitmapFactory.decodeFile(picturePath, bf);
+            if ((imageBitmap.getWidth() > 500) || (imageBitmap.getHeight() > 500))
+                imageBitmap = BitmapFactory.decodeFile(picturePath, bf);
             Log.d("Bitmap", "width: " + imageBitmap.getWidth() + " " + "height: " + imageBitmap.getHeight());
 //            new SendToServerTask().execute(picturePath);
             userImage.setImageBitmap(ImageHelper.getAvatar(imageBitmap, picturePath));

@@ -95,7 +95,7 @@ public class AchievementsFragment extends Fragment {
     }
 
     void initAchievementCards() {
-        if (achievementCards.size() > 0 ) {
+        if (achievementCards.size() > 0) {
             achievementCards.clear();
         }
         for (Achievement a : App.getDataManager().getAchievements()) {

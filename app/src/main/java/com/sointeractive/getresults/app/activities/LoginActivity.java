@@ -3,10 +3,8 @@ package com.sointeractive.getresults.app.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
@@ -60,12 +58,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
-import pl.sointeractive.isaacloud.Isaacloud;
 import pl.sointeractive.isaacloud.connection.HttpResponse;
-import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 import pl.sointeractive.isaacloud.exceptions.IsaaCloudConnectionException;
 
 public class LoginActivity extends Activity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -97,6 +92,27 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     private CheckBox checkbox;
     private ActionBar actionBar;
     private boolean Glogin = true;
+
+    private static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,7 +200,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     } else {
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
                     }
-                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -197,7 +214,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         startActivity(intent);
                     } else
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
-                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -210,7 +228,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         signInWithGplus();
                     } else
                         Toast.makeText(getApplicationContext(), "No Internet connection", Toast.LENGTH_SHORT).show();
-                } else Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(getApplicationContext(), "Application is not configured\nTap \"Configure application\" and scan QR code", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -343,7 +362,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         context = null;
     }
 
-
     public void onConnectionFailed(ConnectionResult result) {
         if (!result.hasResolution()) {
             GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(), this,
@@ -400,10 +418,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 JSONObject json = new JSONObject();
                 try {
                     json = new GetJSON().execute(contents).get();
-                } catch(ExecutionException e) {
+                } catch (ExecutionException e) {
                     e.printStackTrace();
-                }
-                catch(InterruptedException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -411,9 +428,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     String conf = null;
                     try {
                         conf = json.getString("clientid") + " " + json.getString("androidsecret") + " " +
-                        json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
-                        json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
-                    } catch(JSONException e) {}
+                                json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
+                                json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
+                    } catch (JSONException e) {
+                    }
                     App.saveConfigData(conf);
                     Log.d("Settings: ", "conf = " + conf);
                     Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
@@ -749,9 +767,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             JSONObject json;
             try {
                 json = readJsonFromUrl(params[0]);
-            } catch(JSONException e) {json = null;}
-            catch(IOException e) {json = null;}
-            if(json != null) Log.d(TAG, "JSON: " + json.toString());
+            } catch (JSONException e) {
+                json = null;
+            } catch (IOException e) {
+                json = null;
+            }
+            if (json != null) Log.d(TAG, "JSON: " + json.toString());
             else Log.d(TAG, "JSON: null");
             return json;
         }
@@ -770,27 +791,6 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 }
 //                Log.d(TAG, "Connected: " + internetConnection);
             }
-        }
-    }
-
-    private static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
         }
     }
 }

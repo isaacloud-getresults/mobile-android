@@ -47,6 +47,25 @@ public class EventManager {
         context = App.getInstance().getApplicationContext();
     }
 
+    private static void generateNotification(String ticker, String title, String message) {
+        Intent notificationIntent;
+        notificationIntent = new Intent(context, MainActivity.class);
+        notificationIntent.putExtra("achPointer", 1);
+        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setTicker(ticker)
+                .setContentTitle(title)
+                .setContentIntent(intent)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setDefaults(android.app.Notification.DEFAULT_ALL);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(notificationId, mBuilder.build());
+        notificationId++;
+    }
+
     public void postEventLogin() {
         new EventLogin().execute();
     }
@@ -63,6 +82,10 @@ public class EventManager {
     public void postEventUpdateData() {
         new EventUpdateData().execute();
     }
+
+    ///////////////////////////////////////////////////////////////////
+    // ============ POST EVENT WHEN NEW BEACON IS IN RANGE ============
+    ///////////////////////////////////////////////////////////////////
 
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
@@ -99,9 +122,9 @@ public class EventManager {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////
-    // ============ POST EVENT WHEN NEW BEACON IS IN RANGE ============
-    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
+    ////////////////////////////////////////////////////////////////////
 
     private class EventPostNewBeacon extends AsyncTask<String, Object, Object> {
 
@@ -146,9 +169,9 @@ public class EventManager {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////
-    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
-    ////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    // ============ POST EVENT WHEN BEACON IS OUT OF RANGE ============
+    ///////////////////////////////////////////////////////////////////
 
     private class EventGetNewLocation extends AsyncTask<String, Object, Object> {
 
@@ -181,7 +204,7 @@ public class EventManager {
                 userData.setLeaderboardData(json);
                 App.saveUserData(userData);
                 // if on entering the room
-                if (data.length > 0 ) {
+                if (data.length > 0) {
                     try {
                         // SEND GROUP EVENT
                         JSONObject body = new JSONObject();
@@ -223,9 +246,9 @@ public class EventManager {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////
-    // ============ POST EVENT WHEN BEACON IS OUT OF RANGE ============
-    ///////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////
+    // ================ UPDATE DATA EVENT ===============
+    /////////////////////////////////////////////////////
 
     private class EventPostLeftBeacon extends AsyncTask<String, Object, Object> {
 
@@ -267,14 +290,14 @@ public class EventManager {
         }
     }
 
-    /////////////////////////////////////////////////////
-    // ================ UPDATE DATA EVENT ===============
-    /////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    // ================ CHECK ACHIEVEMENTS EVENT ===============
+    ////////////////////////////////////////////////////////////
 
     private class EventUpdateData extends AsyncTask<String, Object, Object> {
 
-        final boolean isError = false;
         private final String TAG = EventUpdateData.class.getSimpleName();
+        boolean isError = false;
         HttpResponse response;
 
         @Override
@@ -315,6 +338,10 @@ public class EventManager {
             } catch (IOException e) {
                 Log.e(TAG, "Error: IO, " + e.getMessage());
                 e.printStackTrace();
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Error: Null pointer, " + e.getMessage());
+                e.printStackTrace();
+                isError = true;
             }
             return null;
         }
@@ -329,10 +356,6 @@ public class EventManager {
             }
         }
     }
-
-    ////////////////////////////////////////////////////////////
-    // ================ CHECK ACHIEVEMENTS EVENT ===============
-    ////////////////////////////////////////////////////////////
 
     private class EventCheckAchievements extends AsyncTask<Object, Object, Object> {
 
@@ -453,23 +476,4 @@ public class EventManager {
             }
         }
     }
-
-    private static void generateNotification(String ticker, String title, String message) {
-          Intent notificationIntent;
-          notificationIntent = new Intent(context, MainActivity.class);
-          notificationIntent.putExtra("achPointer", 1);
-          PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-          NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                   .setSmallIcon(R.drawable.ic_launcher)
-                   .setTicker(ticker)
-                   .setContentTitle(title)
-                   .setContentIntent(intent)
-                   .setContentText(message)
-                   .setAutoCancel(true)
-                   .setDefaults(android.app.Notification.DEFAULT_ALL);
-          NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-          mNotificationManager.notify(notificationId, mBuilder.build());
-          notificationId++;
-          }
 }

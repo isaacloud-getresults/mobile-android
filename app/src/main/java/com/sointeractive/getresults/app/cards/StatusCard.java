@@ -11,7 +11,6 @@ import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
 
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
 
 public class StatusCard extends Card {
 

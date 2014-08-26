@@ -35,7 +35,6 @@ public class LocationsFragment extends Fragment {
 
     private static final String TAG = LocationsFragment.class.getSimpleName();
     private ExpandableListAdapter listAdapter;
-    private StatusCard statusCard;
     private final BroadcastReceiver receiverLocations = new BroadcastReceiver() {
 
         @Override
@@ -46,6 +45,7 @@ public class LocationsFragment extends Fragment {
             }
         }
     };
+    private StatusCard statusCard;
     private final BroadcastReceiver receiverStatus = new BroadcastReceiver() {
 
         @Override

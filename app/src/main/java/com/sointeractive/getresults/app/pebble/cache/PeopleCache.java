@@ -128,15 +128,15 @@ public class PeopleCache {
             return new LinkedList<ResponseItem>();
         }
 
-        final List<ResponseItem> page = pages.get(pageNumber);
-        if (page == null) {
+        try {
+            final List<ResponseItem> page = pages.get(pageNumber);
+            final ResponseItem lastResponse = page.get(page.size() - 1);
+            final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
+            lastPersonResponse.setLast();
+            return page;
+        } catch (final IndexOutOfBoundsException e) {
             return new LinkedList<ResponseItem>();
         }
-
-        final ResponseItem lastResponse = page.get(page.size() - 1);
-        final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
-        lastPersonResponse.setLast();
-        return page;
     }
 
     public void clear() {

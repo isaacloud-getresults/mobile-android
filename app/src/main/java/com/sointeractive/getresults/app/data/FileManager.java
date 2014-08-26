@@ -149,7 +149,7 @@ class FileManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(!data.equals("")) {
+        if (!data.equals("")) {
             StringTokenizer tokenizer = new StringTokenizer(data);
             Settings.INSTANCE_ID = (String) tokenizer.nextElement();
             Log.d("Settings: ", Settings.INSTANCE_ID);
@@ -157,8 +157,8 @@ class FileManager {
             Log.d("Settings: ", Settings.APP_SECRET);
             Settings.BEACON_PROXIMITY_UUID = (String) tokenizer.nextElement();
             Log.d("Settings: ", Settings.BEACON_PROXIMITY_UUID);
-            Settings.PEBBLE_NOTIFICATION_ID = Integer.valueOf((String)tokenizer.nextElement());
-            Settings.ANDROID_NOTIFICATION_ID = Integer.valueOf((String)tokenizer.nextElement());
+            Settings.PEBBLE_NOTIFICATION_ID = Integer.valueOf((String) tokenizer.nextElement());
+            Settings.ANDROID_NOTIFICATION_ID = Integer.valueOf((String) tokenizer.nextElement());
             Settings.LOCATION_COUNTER = (String) tokenizer.nextElement();
             Settings.SERVER_ADDRESS = (String) tokenizer.nextElement();
         }
