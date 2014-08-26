@@ -44,8 +44,14 @@ public class LocationsFragment extends Fragment {
             if (listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
-            Log.d(TAG, "Problem " + App.loadLoginData().getPassword());
-//            Log.d(TAG, "Problem " + App.loadUserData().getUserLocation().getLabel());
+        }
+    };
+    private final BroadcastReceiver receiverStatus = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "Event: onReceive called");
+            Log.d(TAG, "User location is now: " + App.loadUserData().getUserLocation().getLabel());
             statusCard.initLocation(App.loadUserData().getUserLocation());
             statusCard.setOnClickListener(null);
             statusCard.setClickable(false);
@@ -78,6 +84,8 @@ public class LocationsFragment extends Fragment {
         listAdapter = new ExpandableListAdapter(context, locationsArray);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverLocations,
                 new IntentFilter(Settings.BROADCAST_INTENT_UPDATE_DATA));
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiverStatus,
+                new IntentFilter(Settings.BROADCAST_INTENT_NEW_LOCATION));
         dm = new DrawableManager();
     }
 
@@ -88,6 +96,8 @@ public class LocationsFragment extends Fragment {
         context = getActivity();
         cardView = (CardView) view.findViewById(R.id.cardStatus);
         cardView.setCard(this.statusCard);
+        ImageView currentRoom = (ImageView) view.findViewById(R.id.colorBorder);
+        dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", currentRoom, true);
         final ExpandableListView expandableListView = (ExpandableListView) view.findViewById(R.id.listView);
         expandableListView.setGroupIndicator(null);
         expandableListView.setDivider(getResources().getDrawable(R.drawable.divider));
@@ -184,7 +194,7 @@ public class LocationsFragment extends Fragment {
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
             String headerTitle = getGroup(groupPosition).getLabel();
-            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size() + "   " + "{fa-trophy}" + " " + App.getDataManager().getAchievements().size();
+            String headerStats = "{fa-users}" + " " + App.getPeopleAtLocation(locationsList.get(groupPosition)).size();
             if (convertView == null) {
                 LayoutInflater infalInflater = (LayoutInflater) this.context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -199,7 +209,7 @@ public class LocationsFragment extends Fragment {
             lblListHeader.setText(headerTitle);
             lblListHeaderVisits.setText(headerStats);
             ImageView locationPic = (ImageView) convertView.findViewById(R.id.locationImage);
-            dm.fetchDrawableOnThread("http://java.sogeti.nl/JavaBlog/wp-content/uploads/2009/04/android_icon_256.png", locationPic);
+            dm.fetchDrawableOnThread("http://cdn.homeidea.pics/images/images.businessweek.com/ss/06/11/1117_home_offices/image/gourmet.jpg", locationPic, true);
             return convertView;
         }
 

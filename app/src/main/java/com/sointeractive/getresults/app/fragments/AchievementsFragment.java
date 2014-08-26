@@ -65,8 +65,8 @@ public class AchievementsFragment extends Fragment {
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverAchievements,
                 new IntentFilter(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT));
         context = this.getActivity();
-        initAchievementCards();
         cardGridAdapter = new CardGridArrayAdapter(context, achievementCards);
+        initAchievementCards();
     }
 
 
@@ -95,11 +95,15 @@ public class AchievementsFragment extends Fragment {
     }
 
     void initAchievementCards() {
+        if (achievementCards.size() > 0 ) {
+            achievementCards.clear();
+        }
         for (Achievement a : App.getDataManager().getAchievements()) {
             //Create a Card
             Card card = new AchievementCard(context, a);
             achievementCards.add(card);
         }
+        cardGridAdapter.notifyDataSetChanged();
     }
 
 

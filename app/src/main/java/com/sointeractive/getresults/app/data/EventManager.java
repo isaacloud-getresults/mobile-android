@@ -1,14 +1,19 @@
 package com.sointeractive.getresults.app.data;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.widget.Toast;
 
+import com.sointeractive.getresults.app.R;
+import com.sointeractive.getresults.app.activities.MainActivity;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
@@ -104,13 +109,18 @@ public class EventManager {
         private final String TAG = EventPostNewBeacon.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
+        String minor;
+        String major;
 
         @Override
         protected Object doInBackground(String... data) {
+            generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.d(TAG, "Action: sending new beacon event");
             try {
                 JSONObject body = new JSONObject();
-                body.put("place", data[0] + "." + data[1]);
+                major = data[0];
+                minor = data[1];
+                body.put("place", major + "." + minor);
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
             } catch (IsaaCloudConnectionException e) {
@@ -126,7 +136,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             // GET ACTUAL LOCATION EVENT
-            new EventGetNewLocation().execute();
+            new EventGetNewLocation().execute(major, minor);
             if (isError) {
                 Log.e(TAG, "Error: Cannot post new beacon");
             }
@@ -140,7 +150,7 @@ public class EventManager {
     // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
     ////////////////////////////////////////////////////////////////////
 
-    private class EventGetNewLocation extends AsyncTask<Object, Object, Object> {
+    private class EventGetNewLocation extends AsyncTask<String, Object, Object> {
 
 
         final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
@@ -150,7 +160,7 @@ public class EventManager {
         boolean isError = false;
 
         @Override
-        protected Object doInBackground(Object... beaconId) {
+        protected Object doInBackground(String... data) {
             try {
                 int id = userData.getUserId();
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).get();
@@ -168,7 +178,26 @@ public class EventManager {
                 String counterLevel = json.getString("level");
                 userData.setLevel(counterLevel);
                 userData.setGainedAchievements("" + gainedAchievements.length());
+                userData.setLeaderboardData(json);
                 App.saveUserData(userData);
+                // if on entering the room
+                if (data.length > 0 ) {
+                    try {
+                        // SEND GROUP EVENT
+                        JSONObject body = new JSONObject();
+                        body.put("place", data[0] + "." + data[1] + "." + "group");
+                        response = App.getIsaacloudConnector().event(userData.getUserLocationId(),
+                                "GROUP", "PRIORITY_NORMAL", 1, "NORMAL", body);
+                        Log.d(TAG, "Group message event response:" + response.toString());
+                    } catch (IsaaCloudConnectionException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        isError = true;
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -270,12 +299,10 @@ public class EventManager {
                     entries.get(p.getLocation()).add(p);
                     // CHECK ACTUAL USER POSITION:
                     if (p.getId() == App.loadUserData().getUserId()) {
-                        if (p.getLocation() != App.loadUserData().getUserLocationId()) {
-                            UserData userData = App.loadUserData();
-                            userData.setUserLocation(p.getId());
-                            App.saveUserData(userData);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
-                        }
+                        UserData userData = App.loadUserData();
+                        userData.setUserLocation(p.getLocation());
+                        App.saveUserData(userData);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
                     }
                 }
                 App.getDataManager().setPeople(entries);
@@ -415,17 +442,34 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             if (entries.size() != 0) {
-                if (App.getDataManager().isNewNotification(entries.get(0))) {
-                    final String message = entries.get(0).getMessage();
-                    if (message != null) {
+                for (int i = 0; i < entries.size(); i++) {
+                    if (App.getDataManager().isNewNotification(entries.get(i))) {
+                        final String message = entries.get(i).getMessage();
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
-                    }
-                    Log.d(TAG, "NOTIFICATION = NEW");
+                        Log.d(TAG, "NOTIFICATION = NEW");
+                    } else Log.d(TAG, "NOTIFICATION = NONE");
                 }
-            } else Log.d(TAG, "NOTIFICATION = NONE");
+            }
         }
     }
 
+    private static void generateNotification(String ticker, String title, String message) {
+          Intent notificationIntent;
+          notificationIntent = new Intent(context, MainActivity.class);
+          notificationIntent.putExtra("achPointer", 1);
+          PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+          NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                   .setSmallIcon(R.drawable.ic_launcher)
+                   .setTicker(ticker)
+                   .setContentTitle(title)
+                   .setContentIntent(intent)
+                   .setContentText(message)
+                   .setAutoCancel(true)
+                   .setDefaults(android.app.Notification.DEFAULT_ALL);
+          NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+          mNotificationManager.notify(notificationId, mBuilder.build());
+          notificationId++;
+          }
 }

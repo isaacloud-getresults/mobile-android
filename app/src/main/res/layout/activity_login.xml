@@ -28,7 +28,8 @@
                 android:layout_height="@dimen/login_items_height"
                 android:layout_marginTop="30dp"
                 android:inputType="textEmailAddress"
-                android:text="getresults@gmail.com"/>
+                android:text="getresults@gmail.com"
+                android:textColor="@color/color_theme_text_dark"/>
 
 
             <EditText
@@ -38,7 +39,8 @@
                 android:layout_height="@dimen/login_items_height"
                 android:layout_marginTop="5dp"
                 android:inputType="textPassword"
-                android:text="Google@1998"/>
+                android:text="Google@1998"
+                android:textColor="@color/color_theme_text_dark"/>
 
             <CheckBox
                 android:id="@+id/rememberCheckBox"

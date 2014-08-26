@@ -29,7 +29,7 @@ import java.util.List;
 public class TrackService extends Service {
     private static final String TAG = TrackService.class.getSimpleName();
     //
-    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.ESTIMOTE_PROXIMITY_UUID, 6000, null);
+    private static final Region ALL_ESTIMOTE_BEACONS = new Region("regionId", Settings.BEACON_PROXIMITY_UUID, 6000, null);
     private static final SparseArray<ArrayList<Double>> beaconDistances = new SparseArray<ArrayList<Double>>();
     private static final HashMap<String, Beacon> beaconMap = new HashMap<String, Beacon>();
     private static final HashMap<String, Integer> counterMap = new HashMap<String, Integer>();
@@ -144,14 +144,12 @@ public class TrackService extends Service {
             helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
             if (!(majors.contains(b.getMacAddress()))) {
-                if (readyToSend(b, true)) {
                     majors.add(b.getMacAddress());
                     Toast.makeText(getApplicationContext(), "Entered " + b.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
                     lastBeacon = b;
 //                    v.vibrate(0);
-                }
             } else previousFlag = false;
             if (!internetConnection)
                 Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
@@ -186,7 +184,7 @@ public class TrackService extends Service {
             Toast.makeText(getApplicationContext(), "i = " + i, Toast.LENGTH_SHORT).show();
         }
         previousFlag = flag;
-        if (counterMap.get(mac) == 5) {
+        if (counterMap.get(mac) == 2) {
             counterMap.remove(mac);
             return true;
         }
@@ -223,7 +221,7 @@ public class TrackService extends Service {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    return;
+
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
             }

@@ -3,6 +3,7 @@ package com.sointeractive.getresults.app.data;
 import android.content.Context;
 import android.util.Log;
 
+import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.isaacloud.LoginData;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
 
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.util.StringTokenizer;
 
 /**
  * This is a helper class for saving and loading files from the application
@@ -112,6 +114,7 @@ class FileManager {
         File checkFile = new File(app.getFilesDir(), configDataFileName);
         if (!checkFile.exists()) {
             saveConfigData("", app);
+            Log.d("Settings: ", "File does not exist");
         }
         //load the file
         try {
@@ -129,12 +132,15 @@ class FileManager {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        saveConfigData(data, app);
+        Log.d("Settings: ", "data: " + data);
         return data;
     }
 
     public void saveConfigData(String data, App app) {
         //save the file
         try {
+            Log.d("Settings: ", "Data saved in the file");
             FileOutputStream fos = app.openFileOutput(configDataFileName,
                     Context.MODE_PRIVATE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -143,9 +149,19 @@ class FileManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        StringTokenizer tokenizer = new StringTokenizer((data), "/");
-//        Settings.instanceId = (String) tokenizer.nextElement();
-//        Settings.appSecret = (String) tokenizer.nextElement();
+        if(!data.equals("")) {
+            StringTokenizer tokenizer = new StringTokenizer(data);
+            Settings.INSTANCE_ID = (String) tokenizer.nextElement();
+            Log.d("Settings: ", Settings.INSTANCE_ID);
+            Settings.APP_SECRET = (String) tokenizer.nextElement();
+            Log.d("Settings: ", Settings.APP_SECRET);
+            Settings.BEACON_PROXIMITY_UUID = (String) tokenizer.nextElement();
+            Log.d("Settings: ", Settings.BEACON_PROXIMITY_UUID);
+            Settings.PEBBLE_NOTIFICATION_ID = Integer.valueOf((String)tokenizer.nextElement());
+            Settings.ANDROID_NOTIFICATION_ID = Integer.valueOf((String)tokenizer.nextElement());
+            Settings.LOCATION_COUNTER = (String) tokenizer.nextElement();
+            Settings.SERVER_ADDRESS = (String) tokenizer.nextElement();
+        }
     }
 
     public void resetUserData(App app) {

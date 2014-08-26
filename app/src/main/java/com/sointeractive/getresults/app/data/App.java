@@ -6,6 +6,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.LoginData;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
@@ -13,9 +14,12 @@ import com.sointeractive.getresults.app.data.isaacloud.UserData;
 import com.sointeractive.getresults.app.pebble.PebbleConnector;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import pl.sointeractive.isaacloud.Isaacloud;
+import pl.sointeractive.isaacloud.exceptions.InvalidConfigException;
 
 public class App extends Application {
     private static final String TAG = App.class.getSimpleName();
@@ -74,6 +78,14 @@ public class App extends Application {
     }
 
     public static Isaacloud getIsaacloudConnector() {
+        Map<String, String> config = new HashMap<String, String>();
+        config.put("instanceId", Settings.INSTANCE_ID);
+        config.put("appSecret", Settings.APP_SECRET);
+        try {
+            App.setIsaacloudConnector(new Isaacloud(config));
+        } catch (InvalidConfigException e) {
+            e.printStackTrace();
+        }
         return isaacloudConnector;
     }
 
