@@ -23,7 +23,7 @@ public class Settings {
     // Websocket
     public static String SERVER_ADDRESS; // "http://178.62.191.47:3001";
     // IC Data
-    public static int LEADERBOARD_ID = 1;
+    public static int LEADERBOARD_ID = 2;
     public static int PEBBLE_NOTIFICATION_ID; // 1;
     public static int ANDROID_NOTIFICATION_ID; // 2;
     public static String LOCATION_COUNTER; // 1; // location id counter from IsaaCloud

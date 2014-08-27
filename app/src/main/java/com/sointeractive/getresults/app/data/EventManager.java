@@ -397,7 +397,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA));
-            new EventCheckNotifications().execute();
+            //new EventCheckNotifications().execute();
             if (isError) {
                 Log.e(TAG, "Error: Cannot update data");
             }
@@ -420,9 +420,9 @@ public class EventManager {
             try {
                 Map<String, Object> query = new HashMap<String, Object>();
                 query.put("subjectId", App.loadUserData().getUserId());
-               // query.put("typeId", Settings.ANDROID_NOTIFICATION_ID);
+                query.put("typeId", Settings.ANDROID_NOTIFICATION_ID);
                 HttpResponse response = App.getIsaacloudConnector()
-                        .path("/queues/notifications").withQuery(query).withLimit(0).withCreatedAt(App.getDataManager().getLastNotification().getCreatedAt().getTime(), null).get();
+                        .path("/queues/notifications").withQuery(query).withLimit(1).withCreatedAt(App.getDataManager().getLastNotification().getCreatedAt().getTime(), null).get();
                 JSONArray array = response.getJSONArray();
                 for (int i = 0; i < array.length(); i++) {
                     entries.add(new Notification((JSONObject) array.get(i)));
