@@ -20,7 +20,6 @@ import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.checker.NewAchievementsChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -417,7 +416,6 @@ public class EventManager {
                     i++;
                 }
                 App.getDataManager().setAchievements(newAchievements);
-                NewAchievementsChecker.notifyAchievements(recentAchievements);
                 for (final Achievement achievement : recentAchievements) {
                     final Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
