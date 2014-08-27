@@ -173,12 +173,11 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected void onPostExecute(Object result) {
-            Log.d(TAG, "onPostExecute()");
             dialog.dismiss();
             if (success) {
                 new EventGetLocations().execute();
             } else {
-                // TODO: error login activity here;
+                Log.e(TAG, "Error: Cannot register user");
             }
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();

@@ -2,9 +2,6 @@ package com.sointeractive.getresults.app.pebble.responses;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class EmptyResponse implements ResponseItem {
     public static final ResponseItem INSTANCE = new EmptyResponse();
 
@@ -12,7 +9,12 @@ public class EmptyResponse implements ResponseItem {
         // Exists only to defeat instantiation.
     }
 
-    public List<PebbleDictionary> getData() {
-        return new LinkedList<PebbleDictionary>();
+    public PebbleDictionary getData() {
+        return new PebbleDictionary();
+    }
+
+    @Override
+    public int getSize() {
+        return 0;
     }
 }

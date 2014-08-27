@@ -75,6 +75,7 @@ public class MainActivity extends FragmentActivity implements
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         getApplicationContext().startService(i);
+//        Log.e(TAG, "DEBUG MODE: NO TRACK SERVICE");
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
     }

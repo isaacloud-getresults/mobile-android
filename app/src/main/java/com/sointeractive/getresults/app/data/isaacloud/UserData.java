@@ -134,7 +134,7 @@ public class UserData implements Serializable {
         return null;
     }
 
-    public ResponseItem toLoginResponse(final String roomName, final int roomsNumber, final int achievementsNumber) {
-        return new LoginResponse(getName(), score, rank, roomName, roomsNumber, achievementsNumber);
+    public ResponseItem toLoginResponse(final String roomName, final int roomsNumber, final int achievementsNumber, final int achievementPages) {
+        return new LoginResponse(getName(), score, rank, roomName, roomsNumber, achievementsNumber, achievementPages);
     }
 }

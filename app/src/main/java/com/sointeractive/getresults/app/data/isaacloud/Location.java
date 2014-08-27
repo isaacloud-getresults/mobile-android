@@ -45,7 +45,7 @@ public class Location implements Serializable {
         this.label = label;
     }
 
-    public ResponseItem toBeaconResponse(final int peopleNumber) {
-        return new BeaconResponse(id, label, peopleNumber);
+    public ResponseItem toBeaconResponse(final int peopleNumber, final int peoplePages) {
+        return new BeaconResponse(id, label, peopleNumber, peoplePages);
     }
 }

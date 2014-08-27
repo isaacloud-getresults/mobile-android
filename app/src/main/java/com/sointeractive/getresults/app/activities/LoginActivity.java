@@ -668,9 +668,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             JSONObject json;
             try {
                 json = readJsonFromUrl(params[0]);
-            } catch(JSONException e) {json = null;}
-            catch(IOException e) {json = null;}
-            if(json != null) Log.d(TAG, "JSON: " + json.toString());
+            } catch (JSONException e) {
+                json = null;
+            } catch (IOException e) {
+                json = null;
+            }
+            if (json != null) Log.d(TAG, "JSON: " + json.toString());
             else Log.d(TAG, "JSON: null");
             return json;
         }

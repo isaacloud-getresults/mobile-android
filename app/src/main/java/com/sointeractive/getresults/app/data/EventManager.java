@@ -20,7 +20,7 @@ import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.checker.NewAchievementsNotifier;
+import com.sointeractive.getresults.app.pebble.checker.NewAchievementsChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +47,25 @@ public class EventManager {
         context = App.getInstance().getApplicationContext();
     }
 
+    private static void generateNotification(String ticker, String title, String message) {
+        Intent notificationIntent;
+        notificationIntent = new Intent(context, MainActivity.class);
+        notificationIntent.putExtra("achPointer", 1);
+        PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setTicker(ticker)
+                .setContentTitle(title)
+                .setContentIntent(intent)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setDefaults(android.app.Notification.DEFAULT_ALL);
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(notificationId, mBuilder.build());
+        notificationId++;
+    }
+
     public void postEventLogin() {
         new EventLogin().execute();
     }
@@ -63,6 +82,10 @@ public class EventManager {
     public void postEventUpdateData() {
         new EventUpdateData().execute();
     }
+
+    ///////////////////////////////////////////////////////////////////
+    // ============ POST EVENT WHEN NEW BEACON IS IN RANGE ============
+    ///////////////////////////////////////////////////////////////////
 
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
@@ -99,9 +122,9 @@ public class EventManager {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////
-    // ============ POST EVENT WHEN NEW BEACON IS IN RANGE ============
-    ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////
+    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
+    ////////////////////////////////////////////////////////////////////
 
     private class EventPostNewBeacon extends AsyncTask<String, Object, Object> {
 
@@ -146,9 +169,9 @@ public class EventManager {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////
-    // ============ GET ACTUAL LOCATION AFTER BEACON EVENT =============
-    ////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////
+    // ============ POST EVENT WHEN BEACON IS OUT OF RANGE ============
+    ///////////////////////////////////////////////////////////////////
 
     private class EventGetNewLocation extends AsyncTask<String, Object, Object> {
 
@@ -183,7 +206,7 @@ public class EventManager {
                 userData.setLeaderboardData(json);
                 App.saveUserData(userData);
                 // if on entering the room
-                if (data.length > 0 ) {
+                if (data.length > 0) {
                     try {
                         // SEND GROUP EVENT
                         JSONObject body = new JSONObject();
@@ -223,8 +246,6 @@ public class EventManager {
             }
             return null;
         }
-
-
 
         protected void onPostExecute(Object result) {
             // CHECK FOR NEW ACHIEVEMENTS
@@ -269,9 +290,9 @@ public class EventManager {
         }
     }
 
-    ///////////////////////////////////////////////////////////////////
-    // ============ POST EVENT WHEN BEACON IS OUT OF RANGE ============
-    ///////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////
+    // ================ UPDATE DATA EVENT ===============
+    /////////////////////////////////////////////////////
 
     private class EventPostLeftBeacon extends AsyncTask<String, Object, Object> {
 
@@ -313,14 +334,14 @@ public class EventManager {
         }
     }
 
-    /////////////////////////////////////////////////////
-    // ================ UPDATE DATA EVENT ===============
-    /////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////
+    // ================ CHECK ACHIEVEMENTS EVENT ===============
+    ////////////////////////////////////////////////////////////
 
     private class EventUpdateData extends AsyncTask<String, Object, Object> {
 
-        final boolean isError = false;
         private final String TAG = EventUpdateData.class.getSimpleName();
+        boolean isError = false;
         HttpResponse response;
 
         @Override
@@ -347,10 +368,10 @@ public class EventManager {
                     }
                     // CHECK ACTUAL USER POSITION:
                     if (p.getId() == App.loadUserData().getUserId()) {
-                            UserData userData = App.loadUserData();
-                            userData.setUserLocation(p.getLocation());
-                            App.saveUserData(userData);
-                            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
+                        UserData userData = App.loadUserData();
+                        userData.setUserLocation(p.getLocation());
+                        App.saveUserData(userData);
+                        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
                     }
                 }
                 App.getDataManager().setPeople(entries);
@@ -363,6 +384,10 @@ public class EventManager {
             } catch (IOException e) {
                 Log.e(TAG, "Error: IO, " + e.getMessage());
                 e.printStackTrace();
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Error: Null pointer, " + e.getMessage());
+                e.printStackTrace();
+                isError = true;
             }
             return null;
         }
@@ -377,10 +402,6 @@ public class EventManager {
             }
         }
     }
-
-    ////////////////////////////////////////////////////////////
-    // ================ CHECK ACHIEVEMENTS EVENT ===============
-    ////////////////////////////////////////////////////////////
 
     private class EventCheckAchievements extends AsyncTask<Object, Object, Object> {
 
@@ -442,7 +463,7 @@ public class EventManager {
                     i++;
                 }
                 App.getDataManager().setAchievements(newAchievements);
-                NewAchievementsNotifier.notifyAchievements(recentAchievements);
+                NewAchievementsChecker.notifyAchievements(recentAchievements);
                 for (Achievement achievement : recentAchievements) {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
@@ -458,7 +479,7 @@ public class EventManager {
 
     private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
 
-        List<Notification> entries = new ArrayList<Notification>();
+        final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
         protected Object doInBackground(Object... params) {
@@ -492,30 +513,13 @@ public class EventManager {
             if (entries.size() != 0) {
                 for (int i = 0; i < entries.size(); i++) {
                     if (App.getDataManager().isNewNotification(entries.get(i))) {
-                        Toast.makeText(context, entries.get(i).getMessage(), Toast.LENGTH_SHORT).show();
+                        final String message = entries.get(i).getMessage();
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
                         Log.d(TAG, "NOTIFICATION = NEW");
                     } else Log.d(TAG, "NOTIFICATION = NONE");
                 }
             }
         }
     }
-
-    private static void generateNotification(String ticker, String title, String message) {
-          Intent notificationIntent;
-          notificationIntent = new Intent(context, MainActivity.class);
-          notificationIntent.putExtra("achPointer", 1);
-          PendingIntent intent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-          NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                   .setSmallIcon(R.drawable.ic_launcher)
-                   .setTicker(ticker)
-                   .setContentTitle(title)
-                   .setContentIntent(intent)
-                   .setContentText(message)
-                   .setAutoCancel(true)
-                   .setDefaults(android.app.Notification.DEFAULT_ALL);
-          NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-          mNotificationManager.notify(notificationId, mBuilder.build());
-          notificationId++;
-          }
 }

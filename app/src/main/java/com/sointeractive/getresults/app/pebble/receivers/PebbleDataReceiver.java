@@ -7,8 +7,8 @@ import android.util.Log;
 import com.sointeractive.android.kit.PebbleKit;
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.config.Settings;
+import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.pebble.communication.Request;
-import com.sointeractive.getresults.app.pebble.communication.Responder;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import java.util.Collection;
@@ -42,6 +42,6 @@ public class PebbleDataReceiver extends PebbleKit.PebbleDataReceiver {
 
     private void response(final PebbleDictionary data) {
         final Collection<ResponseItem> response = Request.getResponse(data);
-        Responder.sendResponseItemsToPebble(response);
+        App.getPebbleConnector().sendDataToPebble(response);
     }
 }
