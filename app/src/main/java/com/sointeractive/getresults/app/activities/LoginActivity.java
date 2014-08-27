@@ -21,6 +21,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -238,7 +239,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         //<DEBUG_ONLY>
         // TODO: Remove this from code
-        /*try {
+        try {
             generateFakeData();
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -248,7 +249,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     final int achievementsNumber = achievements.size();
                     try {
                         final JSONObject achievementsJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
-                        achievements.add(0, new Achievement(achievementsJSON, true, 1));
+                        final Achievement achievement = new Achievement(achievementsJSON, true, 1);
+                        achievement.setImageUrl("http://chart.apis.google.com/chart?chs=200x200&cht=qr&chld=%7C1&chl=http%3A%2F%2Fxyz.getresults.isaacloud.com%2F");
+                        achievements.add(0, achievement);
                     } catch (final JSONException e) {
                         Log.e(TAG, "Cannot add fake achievement");
                     }
@@ -270,15 +273,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             });
         } catch (final JSONException e) {
             Log.e(TAG, "Cannot create fake data");
-        }*/
+        }
     }
 
     private void generateFakeData() throws JSONException {
         App.getPebbleConnector().closePebbleApp();
 
         final int BEACONS = 16;
-        final int AVG_PEOPLE = 3;
-        final int ACHIEVEMENTS = 3;
+        final int AVG_PEOPLE = 0;
+        final int ACHIEVEMENTS = 0;
 
         // User
         final UserData userData = new UserData();
