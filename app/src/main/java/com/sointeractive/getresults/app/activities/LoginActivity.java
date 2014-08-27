@@ -19,7 +19,6 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -255,7 +254,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
-        try {
+        // TODO: Remove this from code
+        //<DEBUG_ONLY>
+
+        /*try {
             generateFakeData();
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -287,7 +289,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             });
         } catch (final JSONException e) {
             Log.e(TAG, "Cannot create fake data");
-        }
+        }*/
     }
 
     private void generateFakeData() throws JSONException {
@@ -344,6 +346,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         App.getPebbleConnector().clearSendingQueue();
         LoginCache.INSTANCE.logIn();
     }
+
+    //</DEBUG_ONLY>
 
     protected void onStart() {
         super.onStart();
