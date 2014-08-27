@@ -91,7 +91,19 @@ public class PeopleCache {
         } catch (final IndexOutOfBoundsException e) {
             Log.e(TAG, "Cannot get room " + roomId + " for pagination");
         }
+        setLastPageElements(pages);
         return pages;
+    }
+
+    private void setLastPageElements(final Iterable<List<ResponseItem>> roomPages) {
+        for (final List<ResponseItem> peoplePage : roomPages) {
+            if(peoplePage.isEmpty()){
+                continue;
+            }
+            final ResponseItem lastResponse = peoplePage.get(peoplePage.size() - 1);
+            final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
+            lastPersonResponse.setIsLast();
+        }
     }
 
     private void findChanges(final SparseArray<List<List<ResponseItem>>> oldPeopleInRoomPages) {
@@ -130,7 +142,7 @@ public class PeopleCache {
             final List<ResponseItem> page = pages.get(pageNumber);
             final ResponseItem lastResponse = page.get(page.size() - 1);
             final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
-            lastPersonResponse.setLast();
+            lastPersonResponse.setIsLast();
             return page;
         } catch (final IndexOutOfBoundsException e) {
             Log.e(TAG, "Error: Cannot get page " + pageNumber);

@@ -85,6 +85,18 @@ public class AchievementsCache {
             response.setPageNumber(pageNumber);
             achievementPages.get(pageNumber).add(response);
         }
+        setLastPageElements();
+    }
+
+    private void setLastPageElements() {
+        for (final List<ResponseItem> achievementPage : achievementPages) {
+            if(achievementPage.isEmpty()){
+                continue;
+            }
+            final ResponseItem lastResponse = achievementPage.get(achievementPage.size() - 1);
+            final AchievementInResponse lastAchievementResponse = (AchievementInResponse) lastResponse;
+            lastAchievementResponse.setIsLast();
+        }
     }
 
     public int getAchievementPagesNumber() {
@@ -93,11 +105,7 @@ public class AchievementsCache {
 
     public List<ResponseItem> getAchievementPage(final int pageNumber) {
         try {
-            final List<ResponseItem> achievementsPage = achievementPages.get(pageNumber);
-            final ResponseItem lastResponse = achievementsPage.get(achievementsPage.size() - 1);
-            final AchievementInResponse lastAchievementResponse = (AchievementInResponse) lastResponse;
-            lastAchievementResponse.setLast();
-            return achievementsPage;
+            return achievementPages.get(pageNumber);
         } catch (final IndexOutOfBoundsException e) {
             Log.e(TAG, "Error: Cannot get page " + pageNumber);
             return new LinkedList<ResponseItem>();

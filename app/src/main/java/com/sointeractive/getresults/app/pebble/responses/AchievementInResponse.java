@@ -41,7 +41,7 @@ public class AchievementInResponse implements ResponseItem {
         this.pageNumber = pageNumber;
     }
 
-    public void setLast() {
+    public void setIsLast() {
         this.isMoreResponsesOnPage = 0;
     }
 
