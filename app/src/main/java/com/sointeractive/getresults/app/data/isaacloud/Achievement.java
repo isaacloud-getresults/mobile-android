@@ -16,10 +16,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.lang.ref.SoftReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -98,36 +101,51 @@ public class Achievement {
         return descriptionResponse;
     }
 
+    private static final Map<String, Bitmap> badgeMap = new HashMap<String, Bitmap>();
+
     private Collection<ResponseItem> toAchievementBadgeResponse() {
         //<DEBUG_ONLY>
         // TODO: Remove this from code
-        try {
-            final Bitmap icon = new AsyncTask<String, Void, Bitmap>() {
-                @Override
-                protected Bitmap doInBackground(final String... strings) {
-                    try {
-                        final String src = strings[0];
-                        final URL url = new URL(src);
-                        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setDoInput(true);
-                        connection.connect();
-                        final InputStream input = connection.getInputStream();
-                        return BitmapFactory.decodeStream(input);
-                    } catch (final Exception e) {
-                        Log.e("BADGE", "Error");
-                        e.printStackTrace();
-                        return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-                    }
-                }
-            }.execute(getImageUrl()).get();
-            return AchievementBadgeResponse.getResponse(id, icon);
-        } catch (final Exception e){
-            Log.e("BADGE", "Error");
-            e.printStackTrace();
-            final Collection<ResponseItem> responseItems = new LinkedList<ResponseItem>();
-            responseItems.add(EmptyResponse.INSTANCE);
-            return responseItems;
+        final Collection<ResponseItem> emptyResponse = new LinkedList<ResponseItem>();
+        emptyResponse.add(EmptyResponse.INSTANCE);
+        final String src = getImageUrl();
+        if (src.isEmpty()) {
+            return emptyResponse;
         }
+
+        final Bitmap icon;
+        if (badgeMap.containsKey(src)) {
+            icon = badgeMap.get(src);
+        } else {
+            try {
+                icon = new AsyncTask<String, Void, Bitmap>() {
+                    @Override
+                    protected Bitmap doInBackground(final String... strings) {
+                        try {
+                            final String src = strings[0];
+                            final URL url = new URL(src);
+                            final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setDoInput(true);
+                            connection.connect();
+                            final InputStream input = connection.getInputStream();
+                            return BitmapFactory.decodeStream(input);
+                        } catch (final Exception e) {
+                            Log.e("BADGE", "Error");
+                            e.printStackTrace();
+                            return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+                        }
+                    }
+                }.execute(src).get();
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+                return emptyResponse;
+            } catch (final ExecutionException e) {
+                e.printStackTrace();
+                return emptyResponse;
+            }
+            badgeMap.put(src, icon);
+        }
+        return AchievementBadgeResponse.getResponse(id, icon);
         //</DEBUG_ONLY>
     }
 

@@ -25,6 +25,7 @@ public class AchievementBadgeResponse implements ResponseItem {
 
     private static final int IMAGE_WIDTH = 64;
     private static final int IMAGE_HEIGHT = 64;
+    private static final int TRANSPARENCY_THRESHOLD = 128;
 
     private final int id;
     private final int offset;
@@ -96,7 +97,7 @@ public class AchievementBadgeResponse implements ResponseItem {
         final int averageBrightness = getAverageBrightness(bitmapPixels);
         Log.v(TAG, "Average brightness: " + averageBrightness);
         for (final int pixel : bitmapPixels) {
-            if (isWhite(pixel, averageBrightness)) {
+            if (isWhite(pixel, averageBrightness) || isTransparent(pixel)) {
                 bitmapStringBuilder.append("1");
             } else {
                 bitmapStringBuilder.append("0");
@@ -106,16 +107,24 @@ public class AchievementBadgeResponse implements ResponseItem {
     }
 
     private static int getAverageBrightness(final int[] bitmapPixels) {
+        int nonTransparentPixelsNumber = 0;
         int brightnessSum = 0;
         for (final int pixel : bitmapPixels) {
-            brightnessSum += Color.red(pixel);
+            if(Color.alpha(pixel) > TRANSPARENCY_THRESHOLD) {
+                nonTransparentPixelsNumber += 1;
+                brightnessSum += Color.red(pixel);
+            }
         }
-        return brightnessSum / bitmapPixels.length;
+        return brightnessSum / nonTransparentPixelsNumber;
     }
 
     public static boolean isWhite(final int bitmapByte, final int threshold) {
         // Assuming that pixel is gray, so red == green == blue
         return Color.red(bitmapByte) > threshold;
+    }
+
+    private static boolean isTransparent(final int pixel) {
+        return Color.alpha(pixel) < TRANSPARENCY_THRESHOLD;
     }
 
     public static int[] getBitmapPixels(final Bitmap badge) {

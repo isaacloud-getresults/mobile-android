@@ -14,6 +14,7 @@ import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementOutResponse;
+import com.sointeractive.getresults.app.pebble.responses.EmptyResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonOutResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
@@ -100,7 +101,11 @@ public class PebbleConnector extends Observable {
         final String responseType = response.getClass().getSimpleName();
         final PebbleDictionary data = response.getData();
         Log.d(TAG, "Action: Sending " + responseType + ": " + data.toJsonString());
-        PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+        if (response == EmptyResponse.INSTANCE) {
+            onAckReceived();
+        } else {
+            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+        }
     }
 
     public void onAckReceived() {

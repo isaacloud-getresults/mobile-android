@@ -33,6 +33,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
+import com.google.common.collect.Lists;
 import com.sointeractive.getresults.app.R;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
@@ -57,6 +58,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,7 +108,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         context = this;
         Thread thread = new Thread(new InternetRunnable());
-        thread.start();
+        //<DEBUG_ONLY>
+        // TODO: Remove this from code
+        //thread.start();
+        //</DEBUG_ONLY>
         loginData = App.loadLoginData();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -248,9 +253,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     final List<Achievement> achievements = dm.getAchievements();
                     final int achievementsNumber = achievements.size();
                     try {
-                        final JSONObject achievementsJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
-                        final Achievement achievement = new Achievement(achievementsJSON, true, 1);
-                        achievement.setImageUrl("http://chart.apis.google.com/chart?chs=200x200&cht=qr&chld=%7C1&chl=http%3A%2F%2Fxyz.getresults.isaacloud.com%2F");
+                        final JSONObject achievementJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
+                        final Achievement achievement = getFakeAchievement(achievementJSON);
                         achievements.add(0, achievement);
                     } catch (final JSONException e) {
                         Log.e(TAG, "Cannot add fake achievement");
@@ -274,6 +278,19 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         } catch (final JSONException e) {
             Log.e(TAG, "Cannot create fake data");
         }
+    }
+
+    private final List<String> urls = new LinkedList<String>(Arrays.asList(
+            "http://chart.apis.google.com/chart?chs=200x200&cht=qr&chld=%7C1&chl=http%3A%2F%2Fxyz.getresults.isaacloud.com%2F"
+    ));
+
+    public Achievement getFakeAchievement(final JSONObject achievementJSON) throws JSONException {
+        final Achievement achievement = new Achievement(achievementJSON, true, 1);
+        final String imageUrl = urls.get(0);
+        urls.remove(0);
+        achievement.setImageUrl(imageUrl);
+        urls.add(imageUrl);
+        return achievement;
     }
 
     private void generateFakeData() throws JSONException {
@@ -314,8 +331,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         // Achievements
         final List<Achievement> achievements = new ArrayList<Achievement>();
         for (int i = 0; i < ACHIEVEMENTS; i++) {
-            final JSONObject achievementsJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
-            achievements.add(0, new Achievement(achievementsJSON, true, 1));
+            final JSONObject achievementJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
+            achievements.add(0, getFakeAchievement(achievementJSON));
         }
         dm.setAchievements(achievements);
 
