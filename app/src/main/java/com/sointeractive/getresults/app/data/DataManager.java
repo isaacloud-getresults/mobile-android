@@ -34,6 +34,15 @@ public class DataManager {
 
     }
 
+    public Notification getLastNotification() {
+        return lastNotification;
+    }
+
+    public void setLastNotification(Notification lastNotification) {
+        this.lastNotification = lastNotification;
+    }
+
+
     public List<Location> getLocations() {
         return locations;
     }
