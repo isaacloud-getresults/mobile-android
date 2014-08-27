@@ -20,7 +20,6 @@ import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.checker.NewAchievementsChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -178,11 +177,11 @@ public class EventManager {
 
         final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
         final UserData userData = App.loadUserData();
+        final List<Achievement> newAchievements = new ArrayList<Achievement>();
         private final String TAG = EventGetNewLocation.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
         SparseIntArray idMap = new SparseIntArray();
-        final List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -269,7 +268,6 @@ public class EventManager {
                     i++;
                 }
                 App.getDataManager().setAchievements(newAchievements);
-                NewAchievementsNotifier.notifyAchievements(recentAchievements);
                 for (Achievement achievement : recentAchievements) {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
@@ -463,7 +461,6 @@ public class EventManager {
                     i++;
                 }
                 App.getDataManager().setAchievements(newAchievements);
-                NewAchievementsChecker.notifyAchievements(recentAchievements);
                 for (Achievement achievement : recentAchievements) {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());

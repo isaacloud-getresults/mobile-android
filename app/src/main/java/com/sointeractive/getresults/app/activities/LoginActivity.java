@@ -235,9 +235,9 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
-        // TODO: Remove this from code
-        //<DEBUG_ONLY>
 
+        //<DEBUG_ONLY>
+        // TODO: Remove this from code
         /*try {
             generateFakeData();
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
