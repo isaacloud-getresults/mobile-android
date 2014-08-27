@@ -19,7 +19,7 @@ public class LoginData implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -27,7 +27,7 @@ public class LoginData implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -35,7 +35,7 @@ public class LoginData implements Serializable {
         return remembered;
     }
 
-    public void setRemembered(boolean remembered) {
+    public void setRemembered(final boolean remembered) {
         this.remembered = remembered;
     }
 }

@@ -54,10 +54,10 @@ public class LoginCache {
 
     private ResponseItem getLoginResponse(final UserData userData) {
         final String roomName = BeaconsCache.INSTANCE.getRoomName(userData.getUserLocationId());
-        final int roomsNumber = BeaconsCache.INSTANCE.getSize();
+        final int roomsPages = BeaconsCache.INSTANCE.getBeaconPagesNumber();
         final int achievementsNumber = AchievementsCache.INSTANCE.getSize();
-        final int achievementPages = AchievementsCache.INSTANCE.getAchievementPages();
-        return userData.toLoginResponse(roomName, roomsNumber, achievementsNumber, achievementPages);
+        final int achievementPages = AchievementsCache.INSTANCE.getAchievementPagesNumber();
+        return userData.toLoginResponse(roomName, roomsPages, achievementsNumber, achievementPages);
     }
 
     public void clear() {

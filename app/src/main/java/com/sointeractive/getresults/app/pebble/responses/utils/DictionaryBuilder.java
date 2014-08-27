@@ -23,6 +23,12 @@ public class DictionaryBuilder {
         return this;
     }
 
+    public DictionaryBuilder addBytes(final byte[] value) {
+        dictionary.addBytes(currentIndex, value);
+        currentIndex += 1;
+        return this;
+    }
+
     public PebbleDictionary build() {
         return dictionary;
     }

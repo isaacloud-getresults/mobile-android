@@ -20,7 +20,7 @@ public class AchievementsCache {
     private static final String TAG = AchievementsCache.class.getSimpleName();
 
     private static final SparseArray<Collection<ResponseItem>> achievementDescriptionResponses = new SparseArray<Collection<ResponseItem>>();
-    private static List<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
+    private static List<List<ResponseItem>> achievementPages = new LinkedList<List<ResponseItem>>();
     private static Collection<ResponseItem> achievementsResponse = new LinkedList<ResponseItem>();
 
     private int observedPage = -1;
@@ -41,7 +41,7 @@ public class AchievementsCache {
     }
 
     public void reload() {
-        final List<List<ResponseItem>> oldAchievementPages = pages;
+        final List<List<ResponseItem>> oldAchievementPages = achievementPages;
 
         final Collection<Achievement> achievements = App.getDataManager().getAchievements();
         achievementsResponse = makeResponse(achievements);
@@ -52,8 +52,8 @@ public class AchievementsCache {
 
     private void findChanges(final List<List<ResponseItem>> oldAchievementPages) {
         try {
-            NewAchievementsChecker.check(oldAchievementPages.get(observedPage), pages.get(observedPage));
-        } catch (IndexOutOfBoundsException e) {
+            NewAchievementsChecker.check(oldAchievementPages.get(observedPage), achievementPages.get(observedPage));
+        } catch (final IndexOutOfBoundsException e) {
             if (observedPage == -1) {
                 Log.d(TAG, "No achievement page is observed");
             } else {
@@ -69,48 +69,39 @@ public class AchievementsCache {
     }
 
     private void paginateAchievements() {
-        pages = new LinkedList<List<ResponseItem>>();
-        int totalMemory = App.getPebbleConnector().getMemory();
-        int currentMemory = 0;
-        int pageNumber = -1;
+        achievementPages = new LinkedList<List<ResponseItem>>();
+        achievementPages.add(new LinkedList<ResponseItem>());
+        int pageNumber = 0;
         int items = 0;
-        for (ResponseItem generalResponse : achievementsResponse) {
-            AchievementInResponse response = (AchievementInResponse) generalResponse;
-            final int responseSize = response.getSize();
-            if (responseSize > totalMemory) {
-                continue;
-            }
+        for (final ResponseItem generalResponse : achievementsResponse) {
+            final AchievementInResponse response = (AchievementInResponse) generalResponse;
             response.setIsMore();
-            if (responseSize > currentMemory || items >= Settings.MAX_ACHIEVEMENTS_PER_PAGE) {
+            if (items >= Settings.MAX_ACHIEVEMENTS_PER_PAGE) {
                 items = 0;
                 pageNumber += 1;
-                pages.add(new LinkedList<ResponseItem>());
-                currentMemory = totalMemory;
+                achievementPages.add(new LinkedList<ResponseItem>());
             }
             items += 1;
-            currentMemory -= responseSize;
             response.setPageNumber(pageNumber);
-            pages.get(pageNumber).add(response);
+            achievementPages.get(pageNumber).add(response);
         }
     }
 
-    public void clearObservedPage() {
-        observedPage = -1;
+    public int getAchievementPagesNumber() {
+        return achievementPages.size();
     }
 
-    public int getAchievementPages() {
-        return pages.size();
-    }
-
-    public List<ResponseItem> getAchievementsPage(final int pageNumber) {
-        if (pageNumber >= getAchievementPages()) {
+    public List<ResponseItem> getAchievementPage(final int pageNumber) {
+        try {
+            final List<ResponseItem> achievementsPage = achievementPages.get(pageNumber);
+            final ResponseItem lastResponse = achievementsPage.get(achievementsPage.size() - 1);
+            final AchievementInResponse lastAchievementResponse = (AchievementInResponse) lastResponse;
+            lastAchievementResponse.setLast();
+            return achievementsPage;
+        } catch (final IndexOutOfBoundsException e) {
+            Log.e(TAG, "Error: Cannot get page " + pageNumber);
             return new LinkedList<ResponseItem>();
         }
-        final List<ResponseItem> achievementsPage = pages.get(pageNumber);
-        final ResponseItem lastResponse = achievementsPage.get(achievementsPage.size() - 1);
-        final AchievementInResponse lastAchievementResponse = (AchievementInResponse) lastResponse;
-        lastAchievementResponse.setLast();
-        return achievementsPage;
     }
 
     public int getSize() {
@@ -124,5 +115,9 @@ public class AchievementsCache {
     public void setObservedPage(final int observedPage) {
         Log.i(TAG, "Action: Set observed page to: " + observedPage);
         this.observedPage = observedPage;
+    }
+
+    public void clearObservedPage() {
+        observedPage = -1;
     }
 }

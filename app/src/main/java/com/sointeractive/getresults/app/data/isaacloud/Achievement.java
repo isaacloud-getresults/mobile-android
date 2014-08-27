@@ -1,13 +1,26 @@
 package com.sointeractive.getresults.app.data.isaacloud;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Base64;
+import android.util.Log;
+
+import com.sointeractive.getresults.app.pebble.responses.AchievementBadgeResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
+import com.sointeractive.getresults.app.pebble.responses.EmptyResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Data store class for Achievements.
@@ -22,19 +35,19 @@ public class Achievement {
 
     private int id;
 
-    public Achievement(JSONObject json, boolean isGained, int amount) throws JSONException {
-        this.setId(json.getInt("id"));
-        this.setLabel(json.getString("label"));
-        this.setDesc(json.getString("description"));
-        this.setGained(isGained);
-        this.setCounter(amount);
+    public Achievement(final JSONObject json, final boolean isGained, final int amount) throws JSONException {
+        setId(json.getInt("id"));
+        setLabel(json.getString("label"));
+        setDesc(json.getString("description"));
+        setGained(isGained);
+        setCounter(amount);
     }
 
     public String getLabel() {
         return label;
     }
 
-    void setLabel(String label) {
+    void setLabel(final String label) {
         this.label = label;
     }
 
@@ -42,7 +55,7 @@ public class Achievement {
         return description;
     }
 
-    void setDesc(String desc) {
+    void setDesc(final String desc) {
         this.description = desc;
     }
 
@@ -50,7 +63,7 @@ public class Achievement {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(final String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
@@ -58,7 +71,7 @@ public class Achievement {
         return isGained;
     }
 
-    void setGained(boolean isGained) {
+    void setGained(final boolean isGained) {
         this.isGained = isGained;
     }
 
@@ -70,7 +83,7 @@ public class Achievement {
         return counter;
     }
 
-    void setCounter(int counter) {
+    void setCounter(final int counter) {
         this.counter = counter;
     }
 
@@ -79,7 +92,43 @@ public class Achievement {
     }
 
     public Collection<ResponseItem> toAchievementDescriptionResponse() {
-        return AchievementDescriptionResponse.getResponse(id, description);
+        final Collection<ResponseItem> descriptionResponse = AchievementDescriptionResponse.getResponse(id, description);
+        final Collection<ResponseItem> badgeResponse = toAchievementBadgeResponse();
+        descriptionResponse.addAll(badgeResponse);
+        return descriptionResponse;
+    }
+
+    private Collection<ResponseItem> toAchievementBadgeResponse() {
+        //<DEBUG_ONLY>
+        // TODO: Remove this from code
+        try {
+            final Bitmap icon = new AsyncTask<String, Void, Bitmap>() {
+                @Override
+                protected Bitmap doInBackground(final String... strings) {
+                    try {
+                        final String src = strings[0];
+                        final URL url = new URL(src);
+                        final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setDoInput(true);
+                        connection.connect();
+                        final InputStream input = connection.getInputStream();
+                        return BitmapFactory.decodeStream(input);
+                    } catch (final Exception e) {
+                        Log.e("BADGE", "Error");
+                        e.printStackTrace();
+                        return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+                    }
+                }
+            }.execute(getImageUrl()).get();
+            return AchievementBadgeResponse.getResponse(id, icon);
+        } catch (final Exception e){
+            Log.e("BADGE", "Error");
+            e.printStackTrace();
+            final Collection<ResponseItem> responseItems = new LinkedList<ResponseItem>();
+            responseItems.add(EmptyResponse.INSTANCE);
+            return responseItems;
+        }
+        //</DEBUG_ONLY>
     }
 
     public int getId() {

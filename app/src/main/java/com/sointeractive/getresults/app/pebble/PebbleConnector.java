@@ -98,9 +98,8 @@ public class PebbleConnector extends Observable {
 
     private void send(final ResponseItem response) {
         final String responseType = response.getClass().getSimpleName();
-        final int size = response.getSize();
-        PebbleDictionary data = response.getData();
-        Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
+        final PebbleDictionary data = response.getData();
+        Log.d(TAG, "Action: Sending " + responseType + ": " + data.toJsonString());
         PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
     }
 
@@ -121,6 +120,7 @@ public class PebbleConnector extends Observable {
         if (connectionState != currentState) {
             connectionState = currentState;
             if (currentState) {
+                Log.d(TAG, "Action: Resume sending");
                 sendNext();
             }
             setChanged();
@@ -158,28 +158,24 @@ public class PebbleConnector extends Observable {
         deleteResponses(PersonInResponse.class, PersonOutResponse.class);
     }
 
-    private void deleteResponses(Class<?>... classes) {
+    private void deleteResponses(final Class<?>... classes) {
         synchronized (sendingQueue) {
             final Collection<ResponseItem> responses = new LinkedList<ResponseItem>();
-            for (ResponseItem response : sendingQueue) {
+            for (final ResponseItem response : sendingQueue) {
                 if (classToDelete(classes, response)) {
                     responses.add(response);
                 }
             }
-            sendingQueue.removeAll(responses);
+            //sendingQueue.removeAll(responses);
         }
     }
 
     private boolean classToDelete(final Class<?>[] classes, final ResponseItem response) {
-        for (Class<?> cls : classes) {
+        for (final Class<?> cls : classes) {
             if (cls.isInstance(response)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public int getMemory() {
-        return Settings.MEMORY_AVAILABLE - BeaconsCache.INSTANCE.getMemoryUsage();
     }
 }

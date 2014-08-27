@@ -12,13 +12,13 @@ import it.gmariotti.cardslib.library.internal.Card;
 
 public class ProfileCard extends Card {
 
-    public ProfileCard(Context context, int layout) {
+    public ProfileCard(final Context context, final int layout) {
         super(context, layout);
-        this.setShadow(false);
+        setShadow(false);
     }
 
     @Override
-    public void setupInnerViewElements(ViewGroup parent, View view) {
+    public void setupInnerViewElements(final ViewGroup parent, final View view) {
         //Example on the card
 
         final TextView name = (TextView) view.findViewById(R.id.profile_card_text_name);

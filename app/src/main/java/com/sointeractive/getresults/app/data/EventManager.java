@@ -20,7 +20,6 @@ import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.checker.NewAchievementsChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,7 +84,6 @@ public class EventManager {
     }
 
 
-
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
         final UserData userData = App.loadUserData();
@@ -98,7 +96,7 @@ public class EventManager {
             try {
                 JSONObject body = new JSONObject();
                 body.put("activity", "login");
-                Log.d("EVENT", "SENDING LOGIN EVENT");
+                Log.v("EVENT", "SENDING LOGIN EVENT");
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
             } catch (IsaaCloudConnectionException e) {
@@ -138,7 +136,7 @@ public class EventManager {
         @Override
         protected Object doInBackground(String... data) {
             generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
-            Log.d("EVENT", "SENDING POST NEW LOCATION EVENT");
+            Log.v("EVENT", "SENDING POST NEW LOCATION EVENT");
             try {
                 JSONObject body = new JSONObject();
                 major = data[0];
@@ -178,17 +176,17 @@ public class EventManager {
 
         final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
         final UserData userData = App.loadUserData();
+        final List<Achievement> newAchievements = new ArrayList<Achievement>();
         private final String TAG = EventGetNewLocation.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
         SparseIntArray idMap = new SparseIntArray();
-        final List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(String... data) {
             try {
                 int id = userData.getUserId();
-                Log.d("EVENT", "SENDING GET NEW LOCATION EVENT");
+                Log.v("EVENT", "SENDING GET NEW LOCATION EVENT");
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).get();
                 Log.v(TAG, response.toString());
                 JSONObject json = response.getJSONObject();
@@ -210,7 +208,7 @@ public class EventManager {
                 if (data.length > 0) {
                     try {
                         // SEND GROUP EVENT
-                        Log.d("EVENT", "SENDING GROUP EVENT");
+                        Log.v("EVENT", "SENDING GROUP EVENT");
                         JSONObject body = new JSONObject();
                         body.put("place", data[0] + "." + data[1] + "." + "group");
                         response = App.getIsaacloudConnector().event(userData.getUserLocationId(),
@@ -272,7 +270,6 @@ public class EventManager {
                     i++;
                 }
                 App.getDataManager().setAchievements(newAchievements);
-                NewAchievementsChecker.notifyAchievements(recentAchievements);
                 for (Achievement achievement : recentAchievements) {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
@@ -307,7 +304,7 @@ public class EventManager {
         @Override
         protected Object doInBackground(String... data) {
 //            generateNotification("Left beacon range", "Outside location", "Meeting room");
-            Log.d("EVENT", "SENDING LEFT LOCATION EVENT");
+            Log.v("EVENT", "SENDING LEFT LOCATION EVENT");
             try {
                 JSONObject body = new JSONObject();
                 body.put("place", data[0] + "." + data[1] + ".exit");
@@ -356,7 +353,7 @@ public class EventManager {
             }
             entries.put(0, new LinkedList<Person>());
             try {
-                Log.d("EVENT", "GETTING ALL USERS");
+                Log.v("EVENT", "GETTING ALL USERS");
                 // USERS REQUEST
                 HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
                 Log.v(TAG, usersResponse.toString());
@@ -409,7 +406,7 @@ public class EventManager {
 
     private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
 
-        List<Notification> entries = new ArrayList<Notification>();
+        final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
         protected Object doInBackground(Object... params) {

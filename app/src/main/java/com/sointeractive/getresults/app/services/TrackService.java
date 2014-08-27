@@ -44,11 +44,8 @@ public class TrackService extends Service {
     private final BeaconManager beaconManager = new BeaconManager(this);
     private Beacon lastBeacon;
 
-    public TrackService() {
-    }
-
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(final Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -60,12 +57,12 @@ public class TrackService extends Service {
         serviceContext = this;
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
-            public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
+            public void onBeaconsDiscovered(final Region region, final List<Beacon> beacons) {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         temp = majors;
                         trackBeacons(beacons);
-                        for (Beacon beacon : beacons) {
+                        for (final Beacon beacon : beacons) {
                             writeDistance(beacon);
                             Log.v(TAG, "Event: Found beacon: " + beacon + " distance: " + Utils.computeAccuracy(beacon));
                         }
@@ -76,14 +73,14 @@ public class TrackService extends Service {
         });
     }
 
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {
                 try {
                     beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
                     Log.i(TAG, "Action: Start ranging");
-                } catch (RemoteException e) {
+                } catch (final RemoteException e) {
                     Log.e(TAG, "Error: Cannot start ranging", e);
                 }
             }
@@ -102,12 +99,12 @@ public class TrackService extends Service {
             App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()), Integer.toString(lastBeacon.getMinor()));
     }
 
-    void runOnUiThread(Runnable runnable) {
+    void runOnUiThread(final Runnable runnable) {
         handler.post(runnable);
     }
 
-    void writeDistance(Beacon beacon) {
-        ArrayList<Double> help;
+    void writeDistance(final Beacon beacon) {
+        final ArrayList<Double> help;
 
         if ((beaconDistances.size() == 0) || (beaconDistances.get(beacon.getMajor()) == null)) {
             help = new ArrayList<Double>();
@@ -136,11 +133,11 @@ public class TrackService extends Service {
     }
     */
 
-    void trackBeacons(List<Beacon> beacons) {
+    void trackBeacons(final List<Beacon> beacons) {
 
-        ArrayList<String> helper = new ArrayList<String>();
+        final ArrayList<String> helper = new ArrayList<String>();
 //        Vibrator v = (Vibrator) context.getSystemService((Context.VIBRATOR_SERVICE));
-        for (Beacon b : beacons) {
+        for (final Beacon b : beacons) {
             helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
             if (!(majors.contains(b.getMacAddress()))) {
@@ -156,8 +153,8 @@ public class TrackService extends Service {
         }
 
         temp = new ArrayList<String>(majors);
-        for (String i : temp) {
-            Beacon tempBeacon = beaconMap.get(i);
+        for (final String i : temp) {
+            final Beacon tempBeacon = beaconMap.get(i);
             if (!(helper.contains(i))) {
                 if (readyToSend(tempBeacon, true)) {
                     majors.remove(i);
@@ -170,8 +167,8 @@ public class TrackService extends Service {
         }
     }
 
-    private boolean readyToSend(Beacon b, boolean flag) {
-        String mac = b.getMacAddress();
+    private boolean readyToSend(final Beacon b, final boolean flag) {
+        final String mac = b.getMacAddress();
         Integer i;
 
         if (!counterMap.containsKey(mac) || flag != previousFlag) {
@@ -194,13 +191,13 @@ public class TrackService extends Service {
     public boolean hasActiveInternetConnection() {
         if (isNetworkAvailable()) {
             try {
-                HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+                final HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
                 urlc.setRequestProperty("User-Agent", "Test");
                 urlc.setRequestProperty("Connection", "close");
                 urlc.setConnectTimeout(1500);
                 urlc.connect();
                 return (urlc.getResponseCode() == 200);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 return false;
             }
         }
@@ -208,9 +205,9 @@ public class TrackService extends Service {
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
+        final ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
 
@@ -220,7 +217,7 @@ public class TrackService extends Service {
                 internetConnection = isNetworkAvailable();
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
 
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
