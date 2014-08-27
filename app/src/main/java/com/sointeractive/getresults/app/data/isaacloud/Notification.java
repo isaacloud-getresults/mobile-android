@@ -3,32 +3,47 @@ package com.sointeractive.getresults.app.data.isaacloud;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.util.Date;
+
 /**
  * Data store class for notifications.
  */
 
-public class Notification {
+public class Notification implements Serializable {
 
     private JSONObject data;
     private String title, message;
+    private Date createdAt;
 
-    public Notification(final JSONObject data, final String title, final String message) {
+    public Notification(JSONObject data,String message, Date createdAt) {
         this.data = data;
-        //this.title = title;
+        this.createdAt = createdAt;
+        this.title = null;
         this.message = message;
     }
 
-    public Notification(final JSONObject json) throws JSONException {
+    public Notification(JSONObject json) throws JSONException {
         this.data = json.getJSONObject("data");
+        this.createdAt = new Date(Long.valueOf(json.getString("createdAt")));
         //this.title = data.getString("");
         this.message = data.getJSONObject("body").getString("message");
+    }
+
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public JSONObject getData() {
         return data;
     }
 
-    public void setData(final JSONObject data) {
+    public void setData(JSONObject data) {
         this.data = data;
     }
 
@@ -36,7 +51,7 @@ public class Notification {
         return title;
     }
 
-    public void setTitle(final String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -44,7 +59,7 @@ public class Notification {
         return message;
     }
 
-    public void setMessage(final String message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
