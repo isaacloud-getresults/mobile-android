@@ -325,10 +325,12 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                         conf = json.getString("clientid") + " " + json.getString("androidsecret") + " " +
                         json.getString("uuid") + " " + json.getInt("pebbleNotification") + " " +
                         json.getInt("mobileNotification") + " " + json.getInt("counter") + " " + json.getString("websocket");
-                    } catch(JSONException e) {}
-                    App.saveConfigData(conf);
+                        App.saveConfigData(conf);
+                        Toast.makeText(getApplicationContext(), "Application is configured", Toast.LENGTH_SHORT).show();
+                    } catch(JSONException e) {
+                        Toast.makeText(this, "Something changed in JSON", Toast.LENGTH_SHORT);
+                    }
                     Log.d("Settings: ", "conf = " + conf);
-                    Toast.makeText(getApplicationContext(), "Application is configured\n" + conf, Toast.LENGTH_SHORT).show();
                 } else
                     Toast.makeText(getApplicationContext(), "Inappropriate QR code\n" + contents, Toast.LENGTH_SHORT).show();
             }

@@ -158,6 +158,8 @@ public class EventManager {
         private final String TAG = EventGetNewLocation.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
+        SparseIntArray idMap = new SparseIntArray();
+        final List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -198,6 +200,19 @@ public class EventManager {
                         e.printStackTrace();
                     }
                 }
+                for (int i = 0; i < gainedAchievements.length(); i++) {
+                    JSONObject jsonAch = (JSONObject) gainedAchievements.get(i);
+                    idMap.put(jsonAch.getInt("achievement"), jsonAch.getInt("amount"));
+                }
+                HttpResponse responseGeneral = App.getIsaacloudConnector()
+                        .path("/cache/achievements").withLimit(1000).get();
+                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                for (int i = 0; i < arrayGeneral.length(); i++) {
+                    JSONObject jsonAch = (JSONObject) arrayGeneral.get(i);
+                    if (idMap.get(jsonAch.getInt("id"), -1) != -1) {
+                        newAchievements.add(0, new Achievement(jsonAch, true, idMap.get(jsonAch.getInt("id"))));
+                    }
+                }
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -213,7 +228,36 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             // CHECK FOR NEW ACHIEVEMENTS
-            new EventCheckAchievements().execute();
+//            new EventCheckAchievements().execute();
+            List<Achievement> actualAchievements = App.getDataManager().getAchievements();
+            for (Achievement a : actualAchievements) {
+                Log.v(TAG, "old Achievements: " + a.getLabel());
+            }
+            for (Achievement a : newAchievements) {
+                Log.v(TAG, "new Achievements: " + a.getLabel());
+            }
+
+            if (newAchievements.size() != actualAchievements.size()) {
+                // search for new achievement
+                List<Achievement> recentAchievements = new LinkedList<Achievement>();
+                int i = 0;
+                while (i < newAchievements.size()) {
+                    if (!actualAchievements.contains(newAchievements.get(i))) {
+                        recentAchievements.add(newAchievements.get(i));
+                    }
+                    i++;
+                }
+                App.getDataManager().setAchievements(newAchievements);
+                NewAchievementsNotifier.notifyAchievements(recentAchievements);
+                for (Achievement achievement : recentAchievements) {
+                    Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
+                    intent.putExtra("label", achievement.getLabel());
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", achievement.getLabel());
+                }
+            } else {
+                Log.d(TAG, "No new achievements.");
+            }
             // send broadcast
             LocalBroadcastManager.getInstance(context).sendBroadcast(message);
             if (isError) {
@@ -298,7 +342,9 @@ public class EventManager {
                 for (int i = 0; i < usersArray.length(); i++) {
                     JSONObject userJson = (JSONObject) usersArray.get(i);
                     Person p = new Person(userJson);
-                    entries.get(p.getLocation()).add(p);
+                    if (entries.get(p.getLocation()) != null) {
+                        entries.get(p.getLocation()).add(p);
+                    }
                     // CHECK ACTUAL USER POSITION:
                     if (p.getId() == App.loadUserData().getUserId()) {
                             UserData userData = App.loadUserData();
@@ -401,12 +447,12 @@ public class EventManager {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-//                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", recentAchievement.getLabel());
+//                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", achievement.getLabel());
                 }
             } else {
                 Log.d(TAG, "No new achievements.");
             }
-            new EventCheckNotifications().execute();
+//            new EventCheckNotifications().execute();
         }
     }
 

@@ -29,6 +29,7 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
+        /*
         if (extras != null) {
             if (extras.containsKey("achPointer")) {
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -36,6 +37,7 @@ public class MainActivity extends FragmentActivity implements
                 finish();
             }
         }
+        */
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -80,6 +82,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+//        Toast.makeText(this, "onResume()", Toast.LENGTH_LONG).show();
         onNewIntent(getIntent());
     }
 

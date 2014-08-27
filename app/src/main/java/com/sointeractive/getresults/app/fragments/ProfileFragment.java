@@ -2,9 +2,11 @@ package com.sointeractive.getresults.app.fragments;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -112,8 +114,25 @@ public class ProfileFragment extends Fragment {
         userImage = (ImageView) view.findViewById(R.id.userImage);
         userImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(i, RESULT_LOAD_IMAGE);
+                    }
+                })
+                        .setMessage("Do you want to change your profile picture?")
+                        .setIcon(R.drawable.ic_launcher);
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
             }
         });
 
@@ -168,9 +187,10 @@ public class ProfileFragment extends Fragment {
 
         @Override
         public Object doInBackground(String... params) {
-            String url = "http://xyz.getresults.isaacloud.com/";
+            String url = "http://xyz.getresults.isaacloud.com/images/";
 
             File file = new File(params[0]);
+            Log.e("SendToServerTask", "Starting to send " + file.getName());
             try {
                 HttpClient httpclient = new DefaultHttpClient();
 
@@ -184,9 +204,10 @@ public class ProfileFragment extends Fragment {
                 HttpResponse response = httpclient.execute(httppost);
                 success = true;
                 //Do something with response...
+                Log.e("HttpResponse", response.toString());
 
             } catch (Exception e) {
-                Log.e(TAG, "Could not send file");
+                Log.e("Ahtung!", "Could not send file");
             }
             return null;
         }
