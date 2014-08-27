@@ -102,7 +102,12 @@ public class PeopleCache {
             if (oldRoom == null || newRoom == null) {
                 throw new IndexOutOfBoundsException();
             }
-            final List<ResponseItem> oldPage = oldRoom.get(observedPage);
+            final List<ResponseItem> oldPage;
+            if(observedPage < oldRoom.size()-1){
+                oldPage = oldRoom.get(observedPage);
+            }else{
+                oldPage = new LinkedList<ResponseItem>();
+            }
             final List<ResponseItem> newPage = newRoom.get(observedPage);
             NewPeopleChecker.check(oldPage, newPage);
         } catch (final IndexOutOfBoundsException e) {
