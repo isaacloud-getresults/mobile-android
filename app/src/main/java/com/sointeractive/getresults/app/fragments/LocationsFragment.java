@@ -123,6 +123,7 @@ public class LocationsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(context).unregisterReceiver(receiverLocations);
+        Log.d(TAG, "unregistered receiver");
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++
