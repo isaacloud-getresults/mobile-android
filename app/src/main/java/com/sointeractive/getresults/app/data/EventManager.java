@@ -60,8 +60,8 @@ public class EventManager {
                 .setContentTitle(title)
                 .setContentIntent(intent)
                 .setContentText(message)
-                .setAutoCancel(true)
-                .setDefaults(android.app.Notification.DEFAULT_ALL);
+                .setAutoCancel(true);
+                //.setDefaults(android.app.Notification.DEFAULT_ALL);
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(notificationId, mBuilder.build());
         notificationId++;
@@ -137,7 +137,6 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
-            generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.d("EVENT", "SENDING POST NEW LOCATION EVENT");
             try {
                 JSONObject body = new JSONObject();
@@ -251,8 +250,7 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            // CHECK FOR NEW ACHIEVEMENTS
-//            new EventCheckAchievements().execute();
+
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
             for (Achievement a : actualAchievements) {
                 Log.v(TAG, "old Achievements: " + a.getLabel());
@@ -277,7 +275,6 @@ public class EventManager {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", achievement.getLabel());
                 }
             } else {
                 Log.d(TAG, "No new achievements.");
@@ -290,6 +287,7 @@ public class EventManager {
             if (response != null) {
                 Log.v(TAG, "response: " + response.toString());
             }
+            generateNotification("New location", "Current location:", App.loadUserData().getUserLocation().getLabel());
         }
     }
 
@@ -412,17 +410,21 @@ public class EventManager {
         List<Notification> entries = new ArrayList<Notification>();
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected Object doInBackground(Object... p) {
             if (App.getDataManager().getLastNotification() == null) {
                 Notification dummyNotification = new Notification(null, null, new Date(System.currentTimeMillis()));
                 App.getDataManager().setLastNotification(dummyNotification);
             }
             try {
                 Map<String, Object> query = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("limit", "0");
+                params.put("fromc", App.getDataManager().getLastNotification().getCreatedAt().getTime());
                 query.put("subjectId", App.loadUserData().getUserId());
                 query.put("typeId", Settings.ANDROID_NOTIFICATION_ID);
                 HttpResponse response = App.getIsaacloudConnector()
-                        .path("/queues/notifications").withQuery(query).withLimit(1).withCreatedAt(App.getDataManager().getLastNotification().getCreatedAt().getTime(), null).get();
+                        .path("/queues/notifications").withQueryParameters(params)
+                        .withQuery(query).get();
                 JSONArray array = response.getJSONArray();
                 for (int i = 0; i < array.length(); i++) {
                     entries.add(new Notification((JSONObject) array.get(i)));

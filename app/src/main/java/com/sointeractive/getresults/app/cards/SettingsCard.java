@@ -13,7 +13,6 @@ public class SettingsCard extends Card {
 
     public SettingsCard(Context context) {
         super(context, R.layout.settings_card_content);
-        this.setShadow(false);
     }
 
     @Override

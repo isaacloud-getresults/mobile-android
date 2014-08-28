@@ -14,7 +14,6 @@ public class ProfileCard extends Card {
 
     public ProfileCard(Context context, int layout) {
         super(context, layout);
-        this.setShadow(false);
     }
 
     @Override

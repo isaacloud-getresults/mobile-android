@@ -19,7 +19,6 @@ public class StatusCard extends Card {
 
     public StatusCard(Context context, int layout) {
         super(context, layout);
-        this.setShadow(false);
     }
 
     @Override

@@ -13,7 +13,6 @@ public class StatsCard extends Card {
 
     public StatsCard(Context context) {
         super(context, R.layout.stats_card_content);
-        this.setShadow(false);
     }
 
     @Override

@@ -21,6 +21,7 @@ import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.DataManager;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
+import com.sointeractive.getresults.app.data.isaacloud.LoginData;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
 
@@ -45,7 +46,7 @@ public class RegisterActivity extends Activity {
     private Context context;
     private ProgressDialog dialog;
     private EditText textEmail, textPassword, textPasswordRepeat, textFirstName, textLastName;
-    private UserData userData;
+    private LoginData loginData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,22 +148,15 @@ public class RegisterActivity extends Activity {
             } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-            userData = App.loadUserData();
+
             HttpResponse response;
             // send request and retrieve response
             try {
                 response = App.getIsaacloudConnector().path("/admin/users")
                         .post(jsonBody);
                 JSONObject json = response.getJSONObject();
-                userData.setUserId(json.getInt("id"));
-                userData.setName(json.getString("firstName") + " "
-                        + json.getString("lastName"));
-                userData.setEmail(json.getString("email"));
-                userData.setLevel(json.getString("level"));
-                App.saveUserData(userData);
+                Log.d(TAG, "Register json:" + json.toString());
                 success = true;
-            } catch (JSONException e) {
-                e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -173,118 +167,22 @@ public class RegisterActivity extends Activity {
 
         @Override
         protected void onPostExecute(Object result) {
+            loginData = App.loadLoginData();
             dialog.dismiss();
             if (success) {
-                new EventGetLocations().execute();
+                    loginData.setEmail(textEmail.getEditableText().toString());
+                    loginData.setPassword(textPassword.getEditableText().toString());
+                    loginData.setRemembered(true);
+                    App.saveLoginData(loginData);
+                    Intent intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
             } else {
                 Log.e(TAG, "Error: Cannot register user");
             }
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();
         }
 
     }
 
-    // GET LOCATIONS
-    private class EventGetLocations extends AsyncTask<Object, Object, Object> {
-
-        private final String TAG = EventGetLocations.class.getSimpleName();
-        public boolean success = false;
-
-        @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "Action: Downloading locations");
-            dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
-        }
-
-
-        @Override
-        public Object doInBackground(Object... params) {
-            SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
-            List<Location> locations = new ArrayList<Location>();
-            List<Achievement> achievements = new ArrayList<Achievement>();
-            locations.add(new Location("Nowhere", 0));
-            userData = App.loadUserData();
-            try {
-                // LOCATIONS REQUEST
-                Log.d(TAG, "Action: Getting locations");
-                HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
-                Log.v(TAG, response.toString());
-                // all locations from isa
-                JSONArray locationsArray = response.getJSONArray();
-                for (int i = 0; i < locationsArray.length(); i++) {
-                    JSONObject locJson = (JSONObject) locationsArray.get(i);
-                    Location loc = new Location(locJson);
-                    if (loc.getId() != 1 && loc.getId() != 2) {
-                        entries.put(loc.getId(), new LinkedList<Person>());
-                        locations.add(loc);
-                    }
-                }
-
-
-                // USERS REQUEST
-                Log.d(TAG, "Action: Getting users list");
-                HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
-                Log.v(TAG, usersResponse.toString());
-                JSONArray usersArray = usersResponse.getJSONArray();
-                // for every user
-                for (int i = 0; i < usersArray.length(); i++) {
-                    JSONObject userJson = (JSONObject) usersArray.get(i);
-                    Person p = new Person(userJson);
-                    entries.get(p.getLocation()).add(p);
-                }
-
-                // ACHIEVEMENTS REQUEST
-                SparseIntArray idMap = new SparseIntArray();
-                HttpResponse responseUser = App
-                        .getIsaacloudConnector()
-                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
-                JSONObject achievementsJson = responseUser.getJSONObject();
-                JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
-                for (int i = 0; i < arrayUser.length(); i++) {
-                    JSONObject json = (JSONObject) arrayUser.get(i);
-                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
-                }
-
-                HttpResponse responseGeneral = App.getIsaacloudConnector()
-                        .path("/cache/achievements").withLimit(1000).get();
-                JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                Log.v("TEST", arrayGeneral.toString(3));
-                for (int i = 0; i < arrayGeneral.length(); i++) {
-                    JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.get(json.getInt("id"), -1) != -1) {
-                        achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
-                    }
-                }
-                success = true;
-                DataManager dm = App.getDataManager();
-                dm.setLocations(locations);
-                dm.setPeople(entries);
-                dm.setAchievements(achievements);
-                Log.d(TAG, "Number achievements found: " + dm.getAchievements().size());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Object result) {
-            dialog.dismiss();
-            if (success) {
-                Log.d(TAG, "New user registered");
-                Intent intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
-            } else {
-                Log.e(TAG, "Cannot register user");
-            }
-        }
-
-    }
 
 }

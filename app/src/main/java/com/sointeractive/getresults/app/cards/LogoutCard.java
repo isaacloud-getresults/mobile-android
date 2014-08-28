@@ -8,7 +8,6 @@ public class LogoutCard extends Card {
 
     public LogoutCard(Context context) {
         super(context);
-        this.setShadow(false);
         this.setTitle("Log out");
     }
 

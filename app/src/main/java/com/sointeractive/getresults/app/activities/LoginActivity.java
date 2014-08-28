@@ -240,6 +240,20 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        editEmail = (TextView) findViewById(R.id.editEmail);
+        editPassword = (TextView) findViewById(R.id.editPassword);
+        checkbox = (CheckBox) findViewById(R.id.rememberCheckBox);
+        if (loginData.isRemembered()) {
+            checkbox.setChecked(true);
+            editEmail.setText(loginData.getEmail());
+            editPassword.setText(loginData.getPassword());
+        }
     }
 
     protected void onStop() {

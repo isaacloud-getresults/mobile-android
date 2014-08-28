@@ -19,7 +19,6 @@ public class AchievementCard extends Card {
         super(context, R.layout.achievement_card_content);
         this.achievementData = a;
         this.title = a.getLabel();
-        this.setShadow(false);
     }
 
 
