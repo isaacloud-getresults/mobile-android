@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
+import com.andraskindler.parallaxviewpager.ParallaxViewPager;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 import com.sointeractive.getresults.app.R;
@@ -22,7 +23,7 @@ public class MainActivity extends FragmentActivity implements
         ActionBar.TabListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private ViewPager viewPager;
+    private ParallaxViewPager viewPager;
     private ActionBar actionBar;
 
     @Override
@@ -41,7 +42,7 @@ public class MainActivity extends FragmentActivity implements
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager = (ParallaxViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setBackgroundDrawable(null);
@@ -60,6 +61,8 @@ public class MainActivity extends FragmentActivity implements
 
         final PagerAdapter mAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
+        viewPager.setScaleType(ParallaxViewPager.FIT_HEIGHT);
+        viewPager.setBackgroundResource(R.drawable.gr2);
         // set page swipe listener
         viewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {

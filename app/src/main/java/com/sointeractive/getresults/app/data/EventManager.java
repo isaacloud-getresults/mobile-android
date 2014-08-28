@@ -285,6 +285,7 @@ public class EventManager {
                 Log.v(TAG, "response: " + response.toString());
             }
             generateNotification("New location", "Current location:", App.loadUserData().getUserLocation().getLabel());
+            new EventCheckNotifications().execute();
         }
     }
 
@@ -373,6 +374,7 @@ public class EventManager {
                     }
                 }
                 App.getDataManager().setPeople(entries);
+
             } catch (JSONException e) {
                 Log.e(TAG, "Error: JSON");
                 e.printStackTrace();
@@ -416,7 +418,7 @@ public class EventManager {
                 Map<String, Object> query = new HashMap<String, Object>();
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("limit", "0");
-                params.put("fromc", App.getDataManager().getLastNotification().getCreatedAt().getTime());
+                params.put("fromc", App.getDataManager().getLastNotification().getCreatedAt().getTime()+1);
                 query.put("subjectId", App.loadUserData().getUserId());
                 query.put("typeId", Settings.ANDROID_NOTIFICATION_ID);
                 HttpResponse response = App.getIsaacloudConnector()
@@ -440,6 +442,7 @@ public class EventManager {
 
         protected void onPostExecute(final List<Notification> result) {
             for (final Notification notification : result) {
+
                 final String message = notification.getMessage();
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
