@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.sointeractive.android.kit.util.PebbleDictionary;
 import com.sointeractive.getresults.app.data.App;
+import com.sointeractive.getresults.app.pebble.PebbleConnector;
 import com.sointeractive.getresults.app.pebble.cache.AchievementsCache;
 import com.sointeractive.getresults.app.pebble.cache.BeaconsCache;
 import com.sointeractive.getresults.app.pebble.cache.LoginCache;
@@ -43,8 +44,19 @@ public enum Request implements Sendable {
 
     BEACONS(2) {
         @Override
-        public Collection<ResponseItem> getSendable(final int mainQuery, final int secondaryQuery) {
-            return BeaconsCache.INSTANCE.getData();
+        public Collection<ResponseItem> getSendable(final int pageNumber, final int secondaryQuery) {
+            final int pageIndex = pageNumber - 1;
+            BeaconsCache.INSTANCE.setObservedPage(pageIndex);
+            return BeaconsCache.INSTANCE.getBeaconsPage(pageIndex);
+        }
+
+        @Override
+        void onRequest() {
+            super.onRequest();
+            BeaconsCache.INSTANCE.clearObservedPage();
+            final PebbleConnector pebbleConnector = App.getPebbleConnector();
+            pebbleConnector.deletePeopleResponses();
+            pebbleConnector.deleteAchievementResponses();
         }
     },
 
@@ -71,7 +83,7 @@ public enum Request implements Sendable {
         public Collection<ResponseItem> getSendable(final int pageNumber, final int secondaryQuery) {
             final int pageIndex = pageNumber - 1;
             AchievementsCache.INSTANCE.setObservedPage(pageIndex);
-            return AchievementsCache.INSTANCE.getAchievementsPage(pageIndex);
+            return AchievementsCache.INSTANCE.getAchievementPage(pageIndex);
         }
 
         @Override

@@ -20,7 +20,6 @@ import com.sointeractive.getresults.app.data.isaacloud.Location;
 import com.sointeractive.getresults.app.data.isaacloud.Notification;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
-import com.sointeractive.getresults.app.pebble.checker.NewAchievementsChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,7 +84,6 @@ public class EventManager {
     }
 
 
-
     private class EventLogin extends AsyncTask<Object, Object, Object> {
 
         final UserData userData = App.loadUserData();
@@ -98,7 +96,7 @@ public class EventManager {
             try {
                 JSONObject body = new JSONObject();
                 body.put("activity", "login");
-                Log.d("EVENT", "SENDING LOGIN EVENT");
+                Log.v("EVENT", "SENDING LOGIN EVENT");
                 response = App.getIsaacloudConnector().event(userData.getUserId(),
                         "USER", "PRIORITY_HIGH", 1, "NORMAL", body);
             } catch (IsaaCloudConnectionException e) {
@@ -137,7 +135,7 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
-            Log.d("EVENT", "SENDING POST NEW LOCATION EVENT");
+            Log.v("EVENT", "SENDING POST NEW LOCATION EVENT");
             try {
                 JSONObject body = new JSONObject();
                 major = data[0];
@@ -187,7 +185,7 @@ public class EventManager {
         protected Object doInBackground(String... data) {
             try {
                 int id = userData.getUserId();
-                Log.d("EVENT", "SENDING GET NEW LOCATION EVENT");
+                Log.v("EVENT", "SENDING GET NEW LOCATION EVENT");
                 HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).get();
                 Log.v(TAG, response.toString());
                 JSONObject json = response.getJSONObject();
@@ -209,7 +207,7 @@ public class EventManager {
                 if (data.length > 0) {
                     try {
                         // SEND GROUP EVENT
-                        Log.d("EVENT", "SENDING GROUP EVENT");
+                        Log.v("EVENT", "SENDING GROUP EVENT");
                         JSONObject body = new JSONObject();
                         body.put("place", data[0] + "." + data[1] + "." + "group");
                         response = App.getIsaacloudConnector().event(userData.getUserLocationId(),
@@ -270,7 +268,6 @@ public class EventManager {
                     i++;
                 }
                 App.getDataManager().setAchievements(newAchievements);
-                NewAchievementsChecker.notifyAchievements(recentAchievements);
                 for (Achievement achievement : recentAchievements) {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
@@ -305,7 +302,7 @@ public class EventManager {
         @Override
         protected Object doInBackground(String... data) {
 //            generateNotification("Left beacon range", "Outside location", "Meeting room");
-            Log.d("EVENT", "SENDING LEFT LOCATION EVENT");
+            Log.v("EVENT", "SENDING LEFT LOCATION EVENT");
             try {
                 JSONObject body = new JSONObject();
                 body.put("place", data[0] + "." + data[1] + ".exit");
@@ -354,7 +351,7 @@ public class EventManager {
             }
             entries.put(0, new LinkedList<Person>());
             try {
-                Log.d("EVENT", "GETTING ALL USERS");
+                Log.v("EVENT", "GETTING ALL USERS");
                 // USERS REQUEST
                 HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
                 Log.v(TAG, usersResponse.toString());
@@ -405,12 +402,12 @@ public class EventManager {
         }
     }
 
-    private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
+    private class EventCheckNotifications extends AsyncTask<Object, Object, List<Notification>> {
 
-        List<Notification> entries = new ArrayList<Notification>();
+        final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
-        protected Object doInBackground(Object... p) {
+        protected List<Notification> doInBackground(Object... p) {
             if (App.getDataManager().getLastNotification() == null) {
                 Notification dummyNotification = new Notification(null, null, new Date(System.currentTimeMillis()));
                 App.getDataManager().setLastNotification(dummyNotification);
@@ -441,19 +438,16 @@ public class EventManager {
             return entries;
         }
 
-        protected void onPostExecute(Object result) {
-            if (entries.size() != 0) {
-                {
-                    int i = 0;
-                    while ( i < entries.size() && entries.get(i).getCreatedAt().after(App.getDataManager().getLastNotification().getCreatedAt()) ) {
-                        final String message = entries.get(i).getMessage();
-                        Toast.makeText(context, message,
-                                Toast.LENGTH_SHORT).show();
-                        App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
-                        i++;
-                    }
-                    App.getDataManager().setLastNotification(entries.get(i));
-                }
+        protected void onPostExecute(final List<Notification> result) {
+            for (final Notification notification : result) {
+                final String message = notification.getMessage();
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
+            }
+            if(!result.isEmpty()) {
+                final int lastIndex = result.size()-1;
+                final Notification lastNotification = result.get(lastIndex);
+                App.getDataManager().setLastNotification(lastNotification);
             }
         }
     }

@@ -11,7 +11,6 @@ import java.util.Queue;
 
 public class AchievementDescriptionResponse implements ResponseItem {
     private static final int RESPONSE_ID = 5;
-    private static final int BASE_SIZE = 0;
 
     private final int id;
     private final String description;
@@ -52,10 +51,5 @@ public class AchievementDescriptionResponse implements ResponseItem {
                 .addInt(descriptionPartId)
                 .build();
 
-    }
-
-    @Override
-    public int getSize() {
-        return BASE_SIZE;
     }
 }

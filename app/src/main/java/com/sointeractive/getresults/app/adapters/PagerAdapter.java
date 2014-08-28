@@ -10,12 +10,12 @@ import com.sointeractive.getresults.app.fragments.ProfileFragment;
 
 public class PagerAdapter extends FragmentPagerAdapter {
 
-    public PagerAdapter(FragmentManager fm) {
+    public PagerAdapter(final FragmentManager fm) {
         super(fm);
     }
 
     @Override
-    public Fragment getItem(int pos) {
+    public Fragment getItem(final int pos) {
         switch (pos) {
 
             case 0:

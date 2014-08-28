@@ -33,7 +33,7 @@ public class AchievementsFragment extends Fragment {
     private final BroadcastReceiver receiverAchievements = new BroadcastReceiver() {
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, final Intent intent) {
             Log.d(TAG, "Event: onReceive called");
             Toast.makeText(context, "NEW ACHIEVEMENT UNLOCKED!" + "\n" + intent.getStringExtra("label"), Toast.LENGTH_LONG).show();
 //            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -46,35 +46,30 @@ public class AchievementsFragment extends Fragment {
     private CardGridArrayAdapter cardGridAdapter;
     private OnFragmentInteractionListener mListener;
 
-    @SuppressWarnings("WeakerAccess")
-    public AchievementsFragment() {
-        // Required empty public constructor
-    }
-
     public static AchievementsFragment newInstance() {
-        AchievementsFragment f = new AchievementsFragment();
-        Bundle b = new Bundle();
+        final AchievementsFragment f = new AchievementsFragment();
+        final Bundle b = new Bundle();
         f.setArguments(b);
 
         return f;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiverAchievements,
                 new IntentFilter(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT));
-        context = this.getActivity();
+        context = getActivity();
         cardGridAdapter = new CardGridArrayAdapter(context, achievementCards);
         initAchievementCards();
     }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_achievements, container, false);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_achievements, container, false);
         // ACHIEVEMENTS GRID INIT
-        CardGridView gridView = (CardGridView) view.findViewById(R.id.achievementsGrid);
+        final CardGridView gridView = (CardGridView) view.findViewById(R.id.achievementsGrid);
         if (gridView != null) {
             gridView.setAdapter(cardGridAdapter);
         }
@@ -82,7 +77,7 @@ public class AchievementsFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(final Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
@@ -95,12 +90,12 @@ public class AchievementsFragment extends Fragment {
     }
 
     void initAchievementCards() {
-        if (achievementCards.size() > 0) {
+        if (!achievementCards.isEmpty()) {
             achievementCards.clear();
         }
-        for (Achievement a : App.getDataManager().getAchievements()) {
+        for (final Achievement a : App.getDataManager().getAchievements()) {
             //Create a Card
-            Card card = new AchievementCard(context, a);
+            final Card card = new AchievementCard(context, a);
             achievementCards.add(card);
         }
         cardGridAdapter.notifyDataSetChanged();
