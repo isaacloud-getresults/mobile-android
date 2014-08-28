@@ -109,8 +109,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         context = this;
         Thread thread = new Thread(new InternetRunnable());
         //<DEBUG_ONLY>
-        // TODO: Remove this from code
-        //thread.start();
+        // TODO: Restore this to code
+        thread.start();
         //</DEBUG_ONLY>
         loginData = App.loadLoginData();
         Bundle extras = getIntent().getExtras();
@@ -244,7 +244,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         //<DEBUG_ONLY>
         // TODO: Remove this from code
-        try {
+        /*try {
             generateFakeData();
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -277,7 +277,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             });
         } catch (final JSONException e) {
             Log.e(TAG, "Cannot create fake data");
-        }
+        }*/
     }
 
     private final List<String> urls = new LinkedList<String>(Arrays.asList(

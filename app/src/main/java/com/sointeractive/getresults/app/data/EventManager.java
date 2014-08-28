@@ -404,12 +404,12 @@ public class EventManager {
         }
     }
 
-    private class EventCheckNotifications extends AsyncTask<Object, Object, Object> {
+    private class EventCheckNotifications extends AsyncTask<Object, Object, List<Notification>> {
 
         final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
-        protected Object doInBackground(Object... params) {
+        protected List<Notification> doInBackground(Object... params) {
             if (App.getDataManager().getLastNotification() == null) {
                 Notification dummyNotification = new Notification(null, null, new Date(System.currentTimeMillis()));
                 App.getDataManager().setLastNotification(dummyNotification);
@@ -436,19 +436,16 @@ public class EventManager {
             return entries;
         }
 
-        protected void onPostExecute(Object result) {
-            if (entries.size() != 0) {
-                {
-                    int i = 0;
-                    while ( i < entries.size() && entries.get(i).getCreatedAt().after(App.getDataManager().getLastNotification().getCreatedAt()) ) {
-                        final String message = entries.get(i).getMessage();
-                        Toast.makeText(context, message,
-                                Toast.LENGTH_SHORT).show();
-                        App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
-                        i++;
-                    }
-                    App.getDataManager().setLastNotification(entries.get(i));
-                }
+        protected void onPostExecute(final List<Notification> result) {
+            for (final Notification notification : result) {
+                final String message = notification.getMessage();
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);
+            }
+            if(!result.isEmpty()) {
+                final int lastIndex = result.size()-1;
+                final Notification lastNotification = result.get(lastIndex);
+                App.getDataManager().setLastNotification(lastNotification);
             }
         }
     }

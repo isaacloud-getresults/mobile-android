@@ -32,7 +32,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class Achievement {
 
-    private String label, description, imageUrl;
+    private String label, description;
+    private String imageUrl = "";//"https://cdn2.iconfinder.com/data/icons/best-rewards/500/Achievement_approved_award_best_excellent_favorite_win_medal_collection_element_winning_hand-128.png";
     private int counter = 0;
     private boolean isGained;
 
