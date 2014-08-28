@@ -730,7 +730,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     // GET LOCATIONS
-    private class EventGetAchievements extends AsyncTask<Object, Object, Object> {
+    private class EventGetAchievements extends AsyncTask<Object, Object, List<Achievement>> {
 
         private final String TAG = EventGetAchievements.class.getSimpleName();
         public boolean success = false;
@@ -742,7 +742,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
 
         @Override
-        public Object doInBackground(Object... params) {
+        public List<Achievement> doInBackground(Object... params) {
             List<Achievement> achievements = new ArrayList<Achievement>();
             try {
 
@@ -769,10 +769,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     }
                 }
                 success = true;
-                DataManager dm = App.getDataManager();
-                dm.setAchievements(achievements);
-                Log.d(TAG, "Event: Downloaded " + dm.getAchievements().size() + " achievements");
-
+                return achievements;
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
@@ -784,13 +781,16 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
 
         @Override
-        protected void onPostExecute(Object result) {
-            dialog.dismiss();
+        protected void onPostExecute(List<Achievement> result) {
             if (success) {
-                Log.i(TAG, "Achievements downloaded");
+                final DataManager dm = App.getDataManager();
+                dm.setAchievements(result);
+                Log.d(TAG, "Event: Downloaded " + dm.getAchievements().size() + " achievements");
                 LoginCache.INSTANCE.logIn();
+                dialog.dismiss();
                 runMainActivity();
             } else {
+                dialog.dismiss();
                 Log.e(TAG, "Cannot get achievements");
             }
         }
