@@ -34,5 +34,5 @@ public class Settings {
     // IsaaCloud
     public static String INSTANCE_ID;// "179";
     public static String APP_SECRET; // "cbe82930e310e3519666c8ddf9776cee";
-    public static int DATA_DOWNLOAD_INTERVAL = 5000; // 5 sec
+    public static int DATA_DOWNLOAD_INTERVAL = 10000; // 10 sec
 }
