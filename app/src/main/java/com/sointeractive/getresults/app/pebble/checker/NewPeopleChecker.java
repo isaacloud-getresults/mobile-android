@@ -21,8 +21,8 @@ public class NewPeopleChecker {
         final Set<ResponseItem> peopleIn = Sets.difference(newPeopleSet, oldPeopleSet).immutableCopy();
         final Set<ResponseItem> peopleOut = Sets.difference(oldPeopleSet, newPeopleSet).immutableCopy();
 
-        notifyPeopleIn(peopleIn);
         notifyPeopleOut(peopleOut);
+        notifyPeopleIn(peopleIn);
     }
 
     private static void notifyPeopleIn(final Collection<ResponseItem> people) {

@@ -48,7 +48,7 @@ public class App extends Application {
         return eventManager;
     }
 
-    public static void saveUserData(UserData userData) {
+    public static void saveUserData(final UserData userData) {
         fileManager.saveUserData(userData, obj);
         LoginCache.INSTANCE.findChanges();
     }
@@ -57,7 +57,7 @@ public class App extends Application {
         return fileManager.loadUserData(obj);
     }
 
-    public static void saveLoginData(LoginData data) {
+    public static void saveLoginData(final LoginData data) {
         fileManager.saveLoginData(data, obj);
     }
 
@@ -69,7 +69,7 @@ public class App extends Application {
         return fileManager.loadConfigData(obj);
     }
 
-    public static void saveConfigData(String data) {
+    public static void saveConfigData(final String data) {
         fileManager.saveConfigData(data, obj);
     }
 
@@ -78,12 +78,12 @@ public class App extends Application {
     }
 
     public static Isaacloud getIsaacloudConnector() {
-        Map<String, String> config = new HashMap<String, String>();
+        final Map<String, String> config = new HashMap<String, String>();
         config.put("instanceId", Settings.INSTANCE_ID);
         config.put("appSecret", Settings.APP_SECRET);
         try {
             App.setIsaacloudConnector(new Isaacloud(config));
-        } catch (InvalidConfigException e) {
+        } catch (final InvalidConfigException e) {
             e.printStackTrace();
         }
         return isaacloudConnector;
@@ -94,9 +94,9 @@ public class App extends Application {
     }
 
     public static boolean isOnline() {
-        ConnectivityManager cm =
+        final ConnectivityManager cm =
                 (ConnectivityManager) obj.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        final NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
@@ -104,7 +104,7 @@ public class App extends Application {
         return dataManager.getLocations();
     }
 
-    public static List<Person> getPeopleAtLocation(Location l) {
+    public static List<Person> getPeopleAtLocation(final Location l) {
         return dataManager.getPeopleAtLocation(l);
     }
 

@@ -21,6 +21,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
+import com.google.common.collect.Lists;
 import com.sointeractive.getresults.app.R;
 import com.sointeractive.getresults.app.config.Settings;
 import com.sointeractive.getresults.app.data.App;
@@ -56,6 +58,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,7 +108,10 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
         context = this;
         Thread thread = new Thread(new InternetRunnable());
+        //<DEBUG_ONLY>
+        // TODO: Restore this to code
         thread.start();
+        //</DEBUG_ONLY>
         loginData = App.loadLoginData();
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -235,7 +241,114 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         });
 */
+
+        //<DEBUG_ONLY>
+        // TODO: Remove this from code
+        /*try {
+            generateFakeData();
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(final CompoundButton compoundButton, final boolean b) {
+                    final DataManager dm = App.getDataManager();
+                    final List<Achievement> achievements = dm.getAchievements();
+                    final int achievementsNumber = achievements.size();
+                    try {
+                        final JSONObject achievementJSON = new JSONObject("{id:" + achievementsNumber + ",label:'test achievement " + achievementsNumber + "',description:'test description " + achievementsNumber + "'}");
+                        final Achievement achievement = getFakeAchievement(achievementJSON);
+                        achievements.add(0, achievement);
+                    } catch (final JSONException e) {
+                        Log.e(TAG, "Cannot add fake achievement");
+                    }
+                    dm.setAchievements(achievements);
+
+                    final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+                    final int peopleNumber = dm.getPeople().size();
+                    final int beaconsNumber = dm.getLocations().size();
+                    for (int i = 0; i < beaconsNumber; i++) {
+                        entries.put(i, new LinkedList<Person>());
+                    }
+                    for (int i = 0; i < peopleNumber; i++) {
+                        final Person p = new Person("Tester", "Test " + i, i % beaconsNumber, i);
+                        entries.get(p.getLocation()).add(p);
+                    }
+                    entries.get(peopleNumber % beaconsNumber).add(new Person("Tester", "Test " + peopleNumber, peopleNumber % beaconsNumber, peopleNumber));
+                    App.getDataManager().setPeople(entries);
+                }
+            });
+        } catch (final JSONException e) {
+            Log.e(TAG, "Cannot create fake data");
+        }*/
     }
+
+    private final List<String> urls = new LinkedList<String>(Arrays.asList(
+            "http://chart.apis.google.com/chart?chs=200x200&cht=qr&chld=%7C1&chl=http%3A%2F%2Fxyz.getresults.isaacloud.com%2F"
+    ));
+
+    public Achievement getFakeAchievement(final JSONObject achievementJSON) throws JSONException {
+        final Achievement achievement = new Achievement(achievementJSON, true, 1);
+        final String imageUrl = urls.get(0);
+        urls.remove(0);
+        achievement.setImageUrl(imageUrl);
+        urls.add(imageUrl);
+        return achievement;
+    }
+
+    private void generateFakeData() throws JSONException {
+        App.getPebbleConnector().closePebbleApp();
+
+        final int BEACONS = 16;
+        final int AVG_PEOPLE = 0;
+        final int ACHIEVEMENTS = 0;
+
+        // User
+        final UserData userData = new UserData();
+        userData.setName("Tester Test");
+        userData.setFirstName("Tester");
+        userData.setEmail("tester@testing.test");
+        userData.setUserId(1);
+        final JSONObject userJSON = new JSONObject("{leaderboards: [{id: 1, score: 128, position: 8}]}");
+        userData.setLeaderboardData(userJSON);
+        userData.setLevel("5");
+        App.saveUserData(userData);
+
+        // Beacons
+        final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
+        final List<Location> locations = new ArrayList<Location>();
+        for (int i = 0; i < BEACONS; i++) {
+            final JSONObject locJson = new JSONObject("{id:" + i + ",label:'test room " + i + "'}");
+            final Location loc = new Location(locJson);
+            entries.put(loc.getId(), new LinkedList<Person>());
+            locations.add(loc);
+            if (loc.getId() == 0) {
+                userData.setUserLocation(loc);
+                App.saveUserData(userData);
+            }
+        }
+        final DataManager dm = App.getDataManager();
+        dm.setLocations(locations);
+        dm.setPeople(entries);
+
+        // Achievements
+        final List<Achievement> achievements = new ArrayList<Achievement>();
+        for (int i = 0; i < ACHIEVEMENTS; i++) {
+            final JSONObject achievementJSON = new JSONObject("{id:" + i + ",label:'test achievement " + i + "',description:'test description " + i + "'}");
+            achievements.add(0, getFakeAchievement(achievementJSON));
+        }
+        dm.setAchievements(achievements);
+
+        // People
+        for (int i = 0; i < BEACONS * AVG_PEOPLE; i++) {
+            final Person p = new Person("Tester", "Test " + i, i % BEACONS, i);
+            entries.get(p.getLocation()).add(p);
+        }
+        App.getDataManager().setPeople(entries);
+
+        // Log in
+        App.getPebbleConnector().clearSendingQueue();
+        LoginCache.INSTANCE.logIn();
+    }
+
+    //</DEBUG_ONLY>
 
     protected void onStart() {
         super.onStart();

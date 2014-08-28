@@ -14,21 +14,24 @@ import android.media.ExifInterface;
 import java.io.IOException;
 
 public class ImageHelper {
-    public static Bitmap getAvatar(Bitmap imageBitmap, String picturePath) {
-        int orientation;
+    public static Bitmap getAvatar(Bitmap imageBitmap, final String picturePath) {
+        final int orientation;
         if (picturePath != null) {
             try {
-                ExifInterface exif = new ExifInterface((picturePath));
+                final ExifInterface exif = new ExifInterface((picturePath));
                 orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
                 imageBitmap = rotateBitmap(imageBitmap, orientation);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
-        int biggerDimension;
-        int squareSize;
-        int x1, x2, y1, y2;
-        Bitmap squareBitmap;
+        final int biggerDimension;
+        final int squareSize;
+        final int x1;
+        final int x2;
+        final int y1;
+        final int y2;
+        final Bitmap squareBitmap;
         if (imageBitmap.getWidth() > imageBitmap.getHeight()) {
             squareSize = imageBitmap.getHeight();
             biggerDimension = imageBitmap.getWidth();
@@ -49,10 +52,10 @@ public class ImageHelper {
         return getRoundedCornerBitmap(squareBitmap, 1500);
     }
 
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int pixels) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
+    public static Bitmap getRoundedCornerBitmap(final Bitmap bitmap, final int pixels) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap
                 .getHeight(), Config.ARGB_8888);
-        Canvas canvas = new Canvas(output);
+        final Canvas canvas = new Canvas(output);
 
         final int color = 0xff424242;
         final Paint paint = new Paint();
@@ -71,10 +74,10 @@ public class ImageHelper {
         return output;
     }
 
-    public static Bitmap rotateBitmap(Bitmap bitmap, int orientation) {
+    public static Bitmap rotateBitmap(final Bitmap bitmap, final int orientation) {
 
         try {
-            Matrix matrix = new Matrix();
+            final Matrix matrix = new Matrix();
             switch (orientation) {
                 case ExifInterface.ORIENTATION_NORMAL:
                     return bitmap;
@@ -106,14 +109,14 @@ public class ImageHelper {
                     return bitmap;
             }
             try {
-                Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                final Bitmap bmRotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 bitmap.recycle();
                 return bmRotated;
-            } catch (OutOfMemoryError e) {
+            } catch (final OutOfMemoryError e) {
                 e.printStackTrace();
                 return null;
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return bitmap;
         }

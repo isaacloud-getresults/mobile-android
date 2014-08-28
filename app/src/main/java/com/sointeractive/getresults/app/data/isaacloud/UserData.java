@@ -31,7 +31,7 @@ public class UserData implements Serializable {
         return level;
     }
 
-    public void setLevel(String level) {
+    public void setLevel(final String level) {
         this.level = level;
     }
 
@@ -40,23 +40,23 @@ public class UserData implements Serializable {
     }
 
     public int getRank() {
-        return this.rank;
+        return rank;
     }
 
     public String getGainedAchievements() {
         return gainedAchievements;
     }
 
-    public void setGainedAchievements(String gainedAchievements) {
+    public void setGainedAchievements(final String gainedAchievements) {
         this.gainedAchievements = gainedAchievements;
     }
 
     public Location getUserLocation() {
-        return this.userLocation;
+        return userLocation;
     }
 
-    public void setUserLocation(int id) {
-        for (Location l : App.getLocations()) {
+    public void setUserLocation(final int id) {
+        for (final Location l : App.getLocations()) {
             if (l.getId() == id) {
                 this.userLocation = l;
                 break;
@@ -64,7 +64,7 @@ public class UserData implements Serializable {
         }
     }
 
-    public void setUserLocation(Location newLocation) {
+    public void setUserLocation(final Location newLocation) {
         this.userLocation = newLocation;
     }
 
@@ -72,7 +72,7 @@ public class UserData implements Serializable {
         if (userLocation == null) {
             return -1;
         } else {
-            return this.userLocation.getId();
+            return userLocation.getId();
         }
     }
 
@@ -80,7 +80,7 @@ public class UserData implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -88,7 +88,7 @@ public class UserData implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -97,7 +97,7 @@ public class UserData implements Serializable {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(final int userId) {
         this.userId = userId;
     }
 
@@ -105,11 +105,11 @@ public class UserData implements Serializable {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
-    public void setLeaderboardData(JSONObject json) {
+    public void setLeaderboardData(final JSONObject json) {
         try {
             final JSONObject leaderboard = getLeaderboard(json.getJSONArray("leaderboards"));
             if (leaderboard != null) {
@@ -134,7 +134,7 @@ public class UserData implements Serializable {
         return null;
     }
 
-    public ResponseItem toLoginResponse(final String roomName, final int roomsNumber, final int achievementsNumber, final int achievementPages) {
-        return new LoginResponse(getName(), score, rank, roomName, roomsNumber, achievementsNumber, achievementPages);
+    public ResponseItem toLoginResponse(final String roomName, final int roomPages, final int achievementsNumber, final int achievementPages) {
+        return new LoginResponse(getName(), score, rank, roomName, roomPages, achievementsNumber, achievementPages);
     }
 }

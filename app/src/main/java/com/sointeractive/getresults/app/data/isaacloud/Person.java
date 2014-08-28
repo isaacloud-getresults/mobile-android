@@ -16,23 +16,23 @@ public class Person {
     private String firstName, lastName;
     private int id, location;
 
-    public Person(String firstName, String lastName, int location, int id) {
-        this.setFirstName(firstName);
-        this.setLastName(lastName);
-        this.setLocation(location);
-        this.setId(id);
+    public Person(final String firstName, final String lastName, final int location, final int id) {
+        setFirstName(firstName);
+        setLastName(lastName);
+        setLocation(location);
+        setId(id);
     }
 
-    public Person(JSONObject json) throws JSONException {
-        this.setFirstName(json.getString("firstName"));
-        this.setLastName(json.getString("lastName"));
-        this.setId(json.getInt("id"));
-        this.setLocation(3);
+    public Person(final JSONObject json) throws JSONException {
+        setFirstName(json.getString("firstName"));
+        setLastName(json.getString("lastName"));
+        setId(json.getInt("id"));
+        setLocation(3);
         // getting user location
-        JSONArray array = json.getJSONArray("counterValues");
+        final JSONArray array = json.getJSONArray("counterValues");
         if (array.length() != 0) {
             for (int j = 0; j < array.length(); j++) {
-                JSONObject counter = (JSONObject) array.get(j);
+                final JSONObject counter = (JSONObject) array.get(j);
                 // get user location counter
                 if (counter.getString("counter").equals(Settings.LOCATION_COUNTER)) {
                     this.location = Integer.parseInt(counter.getString("value"));
@@ -42,14 +42,14 @@ public class Person {
     }
 
     public String print() {
-        return this.getFirstName() + " " + this.getLastName() + " " + "currently: " + this.getLocation();
+        return getFirstName() + " " + getLastName() + " " + "currently: " + getLocation();
     }
 
     String getFirstName() {
         return firstName;
     }
 
-    void setFirstName(String firstName) {
+    void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
@@ -57,7 +57,7 @@ public class Person {
         return lastName;
     }
 
-    void setLastName(String lastName) {
+    void setLastName(final String lastName) {
         this.lastName = lastName;
     }
 
@@ -69,7 +69,7 @@ public class Person {
         return location;
     }
 
-    void setLocation(int location) {
+    void setLocation(final int location) {
         this.location = location;
     }
 
@@ -77,7 +77,7 @@ public class Person {
         return id;
     }
 
-    void setId(int id) {
+    void setId(final int id) {
         this.id = id;
     }
 

@@ -14,6 +14,7 @@ import com.sointeractive.getresults.app.pebble.communication.NotificationSender;
 import com.sointeractive.getresults.app.pebble.responses.AchievementDescriptionResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementInResponse;
 import com.sointeractive.getresults.app.pebble.responses.AchievementOutResponse;
+import com.sointeractive.getresults.app.pebble.responses.EmptyResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonInResponse;
 import com.sointeractive.getresults.app.pebble.responses.PersonOutResponse;
 import com.sointeractive.getresults.app.pebble.responses.ResponseItem;
@@ -98,10 +99,13 @@ public class PebbleConnector extends Observable {
 
     private void send(final ResponseItem response) {
         final String responseType = response.getClass().getSimpleName();
-        final int size = response.getSize();
-        PebbleDictionary data = response.getData();
-        Log.d(TAG, "Action: Sending " + responseType + " (size=" + size + "): " + data.toJsonString());
-        PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+        final PebbleDictionary data = response.getData();
+        Log.d(TAG, "Action: Sending " + responseType + ": " + data.toJsonString());
+        if (response == EmptyResponse.INSTANCE) {
+            onAckReceived();
+        } else {
+            PebbleKit.sendDataToPebble(context, Settings.PEBBLE_APP_UUID, data);
+        }
     }
 
     public void onAckReceived() {
@@ -121,6 +125,7 @@ public class PebbleConnector extends Observable {
         if (connectionState != currentState) {
             connectionState = currentState;
             if (currentState) {
+                Log.d(TAG, "Action: Resume sending");
                 sendNext();
             }
             setChanged();
@@ -158,28 +163,24 @@ public class PebbleConnector extends Observable {
         deleteResponses(PersonInResponse.class, PersonOutResponse.class);
     }
 
-    private void deleteResponses(Class<?>... classes) {
+    private void deleteResponses(final Class<?>... classes) {
         synchronized (sendingQueue) {
             final Collection<ResponseItem> responses = new LinkedList<ResponseItem>();
-            for (ResponseItem response : sendingQueue) {
+            for (final ResponseItem response : sendingQueue) {
                 if (classToDelete(classes, response)) {
                     responses.add(response);
                 }
             }
-            sendingQueue.removeAll(responses);
+            //sendingQueue.removeAll(responses);
         }
     }
 
     private boolean classToDelete(final Class<?>[] classes, final ResponseItem response) {
-        for (Class<?> cls : classes) {
+        for (final Class<?> cls : classes) {
             if (cls.isInstance(response)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public int getMemory() {
-        return Settings.MEMORY_AVAILABLE - BeaconsCache.INSTANCE.getMemoryUsage();
     }
 }

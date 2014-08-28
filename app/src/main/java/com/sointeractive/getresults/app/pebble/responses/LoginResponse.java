@@ -6,22 +6,21 @@ import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class LoginResponse implements ResponseItem {
     private static final int RESPONSE_ID = 1;
-    private static final int BASE_SIZE = 0;
 
     private final String roomName;
     private final String name;
     private final int points;
     private final int rank;
-    private final int beaconsSize;
+    private final int roomsPages;
     private final int achievementsNumber;
     private final int pagesNumber;
 
-    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int beaconsSize, final int achievementsNumber, final int pagesNumber) {
+    public LoginResponse(final String name, final int points, final int rank, final String roomName, final int roomsPages, final int achievementsNumber, final int pagesNumber) {
         this.name = StringTrimmer.getUserName(name);
         this.points = points;
         this.rank = rank;
         this.roomName = StringTrimmer.getBeaconName(roomName);
-        this.beaconsSize = beaconsSize;
+        this.roomsPages = roomsPages;
         this.achievementsNumber = achievementsNumber;
         this.pagesNumber = pagesNumber;
     }
@@ -33,15 +32,10 @@ public class LoginResponse implements ResponseItem {
                 .addString(roomName)
                 .addInt(points)
                 .addInt(rank)
-                .addInt(beaconsSize)
+                .addInt(roomsPages)
                 .addInt(achievementsNumber)
                 .addInt(pagesNumber)
                 .build();
-    }
-
-    @Override
-    public int getSize() {
-        return BASE_SIZE;
     }
 
     @SuppressWarnings("RedundantIfStatement")
@@ -53,7 +47,7 @@ public class LoginResponse implements ResponseItem {
         final LoginResponse that = (LoginResponse) o;
 
         if (achievementsNumber != that.achievementsNumber) return false;
-        if (beaconsSize != that.beaconsSize) return false;
+        if (roomsPages != that.roomsPages) return false;
         if (pagesNumber != that.pagesNumber) return false;
         if (points != that.points) return false;
         if (rank != that.rank) return false;
@@ -70,7 +64,7 @@ public class LoginResponse implements ResponseItem {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + points;
         result = 31 * result + rank;
-        result = 31 * result + beaconsSize;
+        result = 31 * result + roomsPages;
         result = 31 * result + achievementsNumber;
         result = 31 * result + pagesNumber;
         return result;

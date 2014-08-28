@@ -6,7 +6,6 @@ import com.sointeractive.getresults.app.pebble.responses.utils.StringTrimmer;
 
 public class AchievementInResponse implements ResponseItem {
     private static final int RESPONSE_ID = 4;
-    private static final int BASE_SIZE = 28;
 
     private final int id;
     private final String name;
@@ -32,11 +31,6 @@ public class AchievementInResponse implements ResponseItem {
                 .build();
     }
 
-    @Override
-    public int getSize() {
-        return BASE_SIZE + name.length();
-    }
-
     private int getDescriptionPartsNumber() {
         final double stringLength = description.length();
         final double partSize = StringTrimmer.MAX_ACHIEVEMENT_DESCRIPTION_STR_LEN;
@@ -47,7 +41,7 @@ public class AchievementInResponse implements ResponseItem {
         this.pageNumber = pageNumber;
     }
 
-    public void setLast() {
+    public void setIsLast() {
         this.isMoreResponsesOnPage = 0;
     }
 

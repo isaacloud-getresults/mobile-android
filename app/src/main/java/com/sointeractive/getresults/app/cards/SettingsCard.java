@@ -11,15 +11,15 @@ import it.gmariotti.cardslib.library.internal.ViewToClickToExpand;
 
 public class SettingsCard extends Card {
 
-    public SettingsCard(Context context) {
+    public SettingsCard(final Context context) {
         super(context, R.layout.settings_card_content);
-        this.setShadow(false);
+        setShadow(false);
     }
 
     @Override
-    public void setupInnerViewElements(ViewGroup parent, View view) {
+    public void setupInnerViewElements(final ViewGroup parent, final View view) {
         //Example on the card
-        ViewToClickToExpand viewToClickToExpand = ViewToClickToExpand.builder().setupView(getCardView());
+        final ViewToClickToExpand viewToClickToExpand = ViewToClickToExpand.builder().setupView(getCardView());
         setViewToClickToExpand(viewToClickToExpand);
 
     }

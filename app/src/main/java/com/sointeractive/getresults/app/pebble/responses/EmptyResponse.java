@@ -12,9 +12,4 @@ public class EmptyResponse implements ResponseItem {
     public PebbleDictionary getData() {
         return new PebbleDictionary();
     }
-
-    @Override
-    public int getSize() {
-        return 0;
-    }
 }

@@ -18,22 +18,22 @@ public class Location implements Serializable {
     private int id;
 
 
-    public Location(String label, int id) {
-        this.setLabel(label);
-        this.setId(id);
+    public Location(final String label, final int id) {
+        setLabel(label);
+        setId(id);
 
     }
 
-    public Location(JSONObject json) throws JSONException {
-        this.setLabel(json.getString("label"));
-        this.setId(json.getInt("id"));
+    public Location(final JSONObject json) throws JSONException {
+        setLabel(json.getString("label"));
+        setId(json.getInt("id"));
     }
 
     public int getId() {
         return id;
     }
 
-    void setId(int id) {
+    void setId(final int id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public class Location implements Serializable {
         return label;
     }
 
-    void setLabel(String label) {
+    void setLabel(final String label) {
         this.label = label;
     }
 

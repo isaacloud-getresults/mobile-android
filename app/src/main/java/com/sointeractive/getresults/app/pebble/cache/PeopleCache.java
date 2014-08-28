@@ -60,41 +60,50 @@ public class PeopleCache {
     private void paginatePeople() {
         peopleInRoomPages = new SparseArray<List<List<ResponseItem>>>();
         final List<Location> locations = App.getDataManager().getLocations();
-        for (Location location : locations) {
+        for (final Location location : locations) {
             final int locationId = location.getId();
             peopleInRoomPages.append(locationId, paginatePeopleInRoom(locationId));
         }
     }
 
     private List<List<ResponseItem>> paginatePeopleInRoom(final int roomId) {
-        final Collection<ResponseItem> peopleInRoom = peopleResponses.get(roomId);
-        LinkedList<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
-        if (peopleInRoom == null) {
-            return pages;
+        final LinkedList<List<ResponseItem>> pages = new LinkedList<List<ResponseItem>>();
+        try {
+            final Collection<ResponseItem> peopleInRoom = peopleResponses.get(roomId);
+            if (peopleInRoom == null) {
+                return pages;
+            }
+            pages.add(new LinkedList<ResponseItem>());
+            int pageNumber = 0;
+            int items = 0;
+            for (final ResponseItem generalResponse : peopleInRoom) {
+                final PersonInResponse response = (PersonInResponse) generalResponse;
+                response.setIsMore();
+                if (items >= Settings.MAX_PEOPLE_PER_PAGE) {
+                    items = 0;
+                    pageNumber += 1;
+                    pages.add(new LinkedList<ResponseItem>());
+                }
+                items += 1;
+                response.setPageNumber(pageNumber);
+                pages.get(pageNumber).add(response);
+            }
+        } catch (final IndexOutOfBoundsException e) {
+            Log.e(TAG, "Cannot get room " + roomId + " for pagination");
         }
-        int totalMemory = App.getPebbleConnector().getMemory();
-        int currentMemory = 0;
-        int pageNumber = -1;
-        int items = 0;
-        for (ResponseItem generalResponse : peopleInRoom) {
-            PersonInResponse response = (PersonInResponse) generalResponse;
-            final int responseSize = response.getSize();
-            if (responseSize > totalMemory) {
+        setLastPageElements(pages);
+        return pages;
+    }
+
+    private void setLastPageElements(final Iterable<List<ResponseItem>> roomPages) {
+        for (final List<ResponseItem> peoplePage : roomPages) {
+            if(peoplePage.isEmpty()){
                 continue;
             }
-            response.setIsMore();
-            if (responseSize > currentMemory || items >= Settings.MAX_PEOPLE_PER_PAGE) {
-                items = 0;
-                pageNumber += 1;
-                pages.add(new LinkedList<ResponseItem>());
-                currentMemory = totalMemory;
-            }
-            items += 1;
-            currentMemory -= responseSize;
-            response.setPageNumber(pageNumber);
-            pages.get(pageNumber).add(response);
+            final ResponseItem lastResponse = peoplePage.get(peoplePage.size() - 1);
+            final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
+            lastPersonResponse.setIsLast();
         }
-        return pages;
     }
 
     private void findChanges(final SparseArray<List<List<ResponseItem>>> oldPeopleInRoomPages) {
@@ -105,10 +114,15 @@ public class PeopleCache {
             if (oldRoom == null || newRoom == null) {
                 throw new IndexOutOfBoundsException();
             }
-            final List<ResponseItem> oldPage = oldRoom.get(observedPage);
+            final List<ResponseItem> oldPage;
+            if(observedPage < oldRoom.size()-1){
+                oldPage = oldRoom.get(observedPage);
+            }else{
+                oldPage = new LinkedList<ResponseItem>();
+            }
             final List<ResponseItem> newPage = newRoom.get(observedPage);
             NewPeopleChecker.check(oldPage, newPage);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (final IndexOutOfBoundsException e) {
             if (observedPage == -1) {
                 Log.d(TAG, "No people page is observed");
             } else {
@@ -123,18 +137,15 @@ public class PeopleCache {
     }
 
     public Collection<ResponseItem> getPeoplePage(final int roomId, final int pageNumber) {
-        final List<List<ResponseItem>> pages = peopleInRoomPages.get(roomId);
-        if (pages == null) {
-            return new LinkedList<ResponseItem>();
-        }
-
         try {
+            final List<List<ResponseItem>> pages = peopleInRoomPages.get(roomId);
             final List<ResponseItem> page = pages.get(pageNumber);
             final ResponseItem lastResponse = page.get(page.size() - 1);
             final PersonInResponse lastPersonResponse = (PersonInResponse) lastResponse;
-            lastPersonResponse.setLast();
+            lastPersonResponse.setIsLast();
             return page;
         } catch (final IndexOutOfBoundsException e) {
+            Log.e(TAG, "Error: Cannot get page " + pageNumber);
             return new LinkedList<ResponseItem>();
         }
     }

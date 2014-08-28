@@ -74,8 +74,10 @@ public class MainActivity extends FragmentActivity implements
         App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
+        //<DEBUG_ONLY>
+        // TODO: Restore this to code
         getApplicationContext().startService(i);
-//        Log.e(TAG, "DEBUG MODE: NO TRACK SERVICE");
+        //</DEBUG_ONLY>
         Intent j = new Intent(getApplicationContext(), DataService.class);
         getApplicationContext().startService(j);
     }
