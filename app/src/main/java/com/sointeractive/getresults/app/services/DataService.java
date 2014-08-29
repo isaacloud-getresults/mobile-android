@@ -33,7 +33,6 @@ public class DataService extends Service {
     public void onDestroy() {
         super.onDestroy();
         timer.cancel();
-        Toast.makeText(this, "DataService stopped", Toast.LENGTH_LONG).show();
     }
 
     @Override

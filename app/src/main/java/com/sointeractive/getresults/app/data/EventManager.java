@@ -178,8 +178,6 @@ public class EventManager {
         private final String TAG = EventGetNewLocation.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
-        SparseIntArray idMap = new SparseIntArray();
-        final List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -222,20 +220,6 @@ public class EventManager {
                         e.printStackTrace();
                     }
                 }
-                // get achievements
-                for (int i = 0; i < gainedAchievements.length(); i++) {
-                    JSONObject jsonAch = (JSONObject) gainedAchievements.get(i);
-                    idMap.put(jsonAch.getInt("achievement"), jsonAch.getInt("amount"));
-                }
-                HttpResponse responseGeneral = App.getIsaacloudConnector()
-                        .path("/cache/achievements").withLimit(1000).get();
-                JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                for (int i = 0; i < arrayGeneral.length(); i++) {
-                    JSONObject jsonAch = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.get(jsonAch.getInt("id"), -1) != -1) {
-                        newAchievements.add(0, new Achievement(jsonAch, true, idMap.get(jsonAch.getInt("id"))));
-                    }
-                }
             } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -248,34 +232,6 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-
-            List<Achievement> actualAchievements = App.getDataManager().getAchievements();
-            for (Achievement a : actualAchievements) {
-                Log.v(TAG, "old Achievements: " + a.getLabel());
-            }
-            for (Achievement a : newAchievements) {
-                Log.v(TAG, "new Achievements: " + a.getLabel());
-            }
-
-            if (newAchievements.size() != actualAchievements.size()) {
-                // search for new achievement
-                List<Achievement> recentAchievements = new LinkedList<Achievement>();
-                int i = 0;
-                while (i < newAchievements.size()) {
-                    if (!actualAchievements.contains(newAchievements.get(i))) {
-                        recentAchievements.add(newAchievements.get(i));
-                    }
-                    i++;
-                }
-                App.getDataManager().setAchievements(newAchievements);
-                for (Achievement achievement : recentAchievements) {
-                    Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
-                    intent.putExtra("label", achievement.getLabel());
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                }
-            } else {
-                Log.d(TAG, "No new achievements.");
-            }
             // send broadcast
             LocalBroadcastManager.getInstance(context).sendBroadcast(message);
             if (isError) {
@@ -342,6 +298,9 @@ public class EventManager {
         private final String TAG = EventUpdateData.class.getSimpleName();
         boolean isError = false;
         HttpResponse response;
+        final UserData userData = App.loadUserData();
+        SparseIntArray idMap = new SparseIntArray();
+        final List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -373,7 +332,25 @@ public class EventManager {
                         LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_NEW_LOCATION));
                     }
                 }
+                int id = userData.getUserId();
+                HttpResponse response = App.getIsaacloudConnector().path("/cache/users/" + id).withFields("gainedAchievements").get();
+                JSONObject json = response.getJSONObject();
+                JSONArray gainedAchievements = json.getJSONArray("gainedAchievements");
                 App.getDataManager().setPeople(entries);
+                // get achievements
+                for (int i = 0; i < gainedAchievements.length(); i++) {
+                    JSONObject jsonAch = (JSONObject) gainedAchievements.get(i);
+                    idMap.put(jsonAch.getInt("achievement"), jsonAch.getInt("amount"));
+                }
+                HttpResponse responseGeneral = App.getIsaacloudConnector()
+                        .path("/cache/achievements").withLimit(1000).get();
+                JSONArray arrayGeneral = responseGeneral.getJSONArray();
+                for (int i = 0; i < arrayGeneral.length(); i++) {
+                    JSONObject jsonAch = (JSONObject) arrayGeneral.get(i);
+                    if (idMap.get(jsonAch.getInt("id"), -1) != -1) {
+                        newAchievements.add(0, new Achievement(jsonAch, true, idMap.get(jsonAch.getInt("id"))));
+                    }
+                }
 
             } catch (JSONException e) {
                 Log.e(TAG, "Error: JSON");
@@ -393,6 +370,33 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
+            List<Achievement> actualAchievements = App.getDataManager().getAchievements();
+            for (Achievement a : actualAchievements) {
+                Log.v(TAG, "old Achievements: " + a.getLabel());
+            }
+            for (Achievement a : newAchievements) {
+                Log.v(TAG, "new Achievements: " + a.getLabel());
+            }
+
+            if (newAchievements.size() != actualAchievements.size()) {
+                // search for new achievement
+                List<Achievement> recentAchievements = new LinkedList<Achievement>();
+                int i = 0;
+                while (i < newAchievements.size()) {
+                    if (!actualAchievements.contains(newAchievements.get(i))) {
+                        recentAchievements.add(newAchievements.get(i));
+                    }
+                    i++;
+                }
+                App.getDataManager().setAchievements(newAchievements);
+                for (Achievement achievement : recentAchievements) {
+                    Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
+                    intent.putExtra("label", achievement.getLabel());
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                }
+            } else {
+                Log.d(TAG, "No new achievements.");
+            }
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA));
             //new EventCheckNotifications().execute();
             if (isError) {
