@@ -789,6 +789,8 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                 LoginCache.INSTANCE.logIn();
                 dialog.dismiss();
                 runMainActivity();
+                // SEND LOGIN EVENT
+                App.getEventManager().postEventLogin();
             } else {
                 dialog.dismiss();
                 Log.e(TAG, "Cannot get achievements");

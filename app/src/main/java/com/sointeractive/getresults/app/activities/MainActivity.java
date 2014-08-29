@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.andraskindler.parallaxviewpager.ParallaxViewPager;
@@ -30,7 +31,7 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle extras = getIntent().getExtras();
-        /*
+
         if (extras != null) {
             if (extras.containsKey("achPointer")) {
                 Intent intent = new Intent(this, LoginActivity.class);
@@ -38,10 +39,9 @@ public class MainActivity extends FragmentActivity implements
                 finish();
             }
         }
-        */
+
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         viewPager = (ParallaxViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -62,7 +62,7 @@ public class MainActivity extends FragmentActivity implements
         final PagerAdapter mAdapter = new PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapter);
         viewPager.setScaleType(ParallaxViewPager.FIT_HEIGHT);
-        viewPager.setBackgroundResource(R.drawable.gr2);
+//        viewPager.setBackgroundResource(R.drawable.gr2);
         // set page swipe listener
         viewPager.setOnPageChangeListener(
                 new ViewPager.SimpleOnPageChangeListener() {
@@ -73,8 +73,6 @@ public class MainActivity extends FragmentActivity implements
                 }
         );
 
-        // SEND LOGIN EVENT
-        App.getEventManager().postEventLogin();
 
         Intent i = new Intent(getApplicationContext(), TrackService.class);
         //<DEBUG_ONLY>
