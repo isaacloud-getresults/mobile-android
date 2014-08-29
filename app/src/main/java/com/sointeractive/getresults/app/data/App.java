@@ -78,14 +78,6 @@ public class App extends Application {
     }
 
     public static Isaacloud getIsaacloudConnector() {
-        final Map<String, String> config = new HashMap<String, String>();
-        config.put("instanceId", Settings.INSTANCE_ID);
-        config.put("appSecret", Settings.APP_SECRET);
-        try {
-            App.setIsaacloudConnector(new Isaacloud(config));
-        } catch (final InvalidConfigException e) {
-            e.printStackTrace();
-        }
         return isaacloudConnector;
     }
 

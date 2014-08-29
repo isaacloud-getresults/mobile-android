@@ -17,19 +17,18 @@ public class StatusCard extends Card {
     private TextView title;
     private IconTextView stats;
 
-    public StatusCard(final Context context, final int layout) {
+    public StatusCard(Context context, int layout) {
         super(context, layout);
-        setShadow(false);
     }
 
     @Override
-    public void setupInnerViewElements(final ViewGroup parent, final View view) {
+    public void setupInnerViewElements(ViewGroup parent, View view) {
 
         title = (TextView) view.findViewById(R.id.status_card_main_text);
         stats = (IconTextView) view.findViewById(R.id.status_card_stats);
     }
 
-    public void initLocation(final Location newLocation) {
+    public void initLocation(Location newLocation) {
         if (title != null) {
 //            if(newLocation != null)
             title.setText(newLocation.getLabel());

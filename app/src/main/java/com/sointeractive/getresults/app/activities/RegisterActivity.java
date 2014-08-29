@@ -21,6 +21,7 @@ import com.sointeractive.getresults.app.data.App;
 import com.sointeractive.getresults.app.data.DataManager;
 import com.sointeractive.getresults.app.data.isaacloud.Achievement;
 import com.sointeractive.getresults.app.data.isaacloud.Location;
+import com.sointeractive.getresults.app.data.isaacloud.LoginData;
 import com.sointeractive.getresults.app.data.isaacloud.Person;
 import com.sointeractive.getresults.app.data.isaacloud.UserData;
 
@@ -45,10 +46,10 @@ public class RegisterActivity extends Activity {
     private Context context;
     private ProgressDialog dialog;
     private EditText textEmail, textPassword, textPasswordRepeat, textFirstName, textLastName;
-    private UserData userData;
+    private LoginData loginData;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         // generate basic view
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
@@ -73,14 +74,14 @@ public class RegisterActivity extends Activity {
 
         buttonRegister.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(final View v) {
-                final String pw = textPassword.getEditableText().toString();
-                final String pw2 = textPasswordRepeat.getEditableText().toString();
-                final String email = textEmail.getEditableText().toString();
-                final String firstName = textFirstName.getEditableText().toString();
-                final String lastName = textLastName.getEditableText().toString();
-                if (!email.isEmpty() && !firstName.isEmpty()
-                        && !lastName.isEmpty()) {
+            public void onClick(View v) {
+                String pw = textPassword.getEditableText().toString();
+                String pw2 = textPasswordRepeat.getEditableText().toString();
+                String email = textEmail.getEditableText().toString();
+                String firstName = textFirstName.getEditableText().toString();
+                String lastName = textLastName.getEditableText().toString();
+                if (email.length() > 0 && firstName.length() > 0
+                        && lastName.length() > 0) {
                     if (pw.equals(pw2)) {
                         if (pw.matches("^((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%\\.]).{6,15})$")) {
                             new RegisterTask().execute();
@@ -132,159 +133,56 @@ public class RegisterActivity extends Activity {
         }
 
         @Override
-        protected Object doInBackground(final Object... params) {
+        protected Object doInBackground(Object... params) {
             Log.d(TAG, "Action: Registering user");
 
-            final JSONObject jsonBody = new JSONObject();
+            JSONObject jsonBody = new JSONObject();
             // generate json
             try {
-                jsonBody.put("email", textEmail.getEditableText().toString());
-                jsonBody.put("password", textPassword.getEditableText().toString());
-                jsonBody.put("firstName", textFirstName.getEditableText().toString());
-                jsonBody.put("lastName", textLastName.getEditableText().toString());
+                jsonBody.put("email", RegisterActivity.this.textEmail.getEditableText().toString());
+                jsonBody.put("password", RegisterActivity.this.textPassword.getEditableText().toString());
+                jsonBody.put("firstName", RegisterActivity.this.textFirstName.getEditableText().toString());
+                jsonBody.put("lastName", RegisterActivity.this.textLastName.getEditableText().toString());
                 jsonBody.put("status", 1);
 
-            } catch (final JSONException e1) {
+            } catch (JSONException e1) {
                 e1.printStackTrace();
             }
-            userData = App.loadUserData();
-            final HttpResponse response;
+
+            HttpResponse response;
             // send request and retrieve response
             try {
                 response = App.getIsaacloudConnector().path("/admin/users")
                         .post(jsonBody);
-                final JSONObject json = response.getJSONObject();
-                userData.setUserId(json.getInt("id"));
-                userData.setName(json.getString("firstName") + " "
-                        + json.getString("lastName"));
-                userData.setEmail(json.getString("email"));
-                userData.setLevel(json.getString("level"));
-                App.saveUserData(userData);
+                JSONObject json = response.getJSONObject();
+                Log.d(TAG, "Register json:" + json.toString());
                 success = true;
-            } catch (final JSONException e) {
+            } catch (IsaaCloudConnectionException e) {
                 e.printStackTrace();
-            } catch (final IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(final Object result) {
+        protected void onPostExecute(Object result) {
+            loginData = App.loadLoginData();
             dialog.dismiss();
             if (success) {
-                new EventGetLocations().execute();
+                    loginData.setEmail(textEmail.getEditableText().toString());
+                    loginData.setPassword(textPassword.getEditableText().toString());
+                    loginData.setRemembered(true);
+                    App.saveLoginData(loginData);
+                    Intent intent = new Intent(context, LoginActivity.class);
+                    startActivity(intent);
             } else {
                 Log.e(TAG, "Error: Cannot register user");
             }
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             finish();
         }
 
     }
 
-    // GET LOCATIONS
-    private class EventGetLocations extends AsyncTask<Object, Object, Object> {
-
-        private final String TAG = EventGetLocations.class.getSimpleName();
-        public boolean success = false;
-
-        @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "Action: Downloading locations");
-            dialog = ProgressDialog.show(context, "Downloading data", "Please wait");
-        }
-
-
-        @Override
-        public Object doInBackground(final Object... params) {
-            final SparseArray<List<Person>> entries = new SparseArray<List<Person>>();
-            final List<Location> locations = new ArrayList<Location>();
-            final List<Achievement> achievements = new ArrayList<Achievement>();
-            locations.add(new Location("Nowhere", 0));
-            userData = App.loadUserData();
-            try {
-                // LOCATIONS REQUEST
-                Log.d(TAG, "Action: Getting locations");
-                final HttpResponse response = App.getIsaacloudConnector().path("/cache/users/groups").withFields("label", "id").get();
-                Log.v(TAG, response.toString());
-                // all locations from isa
-                final JSONArray locationsArray = response.getJSONArray();
-                for (int i = 0; i < locationsArray.length(); i++) {
-                    final JSONObject locJson = (JSONObject) locationsArray.get(i);
-                    final Location loc = new Location(locJson);
-                    if (loc.getId() != 1 && loc.getId() != 2) {
-                        entries.put(loc.getId(), new LinkedList<Person>());
-                        locations.add(loc);
-                    }
-                }
-
-
-                // USERS REQUEST
-                Log.d(TAG, "Action: Getting users list");
-                final HttpResponse usersResponse = App.getIsaacloudConnector().path("/cache/users").withFields("firstName", "lastName", "id", "counterValues").withLimit(0).get();
-                Log.v(TAG, usersResponse.toString());
-                final JSONArray usersArray = usersResponse.getJSONArray();
-                // for every user
-                for (int i = 0; i < usersArray.length(); i++) {
-                    final JSONObject userJson = (JSONObject) usersArray.get(i);
-                    final Person p = new Person(userJson);
-                    entries.get(p.getLocation()).add(p);
-                }
-
-                // ACHIEVEMENTS REQUEST
-                final SparseIntArray idMap = new SparseIntArray();
-                final HttpResponse responseUser = App
-                        .getIsaacloudConnector()
-                        .path("/cache/users/" + userData.getUserId()).withFields("gainedAchievements").withLimit(0).get();
-                final JSONObject achievementsJson = responseUser.getJSONObject();
-                final JSONArray arrayUser = achievementsJson.getJSONArray("gainedAchievements");
-                for (int i = 0; i < arrayUser.length(); i++) {
-                    final JSONObject json = (JSONObject) arrayUser.get(i);
-                    idMap.put(json.getInt("achievement"), json.getInt("amount"));
-                }
-
-                final HttpResponse responseGeneral = App.getIsaacloudConnector()
-                        .path("/cache/achievements").withLimit(1000).get();
-                final JSONArray arrayGeneral = responseGeneral.getJSONArray();
-                Log.v("TEST", arrayGeneral.toString(3));
-                for (int i = 0; i < arrayGeneral.length(); i++) {
-                    final JSONObject json = (JSONObject) arrayGeneral.get(i);
-                    if (idMap.get(json.getInt("id"), -1) != -1) {
-                        achievements.add(new Achievement(json, true, idMap.get(json.getInt("id"))));
-                    }
-                }
-                success = true;
-                final DataManager dm = App.getDataManager();
-                dm.setLocations(locations);
-                dm.setPeople(entries);
-                dm.setAchievements(achievements);
-                Log.d(TAG, "Number achievements found: " + dm.getAchievements().size());
-
-            } catch (final JSONException e) {
-                e.printStackTrace();
-            } catch (final IsaaCloudConnectionException e) {
-                e.printStackTrace();
-            } catch (final IOException e1) {
-                e1.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(final Object result) {
-            dialog.dismiss();
-            if (success) {
-                Log.d(TAG, "New user registered");
-                final Intent intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
-            } else {
-                Log.e(TAG, "Cannot register user");
-            }
-        }
-
-    }
 
 }

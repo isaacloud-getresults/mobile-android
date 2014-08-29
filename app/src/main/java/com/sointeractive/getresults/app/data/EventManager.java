@@ -59,8 +59,8 @@ public class EventManager {
                 .setContentTitle(title)
                 .setContentIntent(intent)
                 .setContentText(message)
-                .setAutoCancel(true)
-                .setDefaults(android.app.Notification.DEFAULT_ALL);
+                .setAutoCancel(true);
+                //.setDefaults(android.app.Notification.DEFAULT_ALL);
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(notificationId, mBuilder.build());
         notificationId++;
@@ -135,7 +135,6 @@ public class EventManager {
 
         @Override
         protected Object doInBackground(String... data) {
-            generateNotification("Entered new beacon range", "Now you are in", "Meeting room");
             Log.v("EVENT", "SENDING POST NEW LOCATION EVENT");
             try {
                 JSONObject body = new JSONObject();
@@ -176,11 +175,11 @@ public class EventManager {
 
         final Intent message = new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA);
         final UserData userData = App.loadUserData();
-        final List<Achievement> newAchievements = new ArrayList<Achievement>();
         private final String TAG = EventGetNewLocation.class.getSimpleName();
         HttpResponse response;
         boolean isError = false;
         SparseIntArray idMap = new SparseIntArray();
+        final List<Achievement> newAchievements = new ArrayList<Achievement>();
 
         @Override
         protected Object doInBackground(String... data) {
@@ -249,8 +248,7 @@ public class EventManager {
         }
 
         protected void onPostExecute(Object result) {
-            // CHECK FOR NEW ACHIEVEMENTS
-//            new EventCheckAchievements().execute();
+
             List<Achievement> actualAchievements = App.getDataManager().getAchievements();
             for (Achievement a : actualAchievements) {
                 Log.v(TAG, "old Achievements: " + a.getLabel());
@@ -274,7 +272,6 @@ public class EventManager {
                     Intent intent = new Intent(Settings.BROADCAST_INTENT_NEW_ACHIEVEMENT);
                     intent.putExtra("label", achievement.getLabel());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                    generateNotification("NEW ACHIEVEMENT UNLOCKED!", "New achievement", achievement.getLabel());
                 }
             } else {
                 Log.d(TAG, "No new achievements.");
@@ -287,6 +284,8 @@ public class EventManager {
             if (response != null) {
                 Log.v(TAG, "response: " + response.toString());
             }
+            generateNotification("New location", "Current location:", App.loadUserData().getUserLocation().getLabel());
+            new EventCheckNotifications().execute();
         }
     }
 
@@ -375,6 +374,7 @@ public class EventManager {
                     }
                 }
                 App.getDataManager().setPeople(entries);
+
             } catch (JSONException e) {
                 Log.e(TAG, "Error: JSON");
                 e.printStackTrace();
@@ -394,7 +394,7 @@ public class EventManager {
 
         protected void onPostExecute(Object result) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Settings.BROADCAST_INTENT_UPDATE_DATA));
-            new EventCheckNotifications().execute();
+            //new EventCheckNotifications().execute();
             if (isError) {
                 Log.e(TAG, "Error: Cannot update data");
             }
@@ -409,17 +409,21 @@ public class EventManager {
         final List<Notification> entries = new ArrayList<Notification>();
 
         @Override
-        protected List<Notification> doInBackground(Object... params) {
+        protected List<Notification> doInBackground(Object... p) {
             if (App.getDataManager().getLastNotification() == null) {
                 Notification dummyNotification = new Notification(null, null, new Date(System.currentTimeMillis()));
                 App.getDataManager().setLastNotification(dummyNotification);
             }
             try {
                 Map<String, Object> query = new HashMap<String, Object>();
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("limit", "0");
+                params.put("fromc", App.getDataManager().getLastNotification().getCreatedAt().getTime()+1);
                 query.put("subjectId", App.loadUserData().getUserId());
-               // query.put("typeId", Settings.ANDROID_NOTIFICATION_ID);
+                query.put("typeId", Settings.ANDROID_NOTIFICATION_ID);
                 HttpResponse response = App.getIsaacloudConnector()
-                        .path("/queues/notifications").withQuery(query).withLimit(0).withCreatedAt(App.getDataManager().getLastNotification().getCreatedAt().getTime(), null).get();
+                        .path("/queues/notifications").withQueryParameters(params)
+                        .withQuery(query).get();
                 JSONArray array = response.getJSONArray();
                 for (int i = 0; i < array.length(); i++) {
                     entries.add(new Notification((JSONObject) array.get(i)));
@@ -438,6 +442,7 @@ public class EventManager {
 
         protected void onPostExecute(final List<Notification> result) {
             for (final Notification notification : result) {
+
                 final String message = notification.getMessage();
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 App.getPebbleConnector().sendNotification(Settings.IC_NOTIFICATION_HEADER, message);

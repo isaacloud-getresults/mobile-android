@@ -121,6 +121,15 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             }
         }
         App.loadConfigData();
+
+        final Map<String, String> config = new HashMap<String, String>();
+        config.put("instanceId", Settings.INSTANCE_ID);
+        config.put("appSecret", Settings.APP_SECRET);
+        try {
+            App.setIsaacloudConnector(new Isaacloud(config));
+        } catch (final InvalidConfigException e) {
+            e.printStackTrace();
+        }
         // create new wrapper instance for API connection
         /*
         if(App.loadConfigData() == null) {
@@ -137,6 +146,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
             dialog.show();
         }
         */
+
 
         // find relevant views and add listeners
         final SignInButton buttonSignIn = (SignInButton) findViewById(R.id.buttonGoogle);
@@ -353,6 +363,20 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        editEmail = (TextView) findViewById(R.id.editEmail);
+        editPassword = (TextView) findViewById(R.id.editPassword);
+        checkbox = (CheckBox) findViewById(R.id.rememberCheckBox);
+        if (loginData.isRemembered()) {
+            checkbox.setChecked(true);
+            editEmail.setText(loginData.getEmail());
+            editPassword.setText(loginData.getPassword());
+        }
     }
 
     protected void onStop() {
@@ -706,7 +730,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
     }
 
     // GET LOCATIONS
-    private class EventGetAchievements extends AsyncTask<Object, Object, Object> {
+    private class EventGetAchievements extends AsyncTask<Object, Object, List<Achievement>> {
 
         private final String TAG = EventGetAchievements.class.getSimpleName();
         public boolean success = false;
@@ -718,7 +742,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
 
 
         @Override
-        public Object doInBackground(Object... params) {
+        public List<Achievement> doInBackground(Object... params) {
             List<Achievement> achievements = new ArrayList<Achievement>();
             try {
 
@@ -745,10 +769,7 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
                     }
                 }
                 success = true;
-                DataManager dm = App.getDataManager();
-                dm.setAchievements(achievements);
-                Log.d(TAG, "Event: Downloaded " + dm.getAchievements().size() + " achievements");
-
+                return achievements;
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IsaaCloudConnectionException e) {
@@ -760,13 +781,16 @@ public class LoginActivity extends Activity implements GoogleApiClient.Connectio
         }
 
         @Override
-        protected void onPostExecute(Object result) {
-            dialog.dismiss();
+        protected void onPostExecute(List<Achievement> result) {
             if (success) {
-                Log.i(TAG, "Achievements downloaded");
+                final DataManager dm = App.getDataManager();
+                dm.setAchievements(result);
+                Log.d(TAG, "Event: Downloaded " + dm.getAchievements().size() + " achievements");
                 LoginCache.INSTANCE.logIn();
+                dialog.dismiss();
                 runMainActivity();
             } else {
+                dialog.dismiss();
                 Log.e(TAG, "Cannot get achievements");
             }
         }

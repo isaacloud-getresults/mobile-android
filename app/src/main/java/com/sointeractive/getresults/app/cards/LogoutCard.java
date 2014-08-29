@@ -6,10 +6,9 @@ import it.gmariotti.cardslib.library.internal.Card;
 
 public class LogoutCard extends Card {
 
-    public LogoutCard(final Context context) {
+    public LogoutCard(Context context) {
         super(context);
-        setShadow(false);
-        setTitle("Log out");
+        this.setTitle("Log out");
     }
 
 }

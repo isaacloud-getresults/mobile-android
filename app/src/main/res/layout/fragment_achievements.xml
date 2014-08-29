@@ -1,7 +1,17 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <it.gmariotti.cardslib.library.view.CardView
+        android:id="@+id/cardSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        />
 
     <it.gmariotti.cardslib.library.view.CardGridView
         android:id="@+id/achievementsGrid"

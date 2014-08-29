@@ -44,8 +44,11 @@ public class TrackService extends Service {
     private final BeaconManager beaconManager = new BeaconManager(this);
     private Beacon lastBeacon;
 
+    public TrackService() {
+    }
+
     @Override
-    public IBinder onBind(final Intent intent) {
+    public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -57,12 +60,12 @@ public class TrackService extends Service {
         serviceContext = this;
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
-            public void onBeaconsDiscovered(final Region region, final List<Beacon> beacons) {
+            public void onBeaconsDiscovered(Region region, final List<Beacon> beacons) {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         temp = majors;
                         trackBeacons(beacons);
-                        for (final Beacon beacon : beacons) {
+                        for (Beacon beacon : beacons) {
                             writeDistance(beacon);
                             Log.v(TAG, "Event: Found beacon: " + beacon + " distance: " + Utils.computeAccuracy(beacon));
                         }
@@ -73,14 +76,14 @@ public class TrackService extends Service {
         });
     }
 
-    public int onStartCommand(final Intent intent, final int flags, final int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {
                 try {
                     beaconManager.startRanging(ALL_ESTIMOTE_BEACONS);
                     Log.i(TAG, "Action: Start ranging");
-                } catch (final RemoteException e) {
+                } catch (RemoteException e) {
                     Log.e(TAG, "Error: Cannot start ranging", e);
                 }
             }
@@ -99,12 +102,12 @@ public class TrackService extends Service {
             App.getEventManager().postEventLeftBeacon(Integer.toString(lastBeacon.getMajor()), Integer.toString(lastBeacon.getMinor()));
     }
 
-    void runOnUiThread(final Runnable runnable) {
+    void runOnUiThread(Runnable runnable) {
         handler.post(runnable);
     }
 
-    void writeDistance(final Beacon beacon) {
-        final ArrayList<Double> help;
+    void writeDistance(Beacon beacon) {
+        ArrayList<Double> help;
 
         if ((beaconDistances.size() == 0) || (beaconDistances.get(beacon.getMajor()) == null)) {
             help = new ArrayList<Double>();
@@ -133,11 +136,10 @@ public class TrackService extends Service {
     }
     */
 
-    void trackBeacons(final List<Beacon> beacons) {
+    void trackBeacons(List<Beacon> beacons) {
 
-        final ArrayList<String> helper = new ArrayList<String>();
-//        Vibrator v = (Vibrator) context.getSystemService((Context.VIBRATOR_SERVICE));
-        for (final Beacon b : beacons) {
+        ArrayList<String> helper = new ArrayList<String>();
+        for (Beacon b : beacons) {
             helper.add(b.getMacAddress());
             beaconMap.put(b.getMacAddress(), b);
             if (!(majors.contains(b.getMacAddress()))) {
@@ -146,29 +148,26 @@ public class TrackService extends Service {
                 if (internetConnection)
                     App.getEventManager().postEventNewBeacon(Integer.toString(b.getMajor()), Integer.toString(b.getMinor()));
                 lastBeacon = b;
-//                    v.vibrate(0);
             } else previousFlag = false;
             if (!internetConnection)
                 Toast.makeText(this, "NO INTERNET!", Toast.LENGTH_SHORT).show();
         }
 
         temp = new ArrayList<String>(majors);
-        for (final String i : temp) {
-            final Beacon tempBeacon = beaconMap.get(i);
+        for (String i : temp) {
+            Beacon tempBeacon = beaconMap.get(i);
             if (!(helper.contains(i))) {
-                if (readyToSend(tempBeacon, true)) {
                     majors.remove(i);
                     Toast.makeText(getApplicationContext(), "Left " + tempBeacon.getMinor() + " range!", Toast.LENGTH_SHORT).show();
                     if (internetConnection)
                         App.getEventManager().postEventLeftBeacon(Integer.toString(tempBeacon.getMajor()), Integer.toString(tempBeacon.getMinor()));
-//                    v.vibrate(0);
-                }
+
             } else previousFlag = false;
         }
     }
 
-    private boolean readyToSend(final Beacon b, final boolean flag) {
-        final String mac = b.getMacAddress();
+    private boolean readyToSend(Beacon b, boolean flag) {
+        String mac = b.getMacAddress();
         Integer i;
 
         if (!counterMap.containsKey(mac) || flag != previousFlag) {
@@ -191,13 +190,13 @@ public class TrackService extends Service {
     public boolean hasActiveInternetConnection() {
         if (isNetworkAvailable()) {
             try {
-                final HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+                HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
                 urlc.setRequestProperty("User-Agent", "Test");
                 urlc.setRequestProperty("Connection", "close");
                 urlc.setConnectTimeout(1500);
                 urlc.connect();
                 return (urlc.getResponseCode() == 200);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 return false;
             }
         }
@@ -205,9 +204,9 @@ public class TrackService extends Service {
     }
 
     private boolean isNetworkAvailable() {
-        final ConnectivityManager connectivityManager
+        ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
     }
 
@@ -217,7 +216,7 @@ public class TrackService extends Service {
                 internetConnection = isNetworkAvailable();
                 try {
                     Thread.sleep(1000);
-                } catch (final InterruptedException e) {
+                } catch (InterruptedException e) {
 
                 }
                 Log.d(TAG, "Connected: " + internetConnection);
