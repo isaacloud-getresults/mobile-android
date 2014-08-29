@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -65,6 +66,7 @@ public class ProfileFragment extends Fragment {
     private StatsCard statsCard;
     private CardView profileCardView;
     private ImageView userImage;
+    private Drawable imageDrawable;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -110,6 +112,7 @@ public class ProfileFragment extends Fragment {
         });
 
         userImage = (ImageView) view.findViewById(R.id.userImage);
+        if(imageDrawable != null) userImage.setImageDrawable(imageDrawable);
         userImage.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -177,6 +180,7 @@ public class ProfileFragment extends Fragment {
             Log.d("Bitmap", "width: " + imageBitmap.getWidth() + " " + "height: " + imageBitmap.getHeight());
 //            new SendToServerTask().execute(picturePath);
             userImage.setImageBitmap(ImageHelper.getAvatar(imageBitmap, picturePath));
+            imageDrawable = userImage.getDrawable();
         }
     }
 
